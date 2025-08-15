@@ -1,7 +1,6 @@
 import type { Config } from "tailwindcss";
-import tailwindcssAnimate from "tailwindcss-animate";
 
-const config = {
+const config: Config = {
   darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -37,6 +36,25 @@ const config = {
           1: "rgba(255, 255, 255, 0.10)",
         },
         bankGradient: "#0179FE",
+        primary: "#0179FE",
+        "primary-foreground": "#FFFFFF",
+        secondary: "#E9F2FF",
+        "secondary-foreground": "#0179FE",
+        accent: "#F5FAFF",
+        "accent-foreground": "#0179FE",
+        destructive: "#EF4444",
+        "destructive-foreground": "#FFFFFF",
+        muted: "#F3F4F6",
+        "muted-foreground": "#6B7280",
+        card: "#FFFFFF",
+        "card-foreground": "#171717",
+        popover: "#FFFFFF",
+        "popover-foreground": "#171717",
+        background: "#FFFFFF",
+        foreground: "#171717",
+        input: "#F3F4F6",
+        border: "#E5E7EB",
+        ring: "#0179FE",
         indigo: {
           500: "#6172F3",
           700: "#3538CD",
@@ -116,7 +134,8 @@ const config = {
       },
     },
   },
-  plugins: [tailwindcssAnimate],
-} satisfies Config;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [require("tailwindcss-animate")],
+};
 
 export default config;

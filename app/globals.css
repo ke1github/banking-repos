@@ -2,15 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  font-family: var(--font-inter), system-ui, sans-serif;
-}
+@layer base {
+  html,
+  body {
+    font-family: var(--font-inter), system-ui, sans-serif;
+  }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 }
 
 /* Scrollbar Utilities */
@@ -33,27 +35,24 @@ body {
 }
 
 /* Custom Scrollbar */
-.custom-scrollbar {
-  /* Scrollbar Container */
-  &::-webkit-scrollbar {
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
     width: 3px;
     height: 3px;
     border-radius: 2px;
   }
 
-  /* Scrollbar Track */
-  &::-webkit-scrollbar-track {
+  .custom-scrollbar::-webkit-scrollbar-track {
     background: #dddddd;
   }
 
-  /* Scrollbar Thumb */
-  &::-webkit-scrollbar-thumb {
+  .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #5c5c7b;
     border-radius: 50px;
+  }
 
-    &:hover {
-      background: #7878a3;
-    }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #7878a3;
   }
 }
 
@@ -65,7 +64,7 @@ body {
 
   /* Button resets */
   .sheet-content button {
-    @apply focus:ring-0 focus-visible:ring-transparent focus:ring-offset-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-none !important;
+    @apply focus:ring-0 focus-visible:ring-transparent focus:ring-offset-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-none;
   }
 
   /* Layout utilities */
@@ -135,7 +134,7 @@ body {
   }
 
   .total-balance-chart {
-    @apply flex size-full max-w-[100px] items-center sm:max-w-[120px];
+    @apply flex w-full h-full max-w-[100px] items-center sm:max-w-[120px];
   }
 
   .total-balance-label {
@@ -164,7 +163,7 @@ body {
 
   /* Right sidebar */
   .right-sidebar {
-    @apply no-scrollbar hidden h-screen max-h-screen flex-col border-l border-gray-200 xl:flex w-[355px] xl:overflow-y-scroll !important;
+    @apply no-scrollbar hidden h-screen max-h-screen flex-col border-l border-gray-200 xl:flex w-[355px] xl:overflow-y-scroll;
   }
 
   .profile-banner {
@@ -176,7 +175,7 @@ body {
   }
 
   .profile-img {
-    @apply flex-center absolute -top-8 size-24 rounded-full bg-gray-100 border-8 border-white p-2 shadow-profile;
+    @apply flex-center absolute -top-8 w-24 h-24 rounded-full bg-gray-100 border-8 border-white p-2 shadow-profile;
   }
 
   .profile-details {
@@ -235,11 +234,11 @@ body {
   }
 
   .bank-card_content {
-    @apply relative z-10 flex size-full max-w-[228px] flex-col justify-between rounded-l-[20px] bg-bank-gradient px-5 pb-4 pt-5;
+    @apply relative z-10 flex w-full h-full max-w-[228px] flex-col justify-between rounded-l-[20px] bg-bank-gradient px-5 pb-4 pt-5;
   }
 
   .bank-card_icon {
-    @apply flex size-full flex-1 flex-col items-end justify-between rounded-r-[20px] bg-bank-gradient bg-cover bg-center bg-no-repeat py-5 pr-5;
+    @apply flex w-full h-full flex-1 flex-col items-end justify-between rounded-r-[20px] bg-bank-gradient bg-cover bg-center bg-no-repeat py-5 pr-5;
   }
 
   /* Bank Info */
@@ -330,7 +329,7 @@ body {
   }
 
   .payment-transfer_btn {
-    @apply text-14 w-full bg-bank-gradient font-semibold text-white shadow-form !important;
+    @apply text-14 w-full bg-bank-gradient font-semibold text-white shadow-form;
   }
 
   /* Root Layout */
@@ -349,7 +348,7 @@ body {
   }
 
   .footer_name {
-    @apply flex size-10 items-center justify-center rounded-full bg-gray-200 max-xl:hidden;
+    @apply flex w-10 h-10 items-center justify-center rounded-full bg-gray-200 max-xl:hidden;
   }
 
   .footer_email {
@@ -357,7 +356,7 @@ body {
   }
 
   .footer_name-mobile {
-    @apply flex size-10 items-center justify-center rounded-full bg-gray-200;
+    @apply flex w-10 h-10 items-center justify-center rounded-full bg-gray-200;
   }
 
   .footer_email-mobile {
@@ -365,11 +364,11 @@ body {
   }
 
   .footer_image {
-    @apply relative size-5 max-xl:w-full max-xl:flex max-xl:justify-center max-xl:items-center;
+    @apply relative w-5 h-5 max-xl:w-full max-xl:flex max-xl:justify-center max-xl:items-center;
   }
 
   .footer_image-mobile {
-    @apply relative size-5;
+    @apply relative w-5 h-5;
   }
 
   /* Sidebar */
