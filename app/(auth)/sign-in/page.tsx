@@ -55,7 +55,7 @@ const SignIn = () => {
         </form>
 
         <p className="mt-4 text-center text-[14px] text-gray-600">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/sign-up" className="font-medium text-[#0179FE]">
             Sign Up
           </Link>

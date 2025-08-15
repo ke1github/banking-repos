@@ -1,6 +1,13 @@
 import React from "react";
+
+interface Account {
+  id: string;
+  name: string;
+  // Add other properties as needed
+}
+
 interface TotalBalanceBoxProps {
-  accounts?: Array<any>;
+  accounts?: Array<Account>;
   totalBanks: number;
   totalCurrentBalance: number;
 }
