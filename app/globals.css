@@ -13,6 +13,39 @@
     padding: 0;
     box-sizing: border-box;
   }
+
+  /* Chart styles */
+  .chart-container {
+    position: relative;
+    filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.08));
+  }
+
+  .chart-container canvas {
+    z-index: 1;
+    transition: all 0.3s ease;
+  }
+
+  .chart-container canvas:hover {
+    filter: brightness(1.03);
+  }
+
+  .chart-container .chartjs-tooltip {
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    animation: fadeIn 0.2s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 /* Scrollbar Utilities */
@@ -80,11 +113,15 @@
   }
 
   .mobile-balance-header {
-    @apply flex flex-col gap-1;
+    @apply flex flex-col gap-1 flex-1;
   }
 
   .mobile-balance-amount {
-    @apply text-24 font-semibold mt-2 mb-4;
+    @apply text-24 font-semibold mt-2 mb-2;
+  }
+
+  .mobile-balance-chart {
+    @apply flex items-center justify-center;
   }
 
   .mobile-balance-actions {

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import CountUp from "react-countup";
 import Image from "next/image";
+import DoughnutChart from "./DoughnutChart";
+import AnimatedCounter from "./AnimatedCounter";
 
 interface Account {
   id: string;
@@ -16,15 +17,13 @@ interface BalanceCardProps {
   totalCurrentBalance: number;
 }
 
-// Shared CountUp configuration to reduce redundancy
-const countUpProps = {
+// Shared AnimatedCounter configuration
+const counterConfig = {
   start: 0,
   duration: 2.5,
   decimals: 2,
   prefix: "$",
   separator: ",",
-  preserveValue: true,
-  redraw: false,
 };
 
 const BalanceCard = ({
@@ -54,15 +53,30 @@ const BalanceCard = ({
   if (isMobileView) {
     return (
       <div className="mobile-balance-card">
-        <div className="mobile-balance-header">
-          <h3 className="text-16 font-medium text-white">Total Balance</h3>
-          <span className="text-12 text-white/80">
-            {accounts.length} accounts across {totalBanks} banks
-          </span>
-        </div>
+        <div className="flex flex-row items-center justify-between">
+          <div className="mobile-balance-header">
+            <h3 className="text-16 font-medium text-white">Total Balance</h3>
+            <span className="text-12 text-white/80">
+              {accounts.length} accounts across {totalBanks} banks
+            </span>
+            <div className="mobile-balance-amount">
+              <AnimatedCounter {...counterConfig} end={totalCurrentBalance} />
+            </div>
+          </div>
 
-        <div className="mobile-balance-amount">
-          <CountUp {...countUpProps} end={totalCurrentBalance} />
+          {/* Add chart to mobile view */}
+          <div className="mobile-balance-chart">
+            <DoughnutChart
+              data={{
+                labels: ["Checking", "Savings", "Investment"],
+                values: [40, 35, 25],
+                colors: ["#FFFFFF", "#D1E3FF", "#97C3FF"],
+              }}
+              size={80}
+              cutout="65%"
+              centerText={{ value: totalBanks, label: "Banks" }}
+            />
+          </div>
         </div>
 
         <div className="mobile-balance-actions">
@@ -104,10 +118,16 @@ const BalanceCard = ({
   return (
     <section className="total-balance">
       <div className="total-balance-chart">
-        {/* Placeholder for a Doughnut chart component if needed */}
-        <div className="w-full h-full rounded-full bg-blue-100 flex-center">
-          <span className="text-14 font-medium">{totalBanks}</span>
-        </div>
+        <DoughnutChart
+          data={{
+            labels: ["Checking", "Savings", "Investment"],
+            values: [40, 35, 25],
+            colors: ["#0047B3", "#2065D8", "#2389FA"],
+          }}
+          size={130}
+          cutout="65%"
+          centerText={{ value: totalBanks, label: "Banks" }}
+        />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -119,7 +139,7 @@ const BalanceCard = ({
 
       <div className="flex flex-col items-end ml-auto">
         <p className="total-balance-amount">
-          <CountUp {...countUpProps} end={totalCurrentBalance} />
+          <AnimatedCounter {...counterConfig} end={totalCurrentBalance} />
         </p>
         <p className="text-14 text-gray-600">
           Total Banks: {totalBanks} | Total Accounts: {accounts.length}
