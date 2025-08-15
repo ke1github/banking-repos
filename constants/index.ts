@@ -1,25 +1,63 @@
-export const sidebarLinks = [
-  {
-    imgURL: "/icons/home.svg",
-    route: "/",
-    label: "Dashboard",
-  },
-  {
-    imgURL: "/icons/transaction.svg",
-    route: "/transactions",
-    label: "Transactions",
-  },
-  {
-    imgURL: "/icons/payment-transfer.svg",
-    route: "/transfers",
-    label: "Transfers",
-  },
-  {
-    imgURL: "/icons/credit-card.svg",
-    route: "/cards",
-    label: "Cards",
-  },
-];
+export const sidebarLinks = {
+  mainLinks: [
+    {
+      imgURL: "/icons/home.svg",
+      route: "/",
+      label: "Dashboard",
+    },
+    {
+      imgURL: "/icons/transaction.svg",
+      route: "/transactions",
+      label: "Transactions",
+    },
+    {
+      imgURL: "/icons/payment-transfer.svg",
+      route: "/transfers",
+      label: "Transfers",
+    },
+  ],
+  accountsLinks: [
+    {
+      imgURL: "/icons/credit-card.svg",
+      route: "/cards-accounts",
+      label: "Cards & Accounts",
+    },
+    {
+      imgURL: "/icons/bank-transfer.svg",
+      route: "/my-banks",
+      label: "My Banks",
+    },
+    {
+      imgURL: "/icons/connect-bank.svg",
+      route: "/connect-bank",
+      label: "Connect Bank",
+    },
+  ],
+  paymentLinks: [
+    {
+      imgURL: "/icons/money-send.svg",
+      route: "/send-money",
+      label: "Send Money",
+    },
+    {
+      imgURL: "/icons/deposit.svg",
+      route: "/deposits",
+      label: "Deposits",
+    },
+  ],
+  profileLinks: [
+    {
+      imgURL: "/icons/edit.svg",
+      route: "/profile",
+      label: "Profile Settings",
+    },
+    {
+      imgURL: "/icons/logout.svg",
+      route: "/logout",
+      label: "Logout",
+    },
+  ],
+};
 
 // good_user / good_password - Bank of America
 export const TEST_USER_ID = "6627ed3d00267aa6fa3e";

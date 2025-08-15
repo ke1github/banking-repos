@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import Logo from "@/components/ui/logo";
 
 const SignIn = () => {
   return (
@@ -19,10 +20,13 @@ const SignIn = () => {
 
       {/* Form - Right Side */}
       <div className="flex min-h-screen w-full max-w-[420px] flex-col justify-center gap-5 py-10 md:gap-8">
+        <div className="flex flex-col items-center mb-6">
+          <Logo variant="large" className="mb-4" />
+        </div>
         <div className="flex flex-col gap-1 px-8">
           <h1 className="text-[24px] font-semibold text-gray-900">Sign In</h1>
           <p className="text-[14px] text-gray-600">
-            Welcome back to Horizon Banking
+            Welcome back to SP Banking
           </p>
         </div>
 

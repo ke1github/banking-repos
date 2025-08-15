@@ -198,28 +198,14 @@
   }
 
   .home-content {
-    @apply no-scrollbar flex w-full flex-1 flex-col gap-8 px-5 sm:px-8 py-7 lg:py-12 xl:max-h-screen xl:overflow-y-scroll;
+    @apply no-scrollbar flex w-full flex-1 flex-col gap-4 sm:gap-6 py-4 sm:py-6 xl:max-h-screen xl:overflow-y-scroll;
   }
 
   .home-header {
-    @apply flex flex-col justify-between gap-8;
+    @apply flex flex-col justify-between gap-4 sm:gap-5;
   }
 
-  .total-balance {
-    @apply flex w-full items-center gap-4 rounded-xl border border-gray-200 p-4 shadow-chart sm:gap-6 sm:p-6;
-  }
-
-  .total-balance-chart {
-    @apply flex w-full h-full max-w-[100px] items-center sm:max-w-[120px];
-  }
-
-  .total-balance-label {
-    @apply text-14 font-medium text-gray-600;
-  }
-
-  .total-balance-amount {
-    @apply text-24 lg:text-30 flex-1 font-semibold text-gray-900;
-  }
+  /* Total Balance component styles have been replaced with inline styles in the TotalBalanceBox component */
 
   .recent-transactions {
     @apply flex w-full flex-col gap-6;
@@ -239,7 +225,7 @@
 
   /* Right sidebar */
   .right-sidebar {
-    @apply no-scrollbar hidden h-screen max-h-screen flex-col border-l border-gray-200 xl:flex w-[355px] xl:overflow-y-scroll;
+    @apply no-scrollbar hidden h-screen max-h-screen flex-col border-l border-gray-200 xl:flex w-[320px] xl:overflow-y-scroll;
   }
 
   .profile-banner {
@@ -292,13 +278,7 @@
     @apply flex-center flex-col  gap-2 rounded-md bg-blue-25/20 px-4 py-2 text-white;
   }
 
-  .header-box {
-    @apply flex flex-col gap-1;
-  }
-
-  .header-box-title {
-    @apply text-24 lg:text-30 font-semibold text-gray-900;
-  }
+  /* Header box styles have been replaced with inline styles in the HeaderBox component */
 
   .header-box-subtext {
     @apply text-14 lg:text-16 font-normal text-gray-600;

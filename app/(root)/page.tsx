@@ -86,15 +86,9 @@ const HOME = async () => {
     data;
   return (
     <>
-      {/* Mobile Navigation - only visible on mobile */}
-      <MobileNavbar user={user} />
-
       <section className="home">
-        {/* Left Sidebar */}
-        <Sidebar user={user} />
-
         {/* Main content */}
-        <div className="home-content">
+        <div className="home-content px-6 pt-2 md:pt-0">
           <header className="home-header">
             <HeaderBox
               type="greeting"
@@ -103,6 +97,7 @@ const HOME = async () => {
               subtext={
                 "Access your banking dashboard and manage your finances effortlessly."
               }
+              showLogo={true}
             />
 
             {/* Balance Card - adapts to screen size */}
@@ -113,16 +108,20 @@ const HOME = async () => {
             />
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             <section className="recent-transactions">
-              <div className="flex items-center justify-between">
-                <h2 className="recent-transactions-label">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
                   Recent Transactions
                 </h2>
-                <button className="view-all-btn">View All</button>
+                <button className="text-xs sm:text-sm rounded-lg border border-gray-300 px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                  View All
+                </button>
               </div>
               {/* Transaction list would go here */}
-              <div className="mt-4 text-gray-500">No recent transactions</div>
+              <div className="mt-4 text-gray-500 bg-white p-4 sm:p-6 rounded-lg border border-gray-100 text-sm sm:text-base">
+                No recent transactions
+              </div>
             </section>
 
             <section>

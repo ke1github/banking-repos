@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import BankCard from "./BankCard";
+import AccountCard from "./AccountCard";
 
 interface CardData {
   id: string;
@@ -47,6 +49,17 @@ const RightSidebar = ({
 }: RightSidebarProps) => {
   const [activeTab, setActiveTab] = useState<"accounts" | "cards">("accounts");
 
+  // Handlers for component interactions
+  const handleAccountClick = (accountId: string) => {
+    console.log(`Navigate to account details: ${accountId}`);
+    // Future implementation: router.push(`/accounts/${accountId}`);
+  };
+
+  const handleCardClick = (cardId: string) => {
+    console.log(`Navigate to card details: ${cardId}`);
+    // Future implementation: router.push(`/cards/${cardId}`);
+  };
+
   // Calculate total balance from all accounts
   const totalBalance = bankAccounts.reduce(
     (sum, account) => sum + account.balance,
@@ -89,7 +102,7 @@ const RightSidebar = ({
       <div className="px-4 py-3 border-y border-gray-100">
         <p className="text-12 text-gray-500 mb-1">Total Balance</p>
         <h3 className="text-18 font-semibold text-blue-700">
-          ${totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+          ₹{totalBalance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
         </h3>
         <p className="text-12 text-gray-500 mt-1">
           {bankAccounts.length}{" "}
@@ -129,49 +142,20 @@ const RightSidebar = ({
           <div className="accounts-list">
             {bankAccounts.length > 0 ? (
               bankAccounts.map((account) => (
-                <div
+                <AccountCard
                   key={account.id}
-                  className="account-item bg-white rounded-lg p-4 mb-3 border border-gray-100 hover:border-blue-100 hover:shadow-sm transition-all"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                      {account.bankLogo ? (
-                        <Image
-                          src={account.bankLogo}
-                          alt={account.bankName}
-                          width={24}
-                          height={24}
-                          className="mr-2"
-                        />
-                      ) : (
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                          <span className="text-blue-600 text-xs font-bold">
-                            {account.bankName.charAt(0)}
-                          </span>
-                        </div>
-                      )}
-                      <h4 className="text-14 font-medium">
-                        {account.bankName}
-                      </h4>
-                    </div>
-                    {account.isActive && (
-                      <span className="bg-green-100 text-green-700 text-10 px-2 py-0.5 rounded-full">
-                        Active
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-12 text-gray-600 mb-1">{account.name}</p>
-                  <p className="text-12 text-gray-500">••••{account.mask}</p>
-                  <div className="mt-3 flex justify-between items-center">
-                    <span className="text-12 text-gray-500">Balance</span>
-                    <span className="text-14 font-semibold">
-                      $
-                      {account.balance.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-                </div>
+                  id={account.id}
+                  name={account.name}
+                  officialName={account.officialName}
+                  mask={account.mask}
+                  type={account.type}
+                  subtype={account.subtype}
+                  balance={account.balance}
+                  bankLogo={account.bankLogo}
+                  bankName={account.bankName}
+                  isActive={account.isActive}
+                  onClick={() => handleAccountClick(account.id)}
+                />
               ))
             ) : (
               <div className="empty-state text-center py-8">
@@ -198,52 +182,20 @@ const RightSidebar = ({
           <div className="cards-list">
             {cards.length > 0 ? (
               cards.map((card) => (
-                <div
+                <BankCard
                   key={card.id}
-                  className="card-item relative bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-4 mb-3 text-white shadow-sm"
-                >
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <p className="text-12 text-white/80">{card.bankName}</p>
-                      <p className="text-14 font-medium mt-1">
-                        ••••••{card.lastFourDigits}
-                      </p>
-                    </div>
-                    <Image
-                      src={`/icons/${card.type.toLowerCase()}.svg`}
-                      alt={card.type}
-                      width={36}
-                      height={24}
-                      className="opacity-90"
-                    />
-                  </div>
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-10 text-white/70">Valid thru</p>
-                      <p className="text-12">{card.expiryDate}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-10 text-white/70">Cardholder</p>
-                      <p className="text-12">{card.cardholderName}</p>
-                    </div>
-                  </div>
-
-                  {card.availableCredit !== undefined && (
-                    <div className="mt-3 pt-3 border-t border-white/20">
-                      <div className="flex justify-between items-center">
-                        <span className="text-12 text-white/70">
-                          Available credit
-                        </span>
-                        <span className="text-14 font-semibold">
-                          $
-                          {card.availableCredit.toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  id={card.id}
+                  type={card.type}
+                  lastFourDigits={card.lastFourDigits}
+                  expiryDate={card.expiryDate}
+                  cardholderName={card.cardholderName}
+                  bankName={card.bankName}
+                  balance={card.balance}
+                  availableCredit={card.availableCredit}
+                  isActive={card.isActive}
+                  variant="gradient"
+                  onClick={() => handleCardClick(card.id)}
+                />
               ))
             ) : (
               <div className="empty-state text-center py-8">

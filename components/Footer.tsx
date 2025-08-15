@@ -1,12 +1,21 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Logo from "@/components/ui/logo";
 import { cn } from "@/lib/utils";
 
 const Footer = () => {
   return (
     <footer className="footer-container">
       <div className="footer-content">
+        <div className="footer-branding mb-6">
+          <Link href="/" className="mb-3">
+            <Logo variant="large" textClassName="font-bold" />
+          </Link>
+          <p className="text-sm text-gray-600 max-w-xs">
+            Your trusted partner for secure and convenient banking solutions.
+          </p>
+        </div>
         <div className="footer-links">
           <div className="footer-link-group">
             <h3 className="footer-title">Quick Links</h3>
