@@ -6,6 +6,7 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import Logo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
+import { sidebarLinks } from "@/constants";
 import {
   Sheet,
   SheetContent,
@@ -45,7 +46,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user }) => {
     accountsLinks: SidebarLink[];
     paymentLinks: SidebarLink[];
     profileLinks: SidebarLink[];
-  } = require("@/constants").sidebarLinks;
+  } = sidebarLinks;
 
   return (
     <div className="mobile-navbar fixed w-full top-0 left-0 z-50">

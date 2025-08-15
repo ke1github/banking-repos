@@ -2,14 +2,16 @@
 
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
-import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
+// Remove unused imports
+// import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
 
 interface TextFieldProps {
   name: string;
   label: string;
   type: string;
   placeholder: string;
-  form: UseFormReturn<any>;
+  // Use a more flexible type to accommodate different form types
+  form: UseFormReturn<any, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   icon: React.ReactNode;
   maxLength?: number;
   style?: React.CSSProperties;
@@ -67,7 +69,8 @@ interface PasswordFieldProps {
   name: string;
   label: string;
   placeholder: string;
-  form: UseFormReturn<any>;
+  // Use a more flexible type to accommodate different form types
+  form: UseFormReturn<any, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   showPassword: boolean;
   togglePasswordVisibility: () => void;
 }
@@ -170,7 +173,8 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
 interface CheckboxFieldProps {
   name: string;
   label: React.ReactNode;
-  form: UseFormReturn<any>;
+  // Use a more flexible type to accommodate different form types
+  form: UseFormReturn<any, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export const CheckboxField: React.FC<CheckboxFieldProps> = ({

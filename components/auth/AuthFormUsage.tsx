@@ -6,7 +6,8 @@ import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
 
 // Example usage in sign-in page
 export const SignInPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  // Using isLoading state for authentication process
+  const [, setIsLoading] = useState(false);
 
   const handleSignIn = (data: SignInFormValues | SignUpFormValues) => {
     try {
@@ -30,7 +31,8 @@ export const SignInPage = () => {
 
 // Example usage in sign-up page
 export const SignUpPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  // Using isLoading state for authentication process
+  const [, setIsLoading] = useState(false);
 
   const handleSignUp = (data: SignInFormValues | SignUpFormValues) => {
     try {

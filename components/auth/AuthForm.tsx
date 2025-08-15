@@ -192,7 +192,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
     togglePasswordVisibility,
     handleSignInSubmit,
     handleSignUpSubmit,
-    validateStep,
+    // validateStep, // Removed unused variable
     goToNextStep,
     goToPreviousStep,
   } = useAuthForm({ mode, onSubmit });

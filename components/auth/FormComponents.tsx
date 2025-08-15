@@ -97,7 +97,7 @@ interface FormNavigationProps {
   canGoNext: boolean;
   canGoBack: boolean;
   isSubmitting: boolean;
-  onNext: (e?: any) => void;
+  onNext: (e?: unknown) => void;
   onBack: () => void;
 }
 

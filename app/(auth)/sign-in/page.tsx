@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import AuthForm from "@/components/auth/AuthForm";
 import { useAuth } from "@/lib/auth-context";
+import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
 
 const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleSignIn = async (data: any) => {
+  const handleSignIn = async (data: SignInFormValues | SignUpFormValues) => {
     try {
       setIsLoading(true);
       console.log("Sign in with:", data);
