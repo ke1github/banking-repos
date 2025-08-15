@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { HeaderBox } from "@/components/HeaderBox";
 import BalanceCard from "@/components/BalanceCard";
@@ -5,16 +7,12 @@ import TransferForm from "@/components/TransferForm";
 import MobileNavbar from "@/components/MobileNavbar";
 import Sidebar from "@/components/Sidebar";
 import RightSidebar from "@/components/RightSidebar";
+import LogoutButton from "@/components/LogoutButton";
+import { useAuth } from "@/lib/auth-context";
 
-// This function would normally be a fetch to your API or database
-async function getAccountData() {
-  // Simulated data
+// This function provides mock data - in a real app this would come from API calls
+function getMockAccountData() {
   return {
-    user: {
-      firstName: "Pawan",
-      lastName: "Kumar",
-      email: "pawan@example.com",
-    },
     accounts: [
       { id: "checking", name: "Checking Account" },
       { id: "savings", name: "Savings Account" },
@@ -79,26 +77,31 @@ async function getAccountData() {
   };
 }
 
-// Making this a Server Component by using the async function
-const HOME = async () => {
-  const data = await getAccountData();
-  const { user, accounts, totalBanks, totalBalance, bankAccounts, cards } =
-    data;
+// Client component that uses the auth context
+const HOME = () => {
+  const { user } = useAuth();
+  const data = getMockAccountData();
+  const { accounts, totalBanks, totalBalance, bankAccounts, cards } = data;
+
+  // Extract first name from the user's full name
+  const firstName = user?.name.split(" ")[0] || "Guest";
+
   return (
     <>
       <section className="home">
         {/* Main content */}
         <div className="home-content px-6 pt-2 md:pt-0">
-          <header className="home-header">
+          <header className="home-header flex justify-between items-start">
             <HeaderBox
               type="greeting"
               title="Welcome"
-              user={user.firstName || "Guest"}
+              user={firstName}
               subtext={
                 "Access your banking dashboard and manage your finances effortlessly."
               }
               showLogo={true}
             />
+            <LogoutButton className="mt-2" />
 
             {/* Balance Card - adapts to screen size */}
             <BalanceCard
@@ -132,7 +135,15 @@ const HOME = async () => {
         </div>
 
         {/* Right Sidebar */}
-        <RightSidebar user={user} bankAccounts={bankAccounts} cards={cards} />
+        <RightSidebar
+          user={{
+            firstName: firstName,
+            lastName: user?.name.split(" ").slice(1).join(" "),
+            email: user?.email,
+          }}
+          bankAccounts={bankAccounts}
+          cards={cards}
+        />
       </section>
     </>
   );

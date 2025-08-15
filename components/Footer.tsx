@@ -10,7 +10,7 @@ const Footer = () => {
       <div className="footer-content">
         <div className="footer-branding mb-6">
           <Link href="/" className="mb-3">
-            <Logo variant="large" textClassName="font-bold" />
+            <Logo variant="large" className="font-bold" />
           </Link>
           <p className="text-sm text-gray-600 max-w-xs">
             Your trusted partner for secure and convenient banking solutions.
