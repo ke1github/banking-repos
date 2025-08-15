@@ -3,13 +3,18 @@ import { HeaderBox } from "@/components/HeaderBox";
 import BalanceCard from "@/components/BalanceCard";
 import TransferForm from "@/components/TransferForm";
 import MobileNavbar from "@/components/MobileNavbar";
-import Image from "next/image";
+import Sidebar from "@/components/Sidebar";
+import RightSidebar from "@/components/RightSidebar";
 
 // This function would normally be a fetch to your API or database
 async function getAccountData() {
   // Simulated data
   return {
-    user: { firstName: "Pawan" },
+    user: {
+      firstName: "Pawan",
+      lastName: "Kumar",
+      email: "pawan@example.com",
+    },
     accounts: [
       { id: "checking", name: "Checking Account" },
       { id: "savings", name: "Savings Account" },
@@ -17,72 +22,76 @@ async function getAccountData() {
     ],
     totalBanks: 2,
     totalBalance: 25000,
+    bankAccounts: [
+      {
+        id: "acc1",
+        name: "Checking Account",
+        mask: "4567",
+        type: "depository",
+        subtype: "checking",
+        balance: 12500,
+        bankName: "Chase Bank",
+        isActive: true,
+      },
+      {
+        id: "acc2",
+        name: "Savings Account",
+        mask: "8901",
+        type: "depository",
+        subtype: "savings",
+        balance: 9500,
+        bankName: "Bank of America",
+        isActive: true,
+      },
+      {
+        id: "acc3",
+        name: "Investment Account",
+        mask: "2345",
+        type: "investment",
+        subtype: "brokerage",
+        balance: 3000,
+        bankName: "Fidelity",
+        isActive: true,
+      },
+    ],
+    cards: [
+      {
+        id: "card1",
+        type: "visa" as const,
+        lastFourDigits: "4567",
+        expiryDate: "05/28",
+        cardholderName: "PAWAN KUMAR",
+        bankName: "Chase Bank",
+        availableCredit: 5000,
+        isActive: true,
+      },
+      {
+        id: "card2",
+        type: "mastercard" as const,
+        lastFourDigits: "8901",
+        expiryDate: "12/26",
+        cardholderName: "PAWAN KUMAR",
+        bankName: "Bank of America",
+        availableCredit: 3500,
+        isActive: true,
+      },
+    ],
   };
 }
 
 // Making this a Server Component by using the async function
 const HOME = async () => {
   const data = await getAccountData();
-  const { user, accounts, totalBanks, totalBalance } = data;
+  const { user, accounts, totalBanks, totalBalance, bankAccounts, cards } =
+    data;
   return (
     <>
       {/* Mobile Navigation - only visible on mobile */}
       <MobileNavbar user={user} />
 
       <section className="home">
-        {/* Sidebar - hidden on mobile */}
-        <aside className="sidebar">
-          <div>
-            <div className="mb-10 flex items-center justify-start px-4">
-              <h2 className="sidebar-logo">SP BANKING</h2>
-            </div>
-
-            <div className="flex flex-col gap-2 px-2">
-              {/* Nav items */}
-              <a href="#" className="sidebar-link bg-blue-25">
-                <Image
-                  src="/icons/home.svg"
-                  alt="Dashboard"
-                  width={20}
-                  height={20}
-                />
-                <span className="sidebar-label">Dashboard</span>
-              </a>
-
-              <a href="#" className="sidebar-link hover:bg-blue-25">
-                <Image
-                  src="/icons/transaction.svg"
-                  alt="Transactions"
-                  width={20}
-                  height={20}
-                />
-                <span className="sidebar-label">Transactions</span>
-              </a>
-
-              <a href="#" className="sidebar-link hover:bg-blue-25">
-                <Image
-                  src="/icons/payment-transfer.svg"
-                  alt="Transfers"
-                  width={20}
-                  height={20}
-                />
-                <span className="sidebar-label">Transfers</span>
-              </a>
-            </div>
-          </div>
-
-          <div className="p-4">
-            <a href="#" className="sidebar-link hover:bg-blue-25">
-              <Image
-                src="/icons/logout.svg"
-                alt="Logout"
-                width={20}
-                height={20}
-              />
-              <span className="sidebar-label">Logout</span>
-            </a>
-          </div>
-        </aside>
+        {/* Left Sidebar */}
+        <Sidebar user={user} />
 
         {/* Main content */}
         <div className="home-content">
@@ -122,6 +131,9 @@ const HOME = async () => {
             </section>
           </div>
         </div>
+
+        {/* Right Sidebar */}
+        <RightSidebar user={user} bankAccounts={bankAccounts} cards={cards} />
       </section>
     </>
   );
