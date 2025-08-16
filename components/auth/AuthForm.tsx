@@ -1,515 +1,388 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
+import React, { useState } from "react";
 import {
-  FormContainer,
-  FormNavigation,
-  FormStep,
-  StepIndicator,
-} from "./FormComponents";
+  FiUser,
+  FiMail,
+  FiLock,
+  FiPhone,
+  FiCalendar,
+  FiHome,
+  FiMap,
+  FiMapPin,
+  FiFlag,
+  FiHash,
+  FiCreditCard,
+  FiLoader,
+} from "react-icons/fi";
+import { cn } from "@/lib/utils";
+import Logo from "@/components/ui/logo";
+import { useAuthForm } from "@/lib/hooks/useAuthForm";
 import { TextField, PasswordField, CheckboxField } from "./FormFields";
-import { useAuthForm, AuthMode } from "@/lib/hooks/useAuthForm";
+import { StepIndicator, FormStep, FormNavigation } from "./FormComponents";
+import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
 
-// Icons for form fields
-const UserIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-    />
-  </svg>
-);
-
-const EmailIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-    />
-  </svg>
-);
-
-const PhoneIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
-    />
-  </svg>
-);
-
-const CalendarIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-    />
-  </svg>
-);
-
-const LocationIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-    />
-  </svg>
-);
-
-const CityIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
-    />
-  </svg>
-);
-
-const StateIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
-    />
-  </svg>
-);
-
-const PinCodeIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"
-    />
-  </svg>
-);
-
-const DocumentIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"
-    />
-  </svg>
-);
-
-// Define the component props
-interface AuthFormProps {
-  mode: AuthMode;
+export interface AuthFormProps {
+  mode?: "signin" | "signup";
   onSubmit: (data: SignInFormValues | SignUpFormValues) => void;
   isLoading?: boolean;
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({
-  mode,
+const AuthForm = ({
+  mode = "signin",
   onSubmit,
   isLoading = false,
-}) => {
+}: AuthFormProps) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
   const {
-    signInForm,
-    signUpForm,
-    formError,
-    showPassword,
-    signupStep,
-    togglePasswordVisibility,
-    handleSignInSubmit,
-    handleSignUpSubmit,
-    // validateStep, // Removed unused variable
+    form,
+    currentStep,
+    isLastStep,
     goToNextStep,
     goToPreviousStep,
-  } = useAuthForm({ mode, onSubmit });
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (mode === "signin") {
-      void signInForm.handleSubmit(handleSignInSubmit)();
-    } else {
-      if (signupStep === "financial") {
-        void signUpForm.handleSubmit(handleSignUpSubmit)();
-      } else {
-        void goToNextStep(signupStep);
-      }
-    }
-  };
-
-  if (mode === "signin") {
-    return (
-      <FormContainer onSubmit={handleFormSubmit}>
-        <h1 className="text-2xl font-bold text-center mb-6">Sign In</h1>
-
-        {formError && (
-          <div
-            className={`p-4 mb-4 rounded-md ${
-              formError.type === "error"
-                ? "bg-red-50 text-red-800"
-                : "bg-green-50 text-green-800"
-            }`}
-          >
-            {formError.message}
-          </div>
-        )}
-
-        <div className="space-y-4">
-          <TextField
-            name="email"
-            label="Email Address"
-            type="email"
-            placeholder="Enter your email"
-            form={signInForm}
-            icon={<EmailIcon />}
-          />
-
-          <PasswordField
-            name="password"
-            label="Password"
-            placeholder="Enter your password"
-            form={signInForm}
-            showPassword={showPassword}
-            togglePasswordVisibility={togglePasswordVisibility}
-          />
-
-          <div className="flex justify-between items-center">
-            <CheckboxField
-              name="remember"
-              label="Remember me"
-              form={signInForm}
-            />
-            <a
-              href="#"
-              className="text-sm font-medium text-blue-600 hover:text-blue-500"
-            >
-              Forgot password?
-            </a>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full mt-6 py-2.5 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
-          disabled={isLoading || signInForm.formState.isSubmitting}
-        >
-          {isLoading || signInForm.formState.isSubmitting ? (
-            <div className="flex items-center justify-center">
-              <svg
-                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Signing in...
-            </div>
-          ) : (
-            "Sign In"
-          )}
-        </button>
-
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/sign-up"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            Sign up
-          </Link>
-        </p>
-      </FormContainer>
-    );
-  }
-
-  // Sign Up Form
-  const steps = ["Personal Info", "Address Info", "Financial Info"];
-  const currentStepIndex =
-    signupStep === "personal" ? 0 : signupStep === "address" ? 1 : 2;
+    handleSubmit,
+    isSubmitting,
+    validateStep,
+  } = useAuthForm({
+    mode,
+    onSubmit,
+    isLoading,
+  });
 
   return (
-    <FormContainer onSubmit={handleFormSubmit}>
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Create Your Account
-      </h1>
+    <div className="w-full max-w-md mx-auto">
+      {/* Logo and header */}
+      <div className="text-center mb-8">
+        <Logo variant="large" showText className="mx-auto mb-4" />
+        <h1 className="text-2xl font-bold text-gray-900">
+          {mode === "signin" ? "Sign in to your account" : "Create an account"}
+        </h1>
+        <p className="mt-2 text-gray-600">
+          {mode === "signin"
+            ? "Welcome back! Enter your details to access your account."
+            : "Get started with SP Banking by creating your account."}
+        </p>
+      </div>
 
-      {formError && (
-        <div
-          className={`p-4 mb-4 rounded-md ${
-            formError.type === "error"
-              ? "bg-red-50 text-red-800"
-              : "bg-green-50 text-green-800"
-          }`}
-        >
-          {formError.message}
-        </div>
-      )}
-
-      <StepIndicator
-        currentStep={currentStepIndex}
-        totalSteps={steps.length}
-        steps={steps}
-      />
-
-      {/* Personal Information Step */}
-      <FormStep
-        title="Personal Information"
-        isActive={signupStep === "personal"}
-      >
-        <div className="space-y-4">
-          <TextField
-            name="name"
-            label="Full Name"
-            type="text"
-            placeholder="Enter your full name"
-            form={signUpForm}
-            icon={<UserIcon />}
+      {/* Form content */}
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        {mode === "signup" && (
+          <StepIndicator
+            steps={["Personal", "Address", "Financial"]}
+            currentStep={currentStep}
+            totalSteps={3}
           />
+        )}
 
-          <TextField
-            name="email"
-            label="Email Address"
-            type="email"
-            placeholder="Enter your email"
-            form={signUpForm}
-            icon={<EmailIcon />}
-          />
+        <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+          {mode === "signup" ? (
+            <>
+              {/* Step 1: Personal Information */}
+              <FormStep
+                title="Personal Information"
+                isActive={currentStep === 0}
+              >
+                <TextField
+                  label="Full Name"
+                  name="name"
+                  type="text"
+                  form={form}
+                  placeholder="John Doe"
+                  icon={<FiUser />}
+                />
+                <TextField
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  form={form}
+                  placeholder="john@example.com"
+                  icon={<FiMail />}
+                />
+                <PasswordField
+                  label="Password"
+                  name="password"
+                  form={form}
+                  placeholder="Create a strong password"
+                  showPassword={showPassword}
+                  togglePasswordVisibility={togglePasswordVisibility}
+                />
+                <TextField
+                  label="Mobile Number"
+                  name="mobile"
+                  type="tel"
+                  form={form}
+                  placeholder="+91 9876543210"
+                  icon={<FiPhone />}
+                />
+                <TextField
+                  label="Date of Birth"
+                  name="dateOfBirth"
+                  form={form}
+                  placeholder="DD/MM/YYYY"
+                  type="date"
+                  icon={<FiCalendar />}
+                />
+              </FormStep>
 
-          <PasswordField
-            name="password"
-            label="Password"
-            placeholder="Create a strong password"
-            form={signUpForm}
-            showPassword={showPassword}
-            togglePasswordVisibility={togglePasswordVisibility}
-          />
+              {/* Step 2: Address Information */}
+              <FormStep
+                title="Address Information"
+                isActive={currentStep === 1}
+              >
+                <TextField
+                  label="Address Line 1"
+                  name="addressLine1"
+                  type="text"
+                  form={form}
+                  placeholder="Street address"
+                  icon={<FiHome />}
+                />
+                <TextField
+                  label="Address Line 2 (Optional)"
+                  name="addressLine2"
+                  type="text"
+                  form={form}
+                  placeholder="Apartment, suite, etc."
+                  icon={<FiMap />}
+                />
+                <TextField
+                  label="City"
+                  name="city"
+                  type="text"
+                  form={form}
+                  placeholder="Your city"
+                  icon={<FiMapPin />}
+                />
+                <TextField
+                  label="State"
+                  name="state"
+                  type="text"
+                  form={form}
+                  placeholder="Your state"
+                  icon={<FiFlag />}
+                />
+                <TextField
+                  label="PIN Code"
+                  name="pinCode"
+                  type="text"
+                  form={form}
+                  placeholder="6-digit PIN code"
+                  icon={<FiHash />}
+                />
+              </FormStep>
 
-          <TextField
-            name="mobile"
-            label="Mobile Number"
-            type="tel"
-            placeholder="10-digit mobile number"
-            form={signUpForm}
-            icon={<PhoneIcon />}
-            maxLength={10}
-          />
+              {/* Step 3: Financial Information */}
+              <FormStep
+                title="Financial Information"
+                isActive={currentStep === 2}
+              >
+                <TextField
+                  label="PAN Number"
+                  name="pan"
+                  type="text"
+                  form={form}
+                  placeholder="10-character PAN"
+                  icon={<FiCreditCard />}
+                />
+                <CheckboxField
+                  name="terms"
+                  form={form}
+                  label={
+                    <span>
+                      I agree to the{" "}
+                      <a
+                        href="#"
+                        className="text-blue-600 hover:underline font-medium"
+                      >
+                        Terms of Service
+                      </a>{" "}
+                      and{" "}
+                      <a
+                        href="#"
+                        className="text-blue-600 hover:underline font-medium"
+                      >
+                        Privacy Policy
+                      </a>
+                    </span>
+                  }
+                />
+              </FormStep>
+            </>
+          ) : (
+            <>
+              <TextField
+                label="Email Address"
+                name="email"
+                type="email"
+                form={form}
+                placeholder="john@example.com"
+                icon={<FiMail />}
+              />
+              <PasswordField
+                label="Password"
+                name="password"
+                form={form}
+                placeholder="Enter your password"
+                showPassword={showPassword}
+                togglePasswordVisibility={togglePasswordVisibility}
+              />
 
-          <TextField
-            name="dateOfBirth"
-            label="Date of Birth"
-            type="date"
-            placeholder=""
-            form={signUpForm}
-            icon={<CalendarIcon />}
-            style={{ paddingLeft: "2.5rem" }}
-          />
-        </div>
-      </FormStep>
-
-      {/* Address Information Step */}
-      <FormStep title="Address Information" isActive={signupStep === "address"}>
-        <div className="space-y-4">
-          <TextField
-            name="addressLine1"
-            label="Address Line 1"
-            type="text"
-            placeholder="Street address"
-            form={signUpForm}
-            icon={<LocationIcon />}
-          />
-
-          <TextField
-            name="addressLine2"
-            label="Address Line 2 (Optional)"
-            type="text"
-            placeholder="Apartment, suite, unit, etc."
-            form={signUpForm}
-            icon={<LocationIcon />}
-          />
-
-          <TextField
-            name="city"
-            label="City"
-            type="text"
-            placeholder="Enter your city"
-            form={signUpForm}
-            icon={<CityIcon />}
-          />
-
-          <TextField
-            name="state"
-            label="State"
-            type="text"
-            placeholder="Enter your state"
-            form={signUpForm}
-            icon={<StateIcon />}
-          />
-
-          <TextField
-            name="pinCode"
-            label="PIN Code"
-            type="text"
-            placeholder="6-digit PIN code"
-            form={signUpForm}
-            icon={<PinCodeIcon />}
-            maxLength={6}
-          />
-        </div>
-      </FormStep>
-
-      {/* Financial Information Step */}
-      <FormStep
-        title="Financial Information"
-        isActive={signupStep === "financial"}
-      >
-        <div className="space-y-4">
-          <TextField
-            name="pan"
-            label="PAN Number"
-            type="text"
-            placeholder="Enter your PAN number"
-            form={signUpForm}
-            icon={<DocumentIcon />}
-            maxLength={10}
-          />
-
-          <CheckboxField
-            name="terms"
-            label={
-              <span>
-                I agree to the{" "}
+              <div className="flex items-center justify-between">
+                <CheckboxField
+                  name="remember"
+                  form={form}
+                  label="Remember me"
+                />
                 <a
                   href="#"
-                  className="text-blue-600 hover:text-blue-500"
-                  onClick={(e) => e.preventDefault()}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-500"
                 >
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a
-                  href="#"
-                  className="text-blue-600 hover:text-blue-500"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  Privacy Policy
+                  Forgot password?
                 </a>
-              </span>
-            }
-            form={signUpForm}
-          />
+              </div>
+            </>
+          )}
+
+          {/* Form Navigation */}
+          {mode === "signup" && (
+            <FormNavigation
+              currentStep={currentStep}
+              totalSteps={3}
+              canGoNext={true}
+              canGoBack={currentStep > 0}
+              isSubmitting={isSubmitting}
+              onBack={goToPreviousStep}
+              onNext={() => validateStep(currentStep) && goToNextStep()}
+            />
+          )}
+
+          {/* Submit Button */}
+          {(mode === "signin" || isLastStep) && (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={cn(
+                "w-full py-3 px-4 bg-blue-600 text-white rounded-lg font-medium transition",
+                "hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                isSubmitting && "opacity-70 cursor-not-allowed"
+              )}
+            >
+              {isSubmitting ? (
+                <span className="flex items-center justify-center">
+                  <FiLoader className="animate-spin mr-2" />
+                  {mode === "signin" ? "Signing in..." : "Creating account..."}
+                </span>
+              ) : (
+                <>{mode === "signin" ? "Sign in" : "Create Account"}</>
+              )}
+            </button>
+          )}
+        </form>
+
+        {/* Sign up / Sign in alternative */}
+        <div className="mt-6 text-center text-sm">
+          {mode === "signin" ? (
+            <p>
+              Don't have an account?{" "}
+              <a
+                href="/sign-up"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Sign up
+              </a>
+            </p>
+          ) : (
+            <p>
+              Already have an account?{" "}
+              <a
+                href="/sign-in"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Sign in
+              </a>
+            </p>
+          )}
         </div>
-      </FormStep>
 
-      <FormNavigation
-        currentStep={currentStepIndex}
-        totalSteps={steps.length}
-        canGoNext={!isLoading && !signUpForm.formState.isSubmitting}
-        canGoBack={signupStep !== "personal"}
-        isSubmitting={isLoading || signUpForm.formState.isSubmitting}
-        onNext={() => {
-          const event = new Event("click") as unknown as React.FormEvent;
-          handleFormSubmit(event);
-        }}
-        onBack={() => goToPreviousStep()}
-      />
+        {/* Social Login Section */}
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">
+                Or continue with
+              </span>
+            </div>
+          </div>
 
-      <p className="mt-4 text-center text-sm text-gray-600">
-        Already have an account?{" "}
-        <Link
-          href="/sign-in"
-          className="font-medium text-blue-600 hover:text-blue-500"
-        >
-          Sign in
-        </Link>
-      </p>
-    </FormContainer>
+          <div className="mt-6 grid grid-cols-3 gap-3">
+            <button
+              type="button"
+              className="inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50"
+            >
+              <svg
+                className="h-5 w-5"
+                aria-hidden="true"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.28027 6.60998L5.27028 9.70498C6.21525 6.86002 8.87028 4.75 12.0003 4.75Z"
+                  fill="#EA4335"
+                />
+                <path
+                  d="M23.49 12.275C23.49 11.49 23.415 10.73 23.3 10H12V14.51H18.47C18.18 15.99 17.34 17.25 16.08 18.1L19.945 21.1C22.2 19.01 23.49 15.92 23.49 12.275Z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M5.26498 14.2949C5.02498 13.5699 4.88501 12.7999 4.88501 11.9999C4.88501 11.1999 5.01998 10.4299 5.26498 9.7049L1.275 6.60986C0.46 8.22986 0 10.0599 0 11.9999C0 13.9399 0.46 15.7699 1.28 17.3899L5.26498 14.2949Z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12.0004 24C15.2404 24 17.9654 22.935 19.9454 21.095L16.0804 18.095C15.0054 18.82 13.6204 19.245 12.0004 19.245C8.8704 19.245 6.21537 17.135 5.2654 14.29L1.27539 17.385C3.25539 21.31 7.3104 24 12.0004 24Z"
+                  fill="#34A853"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50"
+            >
+              <svg
+                className="h-5 w-5 text-[#1DA1F2]"
+                aria-hidden="true"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M22.92 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.83 4.5 17.72 4 16.46 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98-3.56-.18-6.73-1.89-8.84-4.48-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.9 20.29 6.16 21 8.58 21c7.88 0 12.21-6.54 12.21-12.21 0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50"
+            >
+              <svg
+                className="h-5 w-5 text-[#24292F]"
+                aria-hidden="true"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

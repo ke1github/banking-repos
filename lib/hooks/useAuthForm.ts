@@ -5,151 +5,97 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  signInSchema,
-  signUpSchema,
   SignInFormValues,
   SignUpFormValues,
+  signInSchema,
+  signUpSchema,
 } from "@/lib/validations";
 
-// Form errors state type
-export interface FormErrorState {
-  message: string;
-  type: "error" | "success";
-}
-
-export type AuthMode = "signin" | "signup";
-export type SignupStep = "personal" | "address" | "financial";
-
 interface UseAuthFormProps {
-  mode: AuthMode;
+  mode: "signin" | "signup";
   onSubmit: (data: SignInFormValues | SignUpFormValues) => void;
+  isLoading?: boolean;
 }
 
-export const useAuthForm = ({ mode, onSubmit }: UseAuthFormProps) => {
-  // Form error state
-  const [formError, setFormError] = useState<FormErrorState | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
+export const useAuthForm = ({
+  mode,
+  onSubmit,
+  isLoading,
+}: UseAuthFormProps) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(isLoading || false);
 
-  // For signup form steps
-  const [signupStep, setSignupStep] = useState<SignupStep>("personal");
+  const schema = mode === "signin" ? signInSchema : signUpSchema;
 
-  // Setup sign-in form
-  const signInForm = useForm<SignInFormValues>({
-    resolver: zodResolver(signInSchema),
-    mode: "onChange",
-    defaultValues: {
-      email: "",
-      password: "",
-      remember: false,
-    },
+  const form = useForm({
+    resolver: zodResolver(schema) as any,
+    defaultValues:
+      mode === "signin"
+        ? { email: "", password: "", remember: false }
+        : {
+            name: "",
+            email: "",
+            password: "",
+            mobile: "",
+            dateOfBirth: "",
+            addressLine1: "",
+            addressLine2: "",
+            city: "",
+            state: "",
+            pinCode: "",
+            pan: "",
+            terms: false,
+          },
+    mode: "onBlur",
   });
 
-  // Setup sign-up form
-  const signUpForm = useForm<SignUpFormValues>({
-    resolver: zodResolver(signUpSchema) as any, // Using 'any' to fix TypeScript issue with addressLine2 optional vs undefined
-    mode: "onChange",
-    defaultValues: {
-      terms: false,
-      name: "",
-      email: "",
-      password: "",
-      mobile: "",
-      dateOfBirth: "",
-      addressLine1: "",
-      addressLine2: undefined,
-      city: "",
-      state: "",
-      pinCode: "",
-      pan: "",
-    },
-  });
+  const {
+    formState: { errors },
+  } = form;
 
-  // Form submission handler for sign in
-  const handleSignInSubmit = (data: SignInFormValues) => {
-    try {
-      setFormError(null);
-      onSubmit(data);
-    } catch (error) {
-      console.error("Form submission error:", error);
-      setFormError({
-        message: error instanceof Error ? error.message : "An error occurred",
-        type: "error",
-      });
+  // Get field names for each step
+  const stepFields = {
+    0: ["name", "email", "password", "mobile", "dateOfBirth"],
+    1: ["addressLine1", "addressLine2", "city", "state", "pinCode"],
+    2: ["pan", "terms"],
+  };
+
+  const isLastStep = mode === "signin" ? true : currentStep === 2;
+
+  const validateStep = (step: number) => {
+    if (mode === "signin") return true;
+
+    const fieldsToValidate = stepFields[step as keyof typeof stepFields];
+    return form.trigger(fieldsToValidate as any);
+  };
+
+  const goToNextStep = () => {
+    if (currentStep < 2) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  // Form submission handler for sign up
-  const handleSignUpSubmit = (data: SignUpFormValues) => {
-    try {
-      setFormError(null);
-      onSubmit(data);
-    } catch (error) {
-      console.error("Form submission error:", error);
-      setFormError({
-        message: error instanceof Error ? error.message : "An error occurred",
-        type: "error",
-      });
-    }
-  };
-
-  // Toggle password visibility
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
-  // Validate step before proceeding to the next step
-  const validateStep = async (step: SignupStep) => {
-    if (mode !== "signup") return true;
-
-    if (step === "personal") {
-      return await signUpForm.trigger([
-        "name",
-        "email",
-        "password",
-        "mobile",
-        "dateOfBirth",
-      ]);
-    } else if (step === "address") {
-      return await signUpForm.trigger([
-        "addressLine1",
-        "city",
-        "state",
-        "pinCode",
-      ]);
-    } else if (step === "financial") {
-      return await signUpForm.trigger(["pan"]);
-    }
-
-    return false;
-  };
-
-  // Navigate to next step after validation
-  const goToNextStep = async (currentStep: SignupStep) => {
-    const isValid = await validateStep(currentStep);
-    if (!isValid) return;
-
-    if (currentStep === "personal") setSignupStep("address");
-    else if (currentStep === "address") setSignupStep("financial");
-  };
-
-  // Go back to previous step
   const goToPreviousStep = () => {
-    if (signupStep === "address") setSignupStep("personal");
-    else if (signupStep === "financial") setSignupStep("address");
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
+
+  const handleSubmit = form.handleSubmit((data) => {
+    setIsSubmitting(true);
+    onSubmit(data);
+  });
 
   return {
-    mode,
-    formError,
-    setFormError,
-    signInForm,
-    signUpForm,
-    showPassword,
-    signupStep,
-    setSignupStep,
-    togglePasswordVisibility,
-    handleSignInSubmit,
-    handleSignUpSubmit,
-    validateStep,
+    form,
+    currentStep,
+    isLastStep,
     goToNextStep,
     goToPreviousStep,
+    handleSubmit,
+    isSubmitting,
+    setIsSubmitting,
+    errors,
+    validateStep,
   };
 };
