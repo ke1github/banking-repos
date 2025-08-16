@@ -33,7 +33,9 @@ export const useAuthForm = ({
       mode === "signin"
         ? { email: "", password: "", remember: false }
         : {
-            name: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
             email: "",
             password: "",
             mobile: "",
@@ -55,7 +57,15 @@ export const useAuthForm = ({
 
   // Get field names for each step
   const stepFields = {
-    0: ["name", "email", "password", "mobile", "dateOfBirth"],
+    0: [
+      "firstName",
+      "middleName",
+      "lastName",
+      "email",
+      "password",
+      "mobile",
+      "dateOfBirth",
+    ],
     1: ["addressLine1", "addressLine2", "city", "state", "pinCode"],
     2: ["pan", "terms"],
   };

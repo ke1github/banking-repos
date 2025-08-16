@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import Logo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { sidebarLinks } from "@/constants";
+import UserAvatar from "@/components/ui/UserAvatar";
 import {
   Sheet,
   SheetContent,
@@ -22,6 +23,8 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 interface MobileNavbarProps {
   user: {
     firstName: string;
+    lastName?: string;
+    image?: string;
   };
 }
 
@@ -81,11 +84,14 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user }) => {
               <div className="flex flex-col flex-1">
                 <div className="p-4 bg-blue-600 text-white sticky top-0 z-10">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <span className="text-lg font-semibold">
-                        {user.firstName.charAt(0)}
-                      </span>
-                    </div>
+                    <UserAvatar
+                      src={user.image}
+                      firstName={user.firstName}
+                      lastName={user.lastName}
+                      size="md"
+                      className="ring-2 ring-white/30"
+                      fallbackClassName="bg-white/20 text-white"
+                    />
                     <div>
                       <p className="text-base font-semibold">
                         Welcome, {user.firstName}

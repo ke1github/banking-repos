@@ -86,11 +86,27 @@ const AuthForm = ({
                 isActive={currentStep === 0}
               >
                 <TextField
-                  label="Full Name"
-                  name="name"
+                  label="First Name"
+                  name="firstName"
                   type="text"
                   form={form}
-                  placeholder="John Doe"
+                  placeholder="John"
+                  icon={<FiUser />}
+                />
+                <TextField
+                  label="Middle Name (Optional)"
+                  name="middleName"
+                  type="text"
+                  form={form}
+                  placeholder="Robert"
+                  icon={<FiUser />}
+                />
+                <TextField
+                  label="Last Name"
+                  name="lastName"
+                  type="text"
+                  form={form}
+                  placeholder="Doe"
                   icon={<FiUser />}
                 />
                 <TextField

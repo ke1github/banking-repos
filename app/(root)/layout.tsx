@@ -32,8 +32,8 @@ export default function RootLayout({
 
   // Convert user to the format expected by sidebar/navbar
   const userDisplayData = {
-    firstName: user.name.split(" ")[0],
-    lastName: user.name.split(" ").slice(1).join(" "),
+    firstName: user.firstName || user.name.split(" ")[0],
+    lastName: user.lastName || user.name.split(" ").slice(1).join(" "),
     email: user.email,
   };
 

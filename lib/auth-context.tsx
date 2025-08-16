@@ -11,7 +11,10 @@ import { useRouter } from "next/navigation";
 
 interface User {
   id: string;
-  name: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  name: string; // Full name for backward compatibility
   email: string;
   // Add other user properties as needed
 }
@@ -21,7 +24,13 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
+  signup: (
+    firstName: string,
+    middleName: string | undefined,
+    lastName: string,
+    email: string,
+    password: string
+  ) => Promise<void>;
   logout: () => void;
 }
 
@@ -94,16 +103,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // Signup function
-  const signup = async (name: string, email: string, password: string) => {
+  const signup = async (
+    firstName: string,
+    middleName: string | undefined,
+    lastName: string,
+    email: string,
+    password: string
+  ) => {
     setIsLoading(true);
     try {
+      // Generate full name for API and legacy compatibility
+      const name = middleName
+        ? `${firstName} ${middleName} ${lastName}`
+        : `${firstName} ${lastName}`;
+
       // Call the signup API
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          firstName,
+          middleName,
+          lastName,
+          name,
+          email,
+          password,
+        }),
       });
 
       if (!response.ok) {

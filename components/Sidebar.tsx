@@ -5,12 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import NavLink from "./NavLink";
 import Logo from "@/components/ui/logo";
+import UserAvatar from "@/components/ui/UserAvatar";
 import { sidebarLinks } from "@/constants";
 
 interface SidebarProps {
   user?: {
     firstName: string;
     lastName?: string;
+    email?: string;
+    image?: string;
   };
 }
 
@@ -81,12 +84,13 @@ const Sidebar = ({ user }: SidebarProps) => {
         <div className="mt-auto border-t border-gray-100 pt-4 pb-6 px-4">
           {user && (
             <div className="mb-4 flex items-center px-2">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2">
-                <span className="text-blue-800 font-medium text-sm">
-                  {user.firstName.charAt(0)}
-                  {user.lastName && user.lastName.charAt(0)}
-                </span>
-              </div>
+              <UserAvatar
+                src={user.image}
+                firstName={user.firstName}
+                lastName={user.lastName}
+                size="sm"
+                className="mr-2"
+              />
               <div className="flex flex-col">
                 <span className="text-sm font-medium">
                   {user.firstName} {user.lastName}
