@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AuthForm from "@/components/auth/AuthForm";
 import { SignUpFormValues } from "@/lib/validations";
 import { signUp } from "@/lib/actions/user.actions";
+import { account as appwriteAccount } from "@/lib/appwrite/config";
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -36,11 +37,25 @@ export default function SignUp() {
       }
 
       if (result.success) {
+        // Create a session in the browser so subsequent client checks pass
+        try {
+          await appwriteAccount.createEmailPasswordSession(
+            data.email,
+            data.password
+          );
+        } catch (_) {
+          // Best-effort; if session fails here we still navigate and the
+          // client hook will keep the user unauthenticated
+        }
         router.push("/");
       }
     } catch (e) {
       console.error("Sign up error:", e);
-      setError("An unexpected error occurred. Please try again.");
+      const msg =
+        e instanceof Error
+          ? e.message
+          : "An unexpected error occurred. Please try again.";
+      setError(msg);
     } finally {
       setIsLoading(false);
     }

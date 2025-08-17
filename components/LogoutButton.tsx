@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { signOut } from "@/lib/actions/user.actions";
+import { account as appwriteAccount } from "@/lib/appwrite/config";
 import { useRouter } from "next/navigation";
 
 interface LogoutButtonProps {
@@ -18,6 +19,12 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
   const router = useRouter();
 
   const handleLogout = async () => {
+    // Clear client session cookie first to avoid guest scope errors
+    try {
+      await appwriteAccount.deleteSession("current");
+    } catch (_) {
+      // ignore if no session
+    }
     await signOut();
     router.push("/sign-in");
   };

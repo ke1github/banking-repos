@@ -26,10 +26,9 @@ function getServerClient() {
     .setProject(appwriteConfig.projectId);
 
   // Add API key for server-side operations
-  if (process.env.APPWRITE_API_KEY) {
-    // Use API key-based authentication for server-side
-    serverClient.setJWT(process.env.APPWRITE_API_KEY);
-  }
+  // Note: We intentionally do not set API key or JWT here, because this
+  // client is used with user sessions (cookie-based) in server actions.
+  // If you need admin operations, initialize a separate admin client.
 
   return serverClient;
 }

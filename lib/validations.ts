@@ -82,10 +82,11 @@ export const signUpSchema = z.object({
   pan: z
     .string()
     .min(1, { message: "PAN number is required" })
+    .trim()
     .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, {
-      message: "Please enter a valid PAN number",
+      message: "Please enter a valid PAN number (e.g., ABCDE1234F)",
     })
-    .trim(),
+    .transform((val) => val.toUpperCase()),
 
   // Terms and Conditions
   terms: z.boolean().refine((val) => val === true, {

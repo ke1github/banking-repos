@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
-import { signOut, getCurrentUser } from "@/lib/actions/user.actions";
+import { signOut } from "@/lib/actions/user.actions";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import MobileNavbar from "@/components/MobileNavbar";
@@ -15,31 +15,13 @@ export default function RootLayout({
 }>) {
   const { user: clientUser, isLoading: isClientLoading } = useAppwrite();
   const router = useRouter();
-  const [serverUser, setServerUser] = React.useState<any>(null);
-  const [loading, setLoading] = React.useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        // Get user from server to ensure authentication is valid
-        const { user: userData, error } = await getCurrentUser();
-
-        if (error || !userData) {
-          router.push("/sign-in");
-          return;
-        }
-
-        setServerUser(userData);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        router.push("/sign-in");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [router]);
+  // Redirect if unauthenticated (client-side check avoids guest-scope errors)
+  React.useEffect(() => {
+    if (!isClientLoading && !clientUser) {
+      router.push("/sign-in");
+    }
+  }, [isClientLoading, clientUser, router]);
 
   const handleLogout = async () => {
     try {
@@ -51,7 +33,7 @@ export default function RootLayout({
   };
 
   // Show loading state while checking auth
-  if (loading || isClientLoading) {
+  if (isClientLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -60,15 +42,15 @@ export default function RootLayout({
   }
 
   // If no user, we should have already redirected
-  if (!serverUser) {
+  if (!clientUser) {
     return null;
   }
 
   // Construct user object for sidebar/navbar
   const userDisplayData = {
-    firstName: serverUser.firstName,
-    lastName: serverUser.lastName,
-    email: serverUser.email,
+    firstName: clientUser.name?.split(" ")[0] ?? "",
+    lastName: clientUser.name?.split(" ").slice(1).join(" ") ?? "",
+    email: (clientUser as any).email ?? "",
   };
 
   return (

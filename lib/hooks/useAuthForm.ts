@@ -72,28 +72,32 @@ export const useAuthForm = ({
 
   const isLastStep = mode === "signin" ? true : currentStep === 2;
 
-  const validateStep = (step: number) => {
+  const validateStep = async (step: number) => {
     if (mode === "signin") return true;
-
     const fieldsToValidate = stepFields[step as keyof typeof stepFields];
     return form.trigger(fieldsToValidate as any);
   };
 
   const goToNextStep = () => {
     if (currentStep < 2) {
-      setCurrentStep(currentStep + 1);
+      setCurrentStep((s) => s + 1);
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStep((s) => s - 1);
     }
   };
 
-  const handleSubmit = form.handleSubmit((data) => {
+  const handleSubmit = form.handleSubmit(async (data) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
-    onSubmit(data);
+    try {
+      await Promise.resolve(onSubmit(data));
+    } finally {
+      setIsSubmitting(false);
+    }
   });
 
   return {

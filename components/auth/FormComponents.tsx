@@ -125,8 +125,8 @@ export const FormNavigation: React.FC<FormNavigationProps> = ({
       </Button>
 
       <Button
-        type="button"
-        onClick={onNext}
+        type={isLastStep ? "submit" : "button"}
+        onClick={isLastStep ? undefined : onNext}
         disabled={!canGoNext || isSubmitting}
         className="px-6"
       >

@@ -39,75 +39,56 @@ export function useProvideAppwrite() {
     isAuthenticated: false,
   });
 
-  // Check if user is authenticated on mount
+  // Check if user is authenticated on mount (client-side via Appwrite Web SDK)
   useEffect(() => {
     const checkUser = async () => {
       try {
         const user = await appwriteAccount.get();
-        setAuthState({
-          user,
-          isLoading: false,
-          isAuthenticated: true,
-        });
-      } catch (error) {
-        console.error("Error checking authentication:", error);
-        setAuthState({
-          user: null,
-          isLoading: false,
-          isAuthenticated: false,
-        });
+        setAuthState({ user, isLoading: false, isAuthenticated: true });
+      } catch {
+        // No session: remain unauthenticated without logging noisy errors
+        setAuthState({ user: null, isLoading: false, isAuthenticated: false });
       }
     };
 
-    checkUser();
+    void checkUser();
   }, []);
 
-  // These methods now mostly handle the UI state part while server actions do the actual auth
-  // Sign in with email and password (uses server action internally)
+  // These methods mostly handle UI state; actual auth happens elsewhere
+  // Sign in state sync (client already created session)
   const login = async (_email: string, _password: string): Promise<boolean> => {
+    void _email;
+    void _password;
     setAuthState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      // The actual authentication is now handled by the server action
-      // This is just for updating the UI state
       const user = await appwriteAccount.get();
-
-      setAuthState({
-        user,
-        isLoading: false,
-        isAuthenticated: true,
-      });
+      setAuthState({ user, isLoading: false, isAuthenticated: true });
 
       return true;
-    } catch (error) {
-      console.error("Client login state update error:", error);
+    } catch {
       setAuthState((prev) => ({ ...prev, isLoading: false }));
       return false;
     }
   };
 
-  // Create account with email and password (uses server action internally)
+  // Create account state sync
   const register = async (
     _email: string,
     _password: string,
     _name: string
   ): Promise<boolean> => {
+    void _email;
+    void _password;
+    void _name;
     setAuthState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      // The actual account creation is now handled by the server action
-      // This is just for updating the UI state
       const user = await appwriteAccount.get();
-
-      setAuthState({
-        user,
-        isLoading: false,
-        isAuthenticated: true,
-      });
+      setAuthState({ user, isLoading: false, isAuthenticated: true });
 
       return true;
-    } catch (error) {
-      console.error("Client registration state update error:", error);
+    } catch {
       setAuthState((prev) => ({ ...prev, isLoading: false }));
       return false;
     }
@@ -134,14 +115,9 @@ export function useProvideAppwrite() {
 
     try {
       const user = await appwriteAccount.get();
-      setAuthState((prev) => ({
-        ...prev,
-        user,
-        isAuthenticated: true,
-      }));
+      setAuthState((prev) => ({ ...prev, user, isAuthenticated: true }));
       return user;
-    } catch (error) {
-      console.error("Get user error:", error);
+    } catch {
       return null;
     }
   };

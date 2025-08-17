@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, type ReactNode } from "react";
 import {
   FiUser,
   FiMail,
-  FiLock,
   FiPhone,
   FiCalendar,
   FiHome,
@@ -21,6 +20,7 @@ import { useAuthForm } from "@/lib/hooks/useAuthForm";
 import { TextField, PasswordField, CheckboxField } from "./FormFields";
 import { StepIndicator, FormStep, FormNavigation } from "./FormComponents";
 import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
+import Link from "next/link";
 
 export interface AuthFormProps {
   mode?: "signin" | "signup";
@@ -38,6 +38,86 @@ const AuthForm = ({
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
+  // Centralized steps count to avoid duplication
+  const TOTAL_STEPS = 3 as const;
+
+  type FieldConfig = {
+    label: string;
+    name: string;
+    type: string;
+    placeholder: string;
+    icon?: ReactNode;
+  };
+
+  const personalFields: FieldConfig[] = [
+    {
+      label: "First Name",
+      name: "firstName",
+      type: "text",
+      placeholder: "John",
+      icon: <FiUser />,
+    },
+    {
+      label: "Middle Name (Optional)",
+      name: "middleName",
+      type: "text",
+      placeholder: "Robert",
+      icon: <FiUser />,
+    },
+    {
+      label: "Last Name",
+      name: "lastName",
+      type: "text",
+      placeholder: "Doe",
+      icon: <FiUser />,
+    },
+    {
+      label: "Email Address",
+      name: "email",
+      type: "email",
+      placeholder: "john@example.com",
+      icon: <FiMail />,
+    },
+  ];
+
+  const addressFields: FieldConfig[] = [
+    {
+      label: "Address Line 1",
+      name: "addressLine1",
+      type: "text",
+      placeholder: "Street address",
+      icon: <FiHome />,
+    },
+    {
+      label: "Address Line 2 (Optional)",
+      name: "addressLine2",
+      type: "text",
+      placeholder: "Apartment, suite, etc.",
+      icon: <FiMap />,
+    },
+    {
+      label: "City",
+      name: "city",
+      type: "text",
+      placeholder: "Your city",
+      icon: <FiMapPin />,
+    },
+    {
+      label: "State",
+      name: "state",
+      type: "text",
+      placeholder: "Your state",
+      icon: <FiFlag />,
+    },
+    {
+      label: "PIN Code",
+      name: "pinCode",
+      type: "text",
+      placeholder: "6-digit PIN code",
+      icon: <FiHash />,
+    },
+  ];
 
   const {
     form,
@@ -82,7 +162,7 @@ const AuthForm = ({
           <StepIndicator
             steps={["Personal", "Address", "Financial"]}
             currentStep={currentStep}
-            totalSteps={3}
+            totalSteps={TOTAL_STEPS}
           />
         )}
 
@@ -94,38 +174,17 @@ const AuthForm = ({
                 title="Personal Information"
                 isActive={currentStep === 0}
               >
-                <TextField
-                  label="First Name"
-                  name="firstName"
-                  type="text"
-                  form={form}
-                  placeholder="John"
-                  icon={<FiUser />}
-                />
-                <TextField
-                  label="Middle Name (Optional)"
-                  name="middleName"
-                  type="text"
-                  form={form}
-                  placeholder="Robert"
-                  icon={<FiUser />}
-                />
-                <TextField
-                  label="Last Name"
-                  name="lastName"
-                  type="text"
-                  form={form}
-                  placeholder="Doe"
-                  icon={<FiUser />}
-                />
-                <TextField
-                  label="Email Address"
-                  name="email"
-                  type="email"
-                  form={form}
-                  placeholder="john@example.com"
-                  icon={<FiMail />}
-                />
+                {personalFields.map((f) => (
+                  <TextField
+                    key={f.name}
+                    label={f.label}
+                    name={f.name}
+                    type={f.type}
+                    form={form}
+                    placeholder={f.placeholder}
+                    icon={f.icon}
+                  />
+                ))}
                 <PasswordField
                   label="Password"
                   name="password"
@@ -157,46 +216,17 @@ const AuthForm = ({
                 title="Address Information"
                 isActive={currentStep === 1}
               >
-                <TextField
-                  label="Address Line 1"
-                  name="addressLine1"
-                  type="text"
-                  form={form}
-                  placeholder="Street address"
-                  icon={<FiHome />}
-                />
-                <TextField
-                  label="Address Line 2 (Optional)"
-                  name="addressLine2"
-                  type="text"
-                  form={form}
-                  placeholder="Apartment, suite, etc."
-                  icon={<FiMap />}
-                />
-                <TextField
-                  label="City"
-                  name="city"
-                  type="text"
-                  form={form}
-                  placeholder="Your city"
-                  icon={<FiMapPin />}
-                />
-                <TextField
-                  label="State"
-                  name="state"
-                  type="text"
-                  form={form}
-                  placeholder="Your state"
-                  icon={<FiFlag />}
-                />
-                <TextField
-                  label="PIN Code"
-                  name="pinCode"
-                  type="text"
-                  form={form}
-                  placeholder="6-digit PIN code"
-                  icon={<FiHash />}
-                />
+                {addressFields.map((f) => (
+                  <TextField
+                    key={f.name}
+                    label={f.label}
+                    name={f.name}
+                    type={f.type}
+                    form={form}
+                    placeholder={f.placeholder}
+                    icon={f.icon}
+                  />
+                ))}
               </FormStep>
 
               {/* Step 3: Financial Information */}
@@ -211,6 +241,8 @@ const AuthForm = ({
                   form={form}
                   placeholder="10-character PAN"
                   icon={<FiCreditCard />}
+                  maxLength={10}
+                  style={{ textTransform: "uppercase" }}
                 />
                 <CheckboxField
                   name="terms"
@@ -275,17 +307,20 @@ const AuthForm = ({
           {mode === "signup" && (
             <FormNavigation
               currentStep={currentStep}
-              totalSteps={3}
-              canGoNext={true}
+              totalSteps={TOTAL_STEPS}
+              canGoNext={!isSubmitting}
               canGoBack={currentStep > 0}
               isSubmitting={isSubmitting}
               onBack={goToPreviousStep}
-              onNext={() => validateStep(currentStep) && goToNextStep()}
+              onNext={async () => {
+                const ok = await validateStep(currentStep);
+                if (ok) goToNextStep();
+              }}
             />
           )}
 
           {/* Submit Button */}
-          {(mode === "signin" || isLastStep) && (
+          {mode === "signin" && (
             <button
               type="submit"
               disabled={isSubmitting}
@@ -298,10 +333,10 @@ const AuthForm = ({
               {isSubmitting ? (
                 <span className="flex items-center justify-center">
                   <FiLoader className="animate-spin mr-2" />
-                  {mode === "signin" ? "Signing in..." : "Creating account..."}
+                  Signing in...
                 </span>
               ) : (
-                <>{mode === "signin" ? "Sign in" : "Create Account"}</>
+                <>Sign in</>
               )}
             </button>
           )}
@@ -312,22 +347,22 @@ const AuthForm = ({
           {mode === "signin" ? (
             <p>
               Don't have an account?{" "}
-              <a
+              <Link
                 href="/sign-up"
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
                 Sign up
-              </a>
+              </Link>
             </p>
           ) : (
             <p>
               Already have an account?{" "}
-              <a
+              <Link
                 href="/sign-in"
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
                 Sign in
-              </a>
+              </Link>
             </p>
           )}
         </div>

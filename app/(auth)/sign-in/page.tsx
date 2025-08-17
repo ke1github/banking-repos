@@ -4,7 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import AuthForm from "@/components/auth/AuthForm";
 import { SignInFormValues } from "@/lib/validations";
-import { signIn } from "@/lib/actions/user.actions";
+import { account as appwriteAccount } from "@/lib/appwrite/config";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -16,25 +16,20 @@ export default function SignIn() {
       setIsLoading(true);
       setError("");
 
-      // Create form data for server action
-      const formData = new FormData();
-      formData.append("email", data.email);
-      formData.append("password", data.password);
+      // Create session in the browser so Appwrite sets auth cookie
+      await appwriteAccount.createEmailPasswordSession(
+        data.email,
+        data.password
+      );
 
-      // Call server action
-      const result = await signIn(formData);
-
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-
-      if (result.success) {
-        router.push("/");
-      }
+      router.push("/");
     } catch (e) {
       console.error("Sign in error:", e);
-      setError("An unexpected error occurred. Please try again.");
+      const msg =
+        e instanceof Error
+          ? e.message
+          : "Failed to sign in. Please check your credentials.";
+      setError(msg);
     } finally {
       setIsLoading(false);
     }
