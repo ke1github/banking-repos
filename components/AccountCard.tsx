@@ -80,7 +80,7 @@ const AccountCard = ({
       iconBg = "bg-indigo-100";
       iconColor = "text-indigo-600";
     }
-
+    // Add more types as needed
     return { borderColor, iconBg, iconColor };
   };
 
@@ -170,7 +170,6 @@ const AccountCard = ({
             </span>
           </div>
         </div>
-
         {highlights && highlights.length > 0 && (
           <div className="mt-2 sm:mt-3 flex flex-wrap gap-1 sm:gap-1.5">
             {highlights.map((highlight, index) => (
