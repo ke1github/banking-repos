@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Logo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { transferFunds } from "@/lib/actions";

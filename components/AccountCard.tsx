@@ -33,7 +33,6 @@ interface AccountCardProps {
 const AccountCard = ({
   id,
   name,
-  officialName,
   mask,
   type,
   subtype,

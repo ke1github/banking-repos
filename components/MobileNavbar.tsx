@@ -15,8 +15,6 @@ import {
   SheetClose,
   SheetTitle,
   SheetHeader,
-  SheetPortal,
-  SheetOverlay,
 } from "@/components/ui/sheet";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 

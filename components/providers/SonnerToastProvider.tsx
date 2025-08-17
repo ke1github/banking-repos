@@ -63,82 +63,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
     return <FiAlertTriangle className="text-red-500" />;
   };
 
-  // Function to get error title based on error code
-  const getErrorTitle = (errorCode?: ErrorCode): string => {
-    if (!errorCode) return "Error";
-
-    // Authentication errors
-    if (
-      errorCode === ErrorCode.AUTHENTICATION_FAILED ||
-      errorCode === ErrorCode.INVALID_CREDENTIALS ||
-      errorCode === ErrorCode.SESSION_EXPIRED ||
-      errorCode === ErrorCode.USER_NOT_FOUND
-    ) {
-      return "Authentication Error";
-    }
-
-    // Authorization errors
-    if (
-      errorCode === ErrorCode.UNAUTHORIZED ||
-      errorCode === ErrorCode.FORBIDDEN
-    ) {
-      return "Authorization Error";
-    }
-
-    // Validation errors
-    if (
-      errorCode === ErrorCode.VALIDATION_ERROR ||
-      errorCode === ErrorCode.REQUIRED_FIELD_MISSING ||
-      errorCode === ErrorCode.INVALID_EMAIL_FORMAT ||
-      errorCode === ErrorCode.INVALID_PASSWORD_FORMAT ||
-      errorCode === ErrorCode.PASSWORDS_DO_NOT_MATCH
-    ) {
-      return "Validation Error";
-    }
-
-    // Banking operation errors
-    if (
-      errorCode === ErrorCode.INSUFFICIENT_FUNDS ||
-      errorCode === ErrorCode.INVALID_ACCOUNT ||
-      errorCode === ErrorCode.TRANSACTION_FAILED ||
-      errorCode === ErrorCode.TRANSFER_LIMIT_EXCEEDED ||
-      errorCode === ErrorCode.ACCOUNT_LOCKED
-    ) {
-      return "Transaction Error";
-    }
-
-    // Network errors
-    if (
-      errorCode === ErrorCode.NETWORK_ERROR ||
-      errorCode === ErrorCode.TIMEOUT_ERROR ||
-      errorCode === ErrorCode.CONNECTION_ERROR
-    ) {
-      return "Network Error";
-    }
-
-    // Server errors
-    if (
-      errorCode === ErrorCode.SERVER_ERROR ||
-      errorCode === ErrorCode.SERVICE_UNAVAILABLE
-    ) {
-      return "Server Error";
-    }
-
-    // HTTP errors
-    if (
-      errorCode === ErrorCode.BAD_REQUEST ||
-      errorCode === ErrorCode.NOT_FOUND ||
-      errorCode === ErrorCode.CONFLICT ||
-      errorCode === ErrorCode.TOO_MANY_REQUESTS
-    ) {
-      return "Request Error";
-    }
-
-    return "Error";
-  };
-
   const showError = (message: string, error?: AppError) => {
-    const title = error ? getErrorTitle(error.code) : "Error";
     const icon = error ? (
       getErrorIcon(error.code)
     ) : (
@@ -161,7 +86,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
     });
   };
 
-  const showSuccess = (message: string, title = "Success") => {
+  const showSuccess = (message: string) => {
     toast.success(message, {
       id: `success-${Date.now()}`,
       duration: 4000,
@@ -169,7 +94,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
     });
   };
 
-  const showWarning = (message: string, title = "Warning") => {
+  const showWarning = (message: string) => {
     toast(message, {
       id: `warning-${Date.now()}`,
       duration: 6000,
@@ -177,7 +102,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
     });
   };
 
-  const showInfo = (message: string, title = "Information") => {
+  const showInfo = (message: string) => {
     toast.info(message, {
       id: `info-${Date.now()}`,
       duration: 5000,

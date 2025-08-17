@@ -50,7 +50,7 @@ export default function RootLayout({
   const userDisplayData = {
     firstName: clientUser.name?.split(" ")[0] ?? "",
     lastName: clientUser.name?.split(" ").slice(1).join(" ") ?? "",
-    email: (clientUser as any).email ?? "",
+    email: clientUser?.email ?? "",
   };
 
   return (

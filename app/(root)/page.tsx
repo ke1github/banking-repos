@@ -4,8 +4,6 @@ import React from "react";
 import { HeaderBox } from "@/components/HeaderBox";
 import BalanceCard from "@/components/BalanceCard";
 import TransferForm from "@/components/TransferForm";
-import MobileNavbar from "@/components/MobileNavbar";
-import Sidebar from "@/components/Sidebar";
 import RightSidebar from "@/components/RightSidebar";
 import LogoutButton from "@/components/LogoutButton";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
@@ -84,7 +82,7 @@ const HOME = () => {
   const { accounts, totalBanks, totalBalance, bankAccounts, cards } = data;
 
   // Extract first name from the user's full name
-  const firstName = user?.name?.split(" ")[0] || "Guest";
+  const firstName = user?.name?.split(" ")?.[0] || "Guest";
 
   return (
     <>
@@ -138,7 +136,7 @@ const HOME = () => {
         <RightSidebar
           user={{
             firstName: firstName,
-            lastName: user?.name.split(" ").slice(1).join(" "),
+            lastName: user?.name?.split(" ")?.slice(1).join(" ") ?? "",
             email: user?.email,
           }}
           bankAccounts={bankAccounts}

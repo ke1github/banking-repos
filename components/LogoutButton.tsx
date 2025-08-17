@@ -22,7 +22,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
     // Clear client session cookie first to avoid guest scope errors
     try {
       await appwriteAccount.deleteSession("current");
-    } catch (_) {
+    } catch {
       // ignore if no session
     }
     await signOut();

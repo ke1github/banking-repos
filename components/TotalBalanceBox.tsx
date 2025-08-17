@@ -1,6 +1,5 @@
 import React from "react";
 import CountUp from "react-countup";
-import { formatCurrency } from "@/lib/utils";
 
 interface Account {
   id: string;

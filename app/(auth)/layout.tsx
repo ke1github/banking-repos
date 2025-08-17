@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -28,8 +27,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         <div className="relative z-10 text-white text-center max-w-md">
           <h2 className="text-2xl font-semibold mb-4">Banking Made Simple</h2>
           <p className="mb-6">
-            "SP Banking has transformed how I manage my finances. The dashboard
-            is intuitive and the features are exactly what I need."
+            SP Banking has transformed how I manage my finances. The dashboard
+            is intuitive and the features are exactly what I need.
           </p>
           <div className="flex items-center justify-center">
             <div className="w-10 h-10 rounded-full bg-white/20 mr-4"></div>

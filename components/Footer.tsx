@@ -2,7 +2,6 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
-import { cn } from "@/lib/utils";
 
 const Footer = () => {
   return (

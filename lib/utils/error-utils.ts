@@ -440,7 +440,7 @@ export async function checkConnectivity(): Promise<boolean> {
 
     clearTimeout(timeoutId);
     return true;
-  } catch (_error) {
+  } catch {
     // Network error or timeout
     return false;
   }

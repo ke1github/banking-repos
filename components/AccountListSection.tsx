@@ -52,7 +52,11 @@ export default function AccountListSection({
 
   // Default click handler if none provided
   const handleAccountClick = (id: string) => {
-    onAccountClick ? onAccountClick(id) : router.push(`/accounts/${id}`);
+    if (onAccountClick) {
+      onAccountClick(id);
+    } else {
+      router.push(`/accounts/${id}`);
+    }
   };
 
   if (!accounts || accounts.length === 0) {

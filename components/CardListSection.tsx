@@ -47,7 +47,11 @@ export default function CardListSection({
 
   // Default click handler if none provided
   const handleCardClick = (id: string) => {
-    onCardClick ? onCardClick(id) : router.push(`/cards/${id}`);
+    if (onCardClick) {
+      onCardClick(id);
+    } else {
+      router.push(`/cards/${id}`);
+    }
   };
 
   // Get appropriate variant based on card type

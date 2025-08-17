@@ -110,7 +110,7 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
     },
     plugins: {
       legend: {
-        display: false, // Always hide legend and show data on hover instead
+        display: showLegend ?? false,
         position: "bottom" as const,
         align: "center" as const,
         labels: {

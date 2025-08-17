@@ -122,7 +122,6 @@ const AuthForm = ({
   const {
     form,
     currentStep,
-    isLastStep,
     goToNextStep,
     goToPreviousStep,
     handleSubmit,
@@ -346,7 +345,7 @@ const AuthForm = ({
         <div className="mt-6 text-center text-sm">
           {mode === "signin" ? (
             <p>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/sign-up"
                 className="font-medium text-blue-600 hover:text-blue-500"

@@ -43,7 +43,7 @@ export default function SignUp() {
             data.email,
             data.password
           );
-        } catch (_) {
+        } catch {
           // Best-effort; if session fails here we still navigate and the
           // client hook will keep the user unauthenticated
         }
