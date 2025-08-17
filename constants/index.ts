@@ -4,7 +4,23 @@ export const sidebarLinks: {
   mainLinks: SidebarLink[];
   accountsLinks: SidebarLink[];
   paymentLinks: SidebarLink[];
+  expenseLinks: SidebarLink[];
+  cashLinks: SidebarLink[];
 } = {
+  expenseLinks: [
+    {
+      imgURL: "/icons/shopping-bag.svg",
+      route: ROUTES.EXPENSE_MANAGEMENT,
+      label: "Expense Management",
+    },
+  ],
+  cashLinks: [
+    {
+      imgURL: "/icons/coins.svg",
+      route: ROUTES.CASH_MANAGEMENT,
+      label: "Cash Management",
+    },
+  ],
   mainLinks: [
     {
       imgURL: "/icons/home.svg",

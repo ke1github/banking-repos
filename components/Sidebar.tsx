@@ -87,6 +87,40 @@ const Sidebar = ({ user }: SidebarProps) => {
               ))}
             </div>
           </div>
+
+          {/* Expense Management section */}
+          <div className="mb-6">
+            <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+              Expense Management
+            </h3>
+            <div className="flex flex-col gap-1">
+              {sidebarLinks.expenseLinks.map((link) => (
+                <NavLink
+                  key={link.label}
+                  href={link.route}
+                  label={link.label}
+                  iconSrc={link.imgURL}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Cash Management section */}
+          <div className="mb-6">
+            <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+              Cash Management
+            </h3>
+            <div className="flex flex-col gap-1">
+              {sidebarLinks.cashLinks.map((link) => (
+                <NavLink
+                  key={link.label}
+                  href={link.route}
+                  label={link.label}
+                  iconSrc={link.imgURL}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* User and profile section */}

@@ -55,6 +55,7 @@ export function DatePicker({
           disabled={disabled}
           fromDate={minDate}
           toDate={maxDate}
+          captionLayout="dropdown"
         />
       </PopoverContent>
     </Popover>

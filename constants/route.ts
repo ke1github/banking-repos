@@ -1,6 +1,8 @@
 // Centralized route constants and helpers to avoid hard-coded strings
 
 export const ROUTES = {
+  EXPENSE_MANAGEMENT: "/expense-management",
+  CASH_MANAGEMENT: "/cash-management",
   HOME: "/",
   SIGN_IN: "/sign-in",
   SIGN_UP: "/sign-up",
