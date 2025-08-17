@@ -16,25 +16,6 @@ interface UserAvatarProps {
   onClick?: () => void;
 }
 
-/**
- * UserAvatar component for displaying user profile images
- *
- * @example
- * // Basic usage with image
- * <UserAvatar src="/path/to/avatar.jpg" alt="John Doe" />
- *
- * // With user name (automatically generates initials)
- * <UserAvatar firstName="John" lastName="Doe" />
- *
- * // With explicit fallback initials
- * <UserAvatar fallback="JD" />
- *
- * // With firstName only (uses first letter as fallback)
- * <UserAvatar firstName="John" />
- *
- * // Different sizes
- * <UserAvatar src="/path/to/avatar.jpg" size="lg" />
- */
 const UserAvatar: React.FC<UserAvatarProps> = ({
   src,
   alt = "User Avatar",

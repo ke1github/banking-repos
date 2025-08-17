@@ -3,6 +3,7 @@
 import React from "react";
 import AccountCard from "./AccountCard";
 import { useRouter } from "next/navigation";
+import { accountDetailsPath, ROUTES } from "@/constants/route";
 
 interface AccountData {
   id: string;
@@ -55,7 +56,7 @@ export default function AccountListSection({
     if (onAccountClick) {
       onAccountClick(id);
     } else {
-      router.push(`/accounts/${id}`);
+      router.push(accountDetailsPath(id));
     }
   };
 
@@ -66,7 +67,7 @@ export default function AccountListSection({
       <div className="py-8 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center">
         <p className="text-gray-500 mb-2">No accounts available</p>
         <button
-          onClick={() => router.push("/connect-bank")}
+          onClick={() => router.push(ROUTES.CONNECT_BANK)}
           className="text-blue-600 text-sm font-medium"
         >
           + Connect a bank account

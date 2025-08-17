@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ROUTES } from "@/constants/route";
 import BankCard from "./BankCard";
 import AccountCard from "./AccountCard";
 
@@ -170,7 +171,7 @@ const RightSidebar = ({
                   No bank accounts connected
                 </p>
                 <Link
-                  href="/connect-bank"
+                  href={ROUTES.CONNECT_BANK}
                   className="text-14 text-blue-600 font-medium"
                 >
                   + Connect a bank
@@ -208,7 +209,7 @@ const RightSidebar = ({
                 />
                 <p className="text-14 text-gray-500 mb-2">No cards added yet</p>
                 <Link
-                  href="/add-card"
+                  href={ROUTES.ADD_CARD}
                   className="text-14 text-blue-600 font-medium"
                 >
                   + Add a card
@@ -224,7 +225,7 @@ const RightSidebar = ({
         <h4 className="text-14 font-medium mb-2">Quick Actions</h4>
         <div className="grid grid-cols-2 gap-2">
           <Link
-            href="/connect-bank"
+            href={ROUTES.CONNECT_BANK}
             className="flex items-center gap-2 p-2 rounded-lg hover:bg-blue-50 transition-colors"
           >
             <Image
@@ -236,7 +237,7 @@ const RightSidebar = ({
             <span className="text-12">Connect Bank</span>
           </Link>
           <Link
-            href="/add-card"
+            href={ROUTES.ADD_CARD}
             className="flex items-center gap-2 p-2 rounded-lg hover:bg-blue-50 transition-colors"
           >
             <Image

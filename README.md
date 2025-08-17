@@ -73,3 +73,25 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Authentication Components
+
+This project includes a modular, multi-step authentication UI built with React Hook Form and Zod.
+
+- Form fields: reusable `TextField`, `PasswordField`, and `CheckboxField` components with validation, icons, and accessibility states.
+- Form scaffolding: `FormStep`, `StepIndicator`, and `FormNavigation` to power the multi-step sign-up flow.
+- Hook: `useAuthForm` centralizes step logic, validation, and submission; integrates Zod schemas from `lib/validations.ts`.
+- Main UI: `components/auth/AuthForm.tsx` renders sign-in and a 3-step sign-up (Personal, Address, Financial).
+
+Validation
+
+- Sign-in: email, password, remember-me.
+- Sign-up: personal info, address, PAN/terms. PAN is normalized to uppercase and schema-validated.
+
+Best practices in use
+
+- Separation of concerns: presentational components vs. form logic vs. validation schemas.
+- Accessibility: labeled inputs, focus styles, clear error states.
+- Type safety: TypeScript throughout; Zod schemas generate types for form values.
+
+Single README policy: all documentation is consolidated here to avoid drift. If you add new docs, integrate them into this file rather than creating additional READMEs.

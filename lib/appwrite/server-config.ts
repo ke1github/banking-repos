@@ -1,4 +1,15 @@
-import { Client, Account, Databases, ID, Query, Teams } from "appwrite";
+import "server-only";
+// Web SDK (for Account/session-related operations)
+import { Client as WebClient, Account, ID, Query } from "appwrite";
+// Node SDK (for privileged Databases/Storage operations via API key)
+import type { Client as NodeClient } from "node-appwrite";
+import {
+  Client as NodeSdkClient,
+  Databases as NodeDatabases,
+  Teams as NodeTeams,
+  Permission,
+  Role,
+} from "node-appwrite";
 
 export const appwriteConfig = {
   endpoint:
@@ -11,33 +22,43 @@ export const appwriteConfig = {
 };
 
 // Server-side only client
-let serverClient: Client | null = null;
-let serverDatabases: Databases | null = null;
+let serverClient: WebClient | null = null; // web client for Account APIs
+let adminClient: NodeClient | null = null; // node client with API key for DB
+let adminDatabases: NodeDatabases | null = null;
 let serverAccount: Account | null = null;
-let serverTeams: Teams | null = null;
+let serverTeams: NodeTeams | null = null;
 
 // Initialize server-side Appwrite client
 function getServerClient() {
   if (serverClient) return serverClient;
 
-  serverClient = new Client();
+  serverClient = new WebClient();
   serverClient
     .setEndpoint(appwriteConfig.endpoint)
     .setProject(appwriteConfig.projectId);
 
-  // Add API key for server-side operations
-  // Note: We intentionally do not set API key or JWT here, because this
-  // client is used with user sessions (cookie-based) in server actions.
-  // If you need admin operations, initialize a separate admin client.
-
   return serverClient;
 }
 
-// Get server-side databases instance
-export function getServerDatabases() {
-  if (serverDatabases) return serverDatabases;
-  serverDatabases = new Databases(getServerClient());
-  return serverDatabases;
+// Admin (Node SDK) client for privileged operations
+function getAdminClient() {
+  if (adminClient) return adminClient;
+  const apiKey = process.env.APPWRITE_API_KEY;
+  if (!apiKey) {
+    throw new Error("APPWRITE_API_KEY is not set for admin operations");
+  }
+  adminClient = new NodeSdkClient()
+    .setEndpoint(appwriteConfig.endpoint)
+    .setProject(appwriteConfig.projectId)
+    .setKey(apiKey);
+  return adminClient;
+}
+
+// Get admin databases instance (uses API key)
+export function getAdminDatabases() {
+  if (adminDatabases) return adminDatabases;
+  adminDatabases = new NodeDatabases(getAdminClient());
+  return adminDatabases;
 }
 
 // Get server-side account instance
@@ -50,8 +71,8 @@ export function getServerAccount() {
 // Get server-side teams instance
 export function getServerTeams() {
   if (serverTeams) return serverTeams;
-  serverTeams = new Teams(getServerClient());
+  serverTeams = new NodeTeams(getAdminClient());
   return serverTeams;
 }
 
-export { ID, Query };
+export { ID, Query, Permission, Role };

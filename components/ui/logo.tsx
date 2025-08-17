@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 interface LogoProps {
   variant?: "default" | "large" | "small";
@@ -18,7 +17,7 @@ const Logo: React.FC<LogoProps> = ({
   const size = variant === "large" ? 48 : variant === "small" ? 24 : 32;
 
   return (
-    <Link href="/" className={`flex items-center ${className}`}>
+    <div className={`flex items-center ${className}`}>
       <Image
         src="/icons/logo.svg"
         alt="SP Banking Logo"
@@ -39,7 +38,7 @@ const Logo: React.FC<LogoProps> = ({
           SP Banking
         </span>
       )}
-    </Link>
+    </div>
   );
 };
 

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { FiSettings, FiBell, FiLogOut } from "react-icons/fi";
+import { ROUTES } from "@/constants/route";
 
 const HeaderWithAvatar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -25,25 +26,25 @@ const HeaderWithAvatar: React.FC = () => {
     <header className="bg-white shadow-sm py-3 px-4 border-b border-gray-200">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <Link href="/" className="text-blue-600 text-xl font-bold">
+          <Link href={ROUTES.HOME} className="text-blue-600 text-xl font-bold">
             SP Banking
           </Link>
 
           <nav className="hidden md:ml-8 md:flex md:space-x-4">
             <Link
-              href="/"
+              href={ROUTES.HOME}
               className="px-3 py-2 rounded-md text-sm font-medium text-gray-900 hover:text-blue-600"
             >
               Dashboard
             </Link>
             <Link
-              href="/accounts"
+              href={ROUTES.ACCOUNTS}
               className="px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-blue-600"
             >
               Accounts
             </Link>
             <Link
-              href="/transactions"
+              href={ROUTES.TRANSACTIONS}
               className="px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-blue-600"
             >
               Transactions
@@ -83,7 +84,7 @@ const HeaderWithAvatar: React.FC = () => {
                   <p className="text-xs text-gray-500">{user.email}</p>
                 </div>
                 <Link
-                  href="/profile"
+                  href={ROUTES.PROFILE}
                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <UserAvatar
@@ -96,7 +97,7 @@ const HeaderWithAvatar: React.FC = () => {
                   Your Profile
                 </Link>
                 <Link
-                  href="/settings"
+                  href={ROUTES.SETTINGS}
                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <FiSettings className="w-4 h-4 mr-2" />

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getServerDatabases } from "@/lib/appwrite/server-config";
+import { getAdminDatabases } from "@/lib/appwrite/server-config";
 import { ID, Query } from "appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 
@@ -42,7 +42,7 @@ export async function getUserBankAccounts(userId: string) {
   }
 
   try {
-    const databases = getServerDatabases();
+    const databases = getAdminDatabases();
     const accounts = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.bankCollectionId,
@@ -65,7 +65,7 @@ export async function getBankAccount(userId: string, accountId: string) {
   }
 
   try {
-    const databases = getServerDatabases();
+    const databases = getAdminDatabases();
     const account = await databases.getDocument(
       appwriteConfig.databaseId,
       appwriteConfig.bankCollectionId,
@@ -104,7 +104,7 @@ export async function createBankAccount(userId: string, formData: FormData) {
   }
 
   try {
-    const databases = getServerDatabases();
+    const databases = getAdminDatabases();
     const accountNumber = Math.floor(
       Math.random() * 9000000000 + 1000000000
     ).toString();
@@ -147,7 +147,7 @@ export async function getAccountTransactions(
   }
 
   try {
-    const databases = getServerDatabases();
+    const databases = getAdminDatabases();
 
     // Verify account belongs to user first
     const account = await databases.getDocument(
@@ -182,7 +182,7 @@ export async function getUserTransactions(userId: string) {
   }
 
   try {
-    const databases = getServerDatabases();
+    const databases = getAdminDatabases();
     const transactions = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.transactionCollectionId,
@@ -219,7 +219,7 @@ export async function createTransaction(userId: string, formData: FormData) {
   }
 
   try {
-    const databases = getServerDatabases();
+    const databases = getAdminDatabases();
 
     // Verify account belongs to user
     const accountResult = await getBankAccount(userId, accountId);

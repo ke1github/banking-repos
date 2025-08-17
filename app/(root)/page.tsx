@@ -5,7 +5,6 @@ import { HeaderBox } from "@/components/HeaderBox";
 import BalanceCard from "@/components/BalanceCard";
 import TransferForm from "@/components/TransferForm";
 import RightSidebar from "@/components/RightSidebar";
-import LogoutButton from "@/components/LogoutButton";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
 
 // This function provides mock data - in a real app this would come from API calls
@@ -99,7 +98,7 @@ const HOME = () => {
               }
               showLogo={true}
             />
-            <LogoutButton className="mt-2" />
+            {/* Logout handled in Sidebar/MobileNavbar */}
 
             {/* Balance Card - adapts to screen size */}
             <BalanceCard

@@ -45,6 +45,7 @@ export const TextField: React.FC<TextFieldProps> = ({
           } p-2.5 pl-10 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-1`}
           maxLength={maxLength}
           style={style}
+          suppressHydrationWarning
         />
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <div
@@ -99,6 +100,7 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
               ? "border-red-500 focus:ring-red-500"
               : "border-gray-300 focus:ring-blue-500"
           } p-2.5 pl-10 pr-10 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-1`}
+          suppressHydrationWarning
         />
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <svg
@@ -122,6 +124,7 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
           type="button"
           onClick={togglePasswordVisibility}
           className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+          suppressHydrationWarning
         >
           {showPassword ? (
             <svg

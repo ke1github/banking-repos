@@ -1,11 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { ID, Query } from "appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import {
-  getServerDatabases,
+  getAdminDatabases,
   getServerAccount,
+  Permission,
+  Role,
 } from "@/lib/appwrite/server-config";
 
 // Type definitions
@@ -60,11 +63,8 @@ export async function signUp(formData: FormData) {
       fullName
     );
 
-    // Create email session
-    await serverAccount.createEmailPasswordSession(email, password);
-
     // Create user profile document in database
-    const serverDatabases = getServerDatabases();
+    const serverDatabases = getAdminDatabases();
     await serverDatabases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
@@ -75,9 +75,16 @@ export async function signUp(formData: FormData) {
         lastName,
         middleName,
         email,
+        // Satisfy required schema fields if present in collection
+        dwollaCustomerUrl: "",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      }
+      },
+      [
+        Permission.read(Role.user(newUser.$id)),
+        Permission.update(Role.user(newUser.$id)),
+        Permission.delete(Role.user(newUser.$id)),
+      ]
     );
 
     // Revalidate paths that might show user info
@@ -151,22 +158,75 @@ export async function signIn(formData: FormData) {
  * Logout a user
  */
 export async function signOut() {
+  // Best-effort: client deletes its own session; here we only clear our cookie
   try {
-    // Get server-side account instance
-    const serverAccount = getServerAccount();
+    try {
+      const serverAccount = getServerAccount();
+      await serverAccount.deleteSession("current");
+    } catch {
+      // Ignore server-side deletion failures (no session context on server)
+    }
 
-    // Delete current session
-    await serverAccount.deleteSession("current");
+    // Clear our auth hint cookie so middleware treats user as logged out
+    try {
+      const cookieStore = await cookies();
+      cookieStore.delete("auth");
+    } catch {}
 
-    revalidatePath("/"); // Redirect to sign-in page
+    revalidatePath("/");
     return { success: true };
   } catch (error) {
     console.error("Logout error:", error);
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-    return { error: "Failed to logout" };
+    // Still return success to avoid trapping the user in a logged-in UI state
+    return { success: true };
   }
+}
+
+/**
+ * Set a lightweight auth cookie for middleware gating.
+ * Call this right after client successfully creates an Appwrite session.
+ */
+export async function setAuthCookie(remember: boolean = true) {
+  try {
+    const cookieStore = await cookies();
+    const options: Parameters<typeof cookieStore.set>[2] = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+    };
+    if (remember) {
+      options.maxAge = 60 * 60 * 24 * 30; // 30 days
+    }
+    cookieStore.set("auth", "1", options);
+    revalidatePath("/");
+    return { success: true } as const;
+  } catch (error) {
+    console.error("setAuthCookie error:", error);
+    return { success: false } as const;
+  }
+}
+
+/**
+ * Clear the auth cookie.
+ */
+export async function clearAuthCookie() {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete("auth");
+    revalidatePath("/");
+    return { success: true } as const;
+  } catch (error) {
+    console.error("clearAuthCookie error:", error);
+    return { success: false } as const;
+  }
+}
+
+/**
+ * Mark the user as authenticated after OAuth by setting the auth cookie.
+ */
+export async function markOAuthAuthenticated(remember: boolean = true) {
+  return setAuthCookie(remember);
 }
 
 /**
@@ -182,7 +242,7 @@ export async function getCurrentUser() {
       const user = await serverAccount.get();
 
       // If we have a user, get their profile from database
-      const serverDbService = getServerDatabases();
+      const serverDbService = getAdminDatabases();
       const profiles = await serverDbService.listDocuments(
         appwriteConfig.databaseId,
         appwriteConfig.userCollectionId,

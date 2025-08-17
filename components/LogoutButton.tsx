@@ -6,15 +6,24 @@ import Image from "next/image";
 import { signOut } from "@/lib/actions/user.actions";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/constants/route";
 
 interface LogoutButtonProps {
   variant?: "icon" | "text";
   className?: string;
+  buttonVariant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link";
 }
 
 const LogoutButton: React.FC<LogoutButtonProps> = ({
   variant = "text",
   className = "",
+  buttonVariant = "outline",
 }) => {
   const router = useRouter();
 
@@ -25,14 +34,18 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
     } catch {
       // ignore if no session
     }
+    try {
+      localStorage.removeItem("remember");
+      sessionStorage.removeItem("session-started");
+    } catch {}
     await signOut();
-    router.push("/sign-in");
+    router.push(ROUTES.SIGN_IN);
   };
 
   if (variant === "icon") {
     return (
       <Button
-        variant="ghost"
+        variant={buttonVariant}
         size="icon"
         onClick={handleLogout}
         className={`p-2 hover:bg-gray-100 ${className}`}
@@ -45,7 +58,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
 
   return (
     <Button
-      variant="outline"
+      variant={buttonVariant}
       onClick={handleLogout}
       className={`flex items-center gap-2 ${className}`}
     >

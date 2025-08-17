@@ -3,6 +3,7 @@
 import React from "react";
 import BankCard from "./BankCard";
 import { useRouter } from "next/navigation";
+import { cardDetailsPath, ROUTES } from "@/constants/route";
 
 interface CardData {
   id: string;
@@ -50,7 +51,7 @@ export default function CardListSection({
     if (onCardClick) {
       onCardClick(id);
     } else {
-      router.push(`/cards/${id}`);
+      router.push(cardDetailsPath(id));
     }
   };
 
@@ -85,7 +86,7 @@ export default function CardListSection({
       <div className="py-8 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center">
         <p className="text-gray-500 mb-2">No cards available</p>
         <button
-          onClick={() => router.push("/add-card")}
+          onClick={() => router.push(ROUTES.ADD_CARD)}
           className="text-blue-600 text-sm font-medium"
         >
           + Add a card

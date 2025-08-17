@@ -1,60 +1,54 @@
-export const sidebarLinks = {
+import { ROUTES, RoutePath } from "@/constants/route";
+type SidebarLink = { imgURL: string; route: RoutePath; label: string };
+export const sidebarLinks: {
+  mainLinks: SidebarLink[];
+  accountsLinks: SidebarLink[];
+  paymentLinks: SidebarLink[];
+} = {
   mainLinks: [
     {
       imgURL: "/icons/home.svg",
-      route: "/",
+      route: ROUTES.HOME,
       label: "Dashboard",
     },
     {
       imgURL: "/icons/transaction.svg",
-      route: "/transactions",
+      route: ROUTES.TRANSACTIONS,
       label: "Transactions",
     },
     {
       imgURL: "/icons/payment-transfer.svg",
-      route: "/transfers",
+      route: ROUTES.TRANSFERS,
       label: "Transfers",
     },
   ],
   accountsLinks: [
     {
       imgURL: "/icons/credit-card.svg",
-      route: "/cards-accounts",
+      route: ROUTES.CARDS_ACCOUNTS,
       label: "Cards & Accounts",
     },
     {
       imgURL: "/icons/bank-transfer.svg",
-      route: "/my-banks",
+      route: ROUTES.MY_BANKS,
       label: "My Banks",
     },
     {
       imgURL: "/icons/connect-bank.svg",
-      route: "/connect-bank",
+      route: ROUTES.CONNECT_BANK,
       label: "Connect Bank",
     },
   ],
   paymentLinks: [
     {
       imgURL: "/icons/money-send.svg",
-      route: "/send-money",
+      route: ROUTES.SEND_MONEY,
       label: "Send Money",
     },
     {
       imgURL: "/icons/deposit.svg",
-      route: "/deposits",
+      route: ROUTES.DEPOSITS,
       label: "Deposits",
-    },
-  ],
-  profileLinks: [
-    {
-      imgURL: "/icons/edit.svg",
-      route: "/profile",
-      label: "Profile Settings",
-    },
-    {
-      imgURL: "/icons/logout.svg",
-      route: "/logout",
-      label: "Logout",
     },
   ],
 };

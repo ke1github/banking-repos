@@ -8,6 +8,7 @@ import Logo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { sidebarLinks } from "@/constants";
 import UserAvatar from "@/components/ui/UserAvatar";
+import { ROUTES } from "@/constants/route";
 import {
   Sheet,
   SheetContent,
@@ -38,17 +39,11 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
   }
 
   // Using the same structured links as sidebar
-  const {
-    mainLinks,
-    accountsLinks,
-    paymentLinks,
-    profileLinks,
-  }: {
+  const { mainLinks, accountsLinks, paymentLinks } = sidebarLinks as {
     mainLinks: SidebarLink[];
     accountsLinks: SidebarLink[];
     paymentLinks: SidebarLink[];
-    profileLinks: SidebarLink[];
-  } = sidebarLinks;
+  };
 
   return (
     <div className="mobile-navbar fixed w-full top-0 left-0 z-50">
@@ -192,26 +187,22 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                   Account
                 </h3>
                 <div className="flex flex-col">
-                  {profileLinks.map((link) => (
-                    <SheetClose asChild key={link.route}>
-                      <Link
-                        href={link.route}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50 text-gray-700"
-                      >
-                        <Image
-                          src={link.imgURL}
-                          alt={link.label}
-                          width={20}
-                          height={20}
-                          className="opacity-75"
-                        />
-                        <span className="text-sm font-medium">
-                          {link.label}
-                        </span>
-                      </Link>
-                    </SheetClose>
-                  ))}
-
+                  {/* Profile link */}
+                  <SheetClose asChild>
+                    <Link
+                      href={ROUTES.PROFILE}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50 text-gray-700"
+                    >
+                      <Image
+                        src="/icons/edit.svg"
+                        alt="Profile"
+                        width={20}
+                        height={20}
+                        className="opacity-75"
+                      />
+                      <span className="text-sm font-medium">Profile</span>
+                    </Link>
+                  </SheetClose>
                   {/* Logout button */}
                   <SheetClose asChild>
                     <button
