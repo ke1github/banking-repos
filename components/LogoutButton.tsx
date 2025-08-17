@@ -3,7 +3,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useAuth } from "@/lib/auth-context";
+import { signOut } from "@/lib/actions/user.actions";
+import { useRouter } from "next/navigation";
 
 interface LogoutButtonProps {
   variant?: "icon" | "text";
@@ -14,10 +15,11 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
   variant = "text",
   className = "",
 }) => {
-  const { logout } = useAuth();
+  const router = useRouter();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/sign-in");
   };
 
   if (variant === "icon") {

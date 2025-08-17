@@ -26,9 +26,10 @@ interface MobileNavbarProps {
     lastName?: string;
     image?: string;
   };
+  onLogout?: () => void;
 }
 
-const MobileNavbar: React.FC<MobileNavbarProps> = ({ user }) => {
+const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Define the type for sidebar link objects
@@ -212,6 +213,23 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user }) => {
                       </Link>
                     </SheetClose>
                   ))}
+
+                  {/* Logout button */}
+                  <SheetClose asChild>
+                    <button
+                      onClick={onLogout}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50 text-gray-700 w-full text-left"
+                    >
+                      <Image
+                        src="/icons/logout.svg"
+                        alt="Logout"
+                        width={20}
+                        height={20}
+                        className="opacity-75"
+                      />
+                      <span className="text-sm font-medium">Logout</span>
+                    </button>
+                  </SheetClose>
                 </div>
               </div>
             </div>

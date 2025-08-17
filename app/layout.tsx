@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Serif } from "next/font/google";
+import { AppwriteAuthProvider } from "@/components/providers/AppwriteProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -21,8 +22,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { AuthProvider } from "@/lib/auth-context";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,7 +32,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${ibmPlexSerif.variable} antialiased`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AppwriteAuthProvider>{children}</AppwriteAuthProvider>
       </body>
     </html>
   );

@@ -1,8 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SP Banking App
+
+A modern banking application built with Next.js and Appwrite.
+
+## Features
+
+- User authentication (sign-up, sign-in, logout)
+- Banking account management
+- Transaction history
+- Fund transfers between accounts
+- Responsive dashboard interface
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+1. Create an Appwrite account and project at [cloud.appwrite.io](https://cloud.appwrite.io)
+2. Set up Appwrite collections for users, bank accounts, and transactions
+3. Configure your environment variables in `.env.local` file
+
+### Environment Setup
+
+Create a `.env.local` file in the root of your project with the following variables:
+
+```
+NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+NEXT_PUBLIC_APPWRITE_PROJECT=your_project_id
+APPWRITE_DATABASE_ID=your_database_id
+APPWRITE_USER_COLLECTION_ID=your_user_collection_id
+APPWRITE_BANK_COLLECTION_ID=your_bank_collection_id
+APPWRITE_TRANSACTION_COLLECTION_ID=your_transaction_collection_id
+```
+
+### Installation
+
+Install the dependencies:
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -10,8 +51,6 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

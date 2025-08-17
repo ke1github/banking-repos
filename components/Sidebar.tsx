@@ -15,9 +15,10 @@ interface SidebarProps {
     email?: string;
     image?: string;
   };
+  onLogout?: () => void;
 }
 
-const Sidebar = ({ user }: SidebarProps) => {
+const Sidebar = ({ user, onLogout }: SidebarProps) => {
   return (
     <aside className="sidebar bg-white h-screen w-[256px] fixed left-0 top-0 border-r border-gray-100 shadow-sm hidden lg:flex flex-col">
       <div className="flex flex-col h-full overflow-y-auto">
@@ -114,6 +115,21 @@ const Sidebar = ({ user }: SidebarProps) => {
                 iconSrc={link.imgURL}
               />
             ))}
+
+            {/* Logout button */}
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-3 w-full px-2 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              <Image
+                src="/icons/logout.svg"
+                alt="Logout"
+                width={20}
+                height={20}
+                className="min-w-[20px]"
+              />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       </div>

@@ -26,12 +26,14 @@ export interface AuthFormProps {
   mode?: "signin" | "signup";
   onSubmit: (data: SignInFormValues | SignUpFormValues) => void;
   isLoading?: boolean;
+  error?: string;
 }
 
 const AuthForm = ({
   mode = "signin",
   onSubmit,
   isLoading = false,
+  error = "",
 }: AuthFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -69,6 +71,13 @@ const AuthForm = ({
 
       {/* Form content */}
       <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        {/* Display error message if any */}
+        {error && (
+          <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200">
+            <p>{error}</p>
+          </div>
+        )}
+
         {mode === "signup" && (
           <StepIndicator
             steps={["Personal", "Address", "Financial"]}

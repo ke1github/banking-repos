@@ -8,7 +8,7 @@ import MobileNavbar from "@/components/MobileNavbar";
 import Sidebar from "@/components/Sidebar";
 import RightSidebar from "@/components/RightSidebar";
 import LogoutButton from "@/components/LogoutButton";
-import { useAuth } from "@/lib/auth-context";
+import { useAppwrite } from "@/lib/hooks/useAppwrite";
 
 // This function provides mock data - in a real app this would come from API calls
 function getMockAccountData() {
@@ -77,14 +77,14 @@ function getMockAccountData() {
   };
 }
 
-// Client component that uses the auth context
+// Client component that uses the appwrite auth context
 const HOME = () => {
-  const { user } = useAuth();
+  const { user } = useAppwrite();
   const data = getMockAccountData();
   const { accounts, totalBanks, totalBalance, bankAccounts, cards } = data;
 
   // Extract first name from the user's full name
-  const firstName = user?.name.split(" ")[0] || "Guest";
+  const firstName = user?.name?.split(" ")[0] || "Guest";
 
   return (
     <>
