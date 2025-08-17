@@ -92,6 +92,16 @@ export async function signUp(formData: FormData) {
     };
   } catch (error) {
     console.error("Signup error:", error);
+    // Detect Appwrite conflict (duplicate email/phone/id)
+    if (error && typeof error === "object" && "code" in error) {
+      const err = error as { code?: number; message?: string };
+      if (err.code === 409) {
+        return {
+          error: "An account with this email already exists. Please sign in.",
+          code: 409,
+        } as const;
+      }
+    }
     if (error instanceof Error) {
       return { error: error.message };
     }

@@ -32,6 +32,27 @@ export default function SignUp() {
       const result = await signUp(formData);
 
       if (result.error) {
+        // If user already exists, try logging them in with provided credentials
+        // If that works, proceed to app; otherwise show a friendly message
+        const isConflict = (result as { code?: number }).code === 409;
+        if (isConflict) {
+          try {
+            await appwriteAccount.createEmailPasswordSession(
+              data.email,
+              data.password
+            );
+            router.push("/");
+            return;
+          } catch {
+            setError(
+              "An account with this email already exists. Please sign in."
+            );
+            // Optionally, navigate to sign-in after a short delay
+            // setTimeout(() => router.push("/sign-in"), 1200);
+            return;
+          }
+        }
+
         setError(result.error);
         return;
       }
