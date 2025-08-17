@@ -2,15 +2,43 @@
 import * as React from "react";
 import { DatePicker } from "@/components/ui/DatePicker";
 
-export function DateField() {
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
+interface DateFieldProps {
+  value?: string;
+  onChange?: (date: string | undefined) => void;
+  label?: string;
+  className?: string;
+  name?: string;
+}
+
+export function DateField({
+  value,
+  onChange,
+  label = "Date",
+  className,
+  name = "date",
+}: DateFieldProps) {
+  // Accept value as string (YYYY-MM-DD) and convert to Date for DatePicker
+  const dateValue = value ? new Date(value) : undefined;
+  const handleChange = (date: Date | undefined) => {
+    if (onChange) {
+      onChange(date ? date.toISOString().slice(0, 10) : undefined);
+    }
+  };
   return (
-    <div>
+    <div className={className}>
       <label className="text-sm text-gray-700">
-        Date
-        <DatePicker value={date} onChange={setDate} placeholder="Select date" />
+        {label}
+        <DatePicker
+          value={dateValue}
+          onChange={handleChange}
+          placeholder="Select date"
+        />
       </label>
-      <input type="hidden" name="date" value={date ? date.toISOString() : ""} />
+      <input
+        type="hidden"
+        name={name}
+        value={dateValue ? dateValue.toISOString().slice(0, 10) : ""}
+      />
     </div>
   );
 }

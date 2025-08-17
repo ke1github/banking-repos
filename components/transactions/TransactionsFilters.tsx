@@ -1,6 +1,7 @@
 "use client";
 
 import { useUrlState } from "@/lib/url-state";
+import { DateField } from "@/components/ui/DateField";
 
 type Filters = {
   q: string;
@@ -72,24 +73,26 @@ export default function TransactionsFilters() {
         <option value="amount-desc">Amount: High to Low</option>
         <option value="amount-asc">Amount: Low to High</option>
       </select>
-      <input
-        type="date"
-        className="border rounded px-3 py-2 text-sm"
-        value={filters.from || ""}
-        onChange={(e) =>
-          setFilters({ from: e.target.value || undefined, page: 1 })
-        }
-        aria-label="From date"
-      />
-      <input
-        type="date"
-        className="border rounded px-3 py-2 text-sm"
-        value={filters.to || ""}
-        onChange={(e) =>
-          setFilters({ to: e.target.value || undefined, page: 1 })
-        }
-        aria-label="To date"
-      />
+      <div className="flex gap-2 items-end">
+        <DateField
+          label="From"
+          value={filters.from || ""}
+          onChange={(date: string | undefined) =>
+            setFilters({ from: date || undefined, page: 1 })
+          }
+          className="w-[140px]"
+          aria-label="From date"
+        />
+        <DateField
+          label="To"
+          value={filters.to || ""}
+          onChange={(date: string | undefined) =>
+            setFilters({ to: date || undefined, page: 1 })
+          }
+          className="w-[140px]"
+          aria-label="To date"
+        />
+      </div>
       <select
         className="border rounded px-3 py-2 text-sm"
         value={String(filters.pageSize)}
