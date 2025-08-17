@@ -88,7 +88,7 @@ const HOME = () => {
       <section className="home">
         {/* Main content */}
         <div className="home-content px-6 pt-2 md:pt-0">
-          <header className="home-header flex justify-between items-start">
+          <header className="home-header flex justify-between items-start md:items-center">
             <HeaderBox
               type="greeting"
               title="Welcome"
@@ -105,6 +105,7 @@ const HOME = () => {
               accounts={accounts}
               totalBanks={totalBanks}
               totalCurrentBalance={totalBalance}
+              variant="compact"
             />
           </header>
 

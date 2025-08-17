@@ -202,7 +202,7 @@
   }
 
   .home-header {
-    @apply flex flex-col justify-between gap-4 sm:gap-5;
+    @apply flex flex-col md:flex-row items-start justify-between gap-4 sm:gap-5;
   }
 
   /* Total Balance component styles have been replaced with inline styles in the TotalBalanceBox component */
