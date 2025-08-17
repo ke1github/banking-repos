@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Serif } from "next/font/google";
 import { AppwriteAuthProvider } from "@/components/providers/AppwriteProvider";
+import { ToastProvider } from "@/components/providers/SonnerToastProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -32,7 +33,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${ibmPlexSerif.variable} antialiased`}
       >
-        <AppwriteAuthProvider>{children}</AppwriteAuthProvider>
+        <AppwriteAuthProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </AppwriteAuthProvider>
       </body>
     </html>
   );
