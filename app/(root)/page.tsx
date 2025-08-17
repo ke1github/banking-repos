@@ -1,92 +1,113 @@
-"use client";
-
-import React from "react";
 import { HeaderBox } from "@/components/HeaderBox";
 import BalanceCard from "@/components/BalanceCard";
 import TransferForm from "@/components/TransferForm";
 import RightSidebar from "@/components/RightSidebar";
-import { useAppwrite } from "@/lib/hooks/useAppwrite";
+import { getServerAccount } from "@/lib/appwrite/server-config";
+import { getUserBankAccounts } from "@/lib/actions/banking.actions";
 
-// This function provides mock data - in a real app this would come from API calls
-function getMockAccountData() {
-  return {
-    accounts: [
-      { id: "checking", name: "Checking Account" },
-      { id: "savings", name: "Savings Account" },
-      { id: "investment", name: "Investment Account" },
-    ],
-    totalBanks: 2,
-    totalBalance: 25000,
-    bankAccounts: [
-      {
-        id: "acc1",
-        name: "Checking Account",
-        mask: "4567",
-        type: "depository",
-        subtype: "checking",
-        balance: 12500,
-        bankName: "Chase Bank",
-        isActive: true,
-      },
-      {
-        id: "acc2",
-        name: "Savings Account",
-        mask: "8901",
-        type: "depository",
-        subtype: "savings",
-        balance: 9500,
-        bankName: "Bank of America",
-        isActive: true,
-      },
-      {
-        id: "acc3",
-        name: "Investment Account",
-        mask: "2345",
-        type: "investment",
-        subtype: "brokerage",
-        balance: 3000,
-        bankName: "Fidelity",
-        isActive: true,
-      },
-    ],
-    cards: [
-      {
-        id: "card1",
-        type: "visa" as const,
-        lastFourDigits: "4567",
-        expiryDate: "05/28",
-        cardholderName: "PAWAN KUMAR",
-        bankName: "Chase Bank",
-        availableCredit: 5000,
-        isActive: true,
-      },
-      {
-        id: "card2",
-        type: "mastercard" as const,
-        lastFourDigits: "8901",
-        expiryDate: "12/26",
-        cardholderName: "PAWAN KUMAR",
-        bankName: "Bank of America",
-        availableCredit: 3500,
-        isActive: true,
-      },
-    ],
-  };
-}
+type AccountDoc = {
+  $id: string;
+  accountNumber?: string;
+  accountType?: string;
+  balance?: number;
+  currency?: string;
+  name?: string;
+  isActive?: boolean;
+  bankName?: string;
+  officialName?: string;
+  subtype?: string;
+};
 
-// Client component that uses the appwrite auth context
-const HOME = () => {
-  const { user } = useAppwrite();
-  const data = getMockAccountData();
-  const { accounts, totalBanks, totalBalance, bankAccounts, cards } = data;
+export const dynamic = "force-dynamic";
 
-  // Extract first name from the user's full name
-  const firstName = user?.name?.split(" ")?.[0] || "Guest";
+export default async function HOME() {
+  // Resolve user from server-side session
+  let userId: string | null = null;
+  let userName: string | undefined;
+  let userEmail: string | undefined;
+  try {
+    const account = getServerAccount();
+    const user = await account.get();
+    userId = user.$id;
+    userName = user.name || undefined;
+    userEmail = user.email || undefined;
+  } catch {}
+
+  // Fetch accounts from Appwrite
+  let bankDocs: AccountDoc[] = [];
+  if (userId) {
+    const res = await getUserBankAccounts(userId);
+    if (!("error" in res) && res.accounts) {
+      bankDocs = res.accounts as AccountDoc[];
+    }
+  }
+
+  // Derive UI shapes
+  const accounts = bankDocs.map((doc) => ({
+    id: doc.$id,
+    name:
+      doc.name ||
+      `${(doc.accountType || "Account")[0]?.toUpperCase()}${(
+        doc.accountType || "account"
+      ).slice(1)} Account`,
+  }));
+  const totalBanks = new Set(
+    bankDocs.map((d) => (d.bankName || "").trim()).filter(Boolean)
+  ).size;
+  const totalBalance = bankDocs.reduce(
+    (sum, d) => sum + Number(d.balance || 0),
+    0
+  );
+  const bankAccounts = bankDocs.map((doc) => {
+    const accountNumber: string = doc.accountNumber || "";
+    const mask = accountNumber.slice(-4) || "0000";
+    const type: string = doc.accountType || "checking";
+    const name: string =
+      doc.name || `${type[0]?.toUpperCase()}${type.slice(1)} Account`;
+    return {
+      id: doc.$id,
+      name,
+      officialName: doc.officialName || undefined,
+      mask,
+      type,
+      subtype: doc.subtype || "",
+      balance: Number(doc.balance) || 0,
+      bankName: doc.bankName || "Bank Account",
+      isActive: Boolean(doc.isActive),
+    };
+  });
+  const creditDocs = bankDocs.filter((d) => (d.accountType || "") === "credit");
+  const cards = creditDocs.map((doc) => {
+    const accountNumber: string = doc.accountNumber || "";
+    const mask = accountNumber.slice(-4) || "0000";
+    const label: string = doc.name || "Credit Card";
+    const lowered = label.toLowerCase();
+    const type: "mastercard" | "amex" | "visa" | "rupay" = lowered.includes(
+      "master"
+    )
+      ? "mastercard"
+      : lowered.includes("amex")
+      ? "amex"
+      : lowered.includes("visa")
+      ? "visa"
+      : "rupay";
+    return {
+      id: doc.$id,
+      type,
+      lastFourDigits: mask,
+      expiryDate: "—",
+      cardholderName: userName || "",
+      bankName: doc.bankName || label,
+      availableCredit: Number(doc.balance) || 0,
+      isActive: Boolean(doc.isActive),
+    };
+  });
+
+  const firstName = userName?.split(" ")?.[0] || "Guest";
 
   return (
     <>
       <section className="home">
-        {/* Main content */}
         <div className="home-content px-6 pt-2 md:pt-0">
           <header className="home-header flex justify-between items-start md:items-center">
             <HeaderBox
@@ -98,9 +119,6 @@ const HOME = () => {
               }
               showLogo={true}
             />
-            {/* Logout handled in Sidebar/MobileNavbar */}
-
-            {/* Balance Card - adapts to screen size */}
             <BalanceCard
               accounts={accounts}
               totalBanks={totalBanks}
@@ -119,25 +137,22 @@ const HOME = () => {
                   View All
                 </button>
               </div>
-              {/* Transaction list would go here */}
               <div className="mt-4 text-gray-500 bg-white p-4 sm:p-6 rounded-lg border border-gray-100 text-sm sm:text-base">
                 No recent transactions
               </div>
             </section>
 
             <section>
-              {/* Using our new Server Actions powered component */}
               <TransferForm accounts={accounts} />
             </section>
           </div>
         </div>
 
-        {/* Right Sidebar */}
         <RightSidebar
           user={{
             firstName: firstName,
-            lastName: user?.name?.split(" ")?.slice(1).join(" ") ?? "",
-            email: user?.email,
+            lastName: userName?.split(" ")?.slice(1).join(" ") ?? "",
+            email: userEmail,
           }}
           bankAccounts={bankAccounts}
           cards={cards}
@@ -145,6 +160,4 @@ const HOME = () => {
       </section>
     </>
   );
-};
-
-export default HOME;
+}

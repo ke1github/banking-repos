@@ -4,6 +4,7 @@ import React from "react";
 import BankCard from "./BankCard";
 import { useRouter } from "next/navigation";
 import { cardDetailsPath, ROUTES } from "@/constants/route";
+import QuickCardActions from "@/components/cards/QuickCardActions";
 
 interface CardData {
   id: string;
@@ -137,6 +138,13 @@ export default function CardListSection({
             customColors={card.customColors}
             animateOnHover={animateCards}
             onClick={() => handleCardClick(card.id)}
+            extraActions={
+              <QuickCardActions
+                accountId={card.id}
+                isActive={card.isActive}
+                priority={card.priority}
+              />
+            }
           />
         ))}
       </div>

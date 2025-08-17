@@ -1,9 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAdminDatabases } from "@/lib/appwrite/server-config";
+import {
+  getAdminDatabases,
+  getServerAccount,
+} from "@/lib/appwrite/server-config";
 import { ID, Query } from "appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
+import type { Models } from "node-appwrite";
 
 export type TransactionType = "deposit" | "withdrawal" | "transfer";
 
@@ -31,6 +35,27 @@ export interface Transaction {
   description: string;
   status: "pending" | "completed" | "failed";
   createdAt: Date;
+}
+
+type TransactionDoc = Models.Document & {
+  description?: string;
+  name?: string;
+  type?: string;
+  category?: string;
+  amount?: number | string;
+};
+
+// Helper to ensure user is authenticated in Server Actions
+async function requireUserId(): Promise<
+  { ok: true; userId: string } | { error: "Please sign in" }
+> {
+  try {
+    const account = getServerAccount();
+    const user = await account.get();
+    return { ok: true, userId: user.$id } as const;
+  } catch {
+    return { error: "Please sign in" } as const;
+  }
 }
 
 /**
@@ -98,6 +123,8 @@ export async function createBankAccount(userId: string, formData: FormData) {
     "checking";
   const currency = (formData.get("currency") as string) || "USD";
   const initialBalance = Number(formData.get("initialBalance") || 0);
+  const bankName = (formData.get("bankName") as string) || undefined;
+  const bankBranch = (formData.get("bankBranch") as string) || undefined;
 
   if (!name) {
     return { error: "Account name is required" };
@@ -122,6 +149,8 @@ export async function createBankAccount(userId: string, formData: FormData) {
         currency,
         name,
         isActive: true,
+        bankName,
+        branch: bankBranch,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
@@ -328,5 +357,234 @@ export async function createTransaction(userId: string, formData: FormData) {
       error:
         error instanceof Error ? error.message : "Failed to create transaction",
     };
+  }
+}
+
+// Server Action wrapper: create a bank account for the authenticated user
+export async function createBankAccountAction(
+  _prev: unknown,
+  formData: FormData
+) {
+  try {
+    const auth = await requireUserId();
+    if ("error" in auth) return auth;
+    const res = await createBankAccount(auth.userId, formData);
+    if ("error" in res) return res;
+    return { ok: true as const, accountId: res.account.$id };
+  } catch (err) {
+    console.error("createBankAccountAction error", err);
+    return { error: "Failed to create bank account" } as const;
+  }
+}
+
+// Server Action wrapper: create a transaction for the authenticated user
+export async function createTransactionAction(
+  _prev: unknown,
+  formData: FormData
+) {
+  try {
+    const auth = await requireUserId();
+    if ("error" in auth) return auth;
+    const res = await createTransaction(auth.userId, formData);
+    if ("error" in res) return res;
+    return { ok: true as const, transactionId: res.transaction.$id };
+  } catch (err) {
+    console.error("createTransactionAction error", err);
+    return { error: "Failed to create transaction" } as const;
+  }
+}
+
+/**
+ * Set a bank account's active status (useful for cards)
+ */
+export async function setBankAccountActive(
+  userId: string,
+  accountId: string,
+  isActive: boolean
+) {
+  if (!userId) return { error: "User not authenticated" };
+  if (!accountId) return { error: "Account ID required" };
+  try {
+    const check = (await getBankAccount(userId, accountId)) as
+      | { account: Record<string, unknown> }
+      | { error: string };
+    if ("error" in check) return check;
+    const databases = getAdminDatabases();
+    await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.bankCollectionId,
+      accountId,
+      { isActive, updatedAt: new Date() }
+    );
+    revalidatePath(`/cards/${accountId}`);
+    revalidatePath(`/cards-accounts`);
+    return { ok: true } as const;
+  } catch (error) {
+    console.error("Failed to update account active status:", error);
+    return { error: "Failed to update status" };
+  }
+}
+
+/**
+ * Set a bank account's priority flag (for highlighting a card)
+ */
+export async function setBankAccountPriority(
+  userId: string,
+  accountId: string,
+  priority: boolean
+) {
+  if (!userId) return { error: "User not authenticated" };
+  if (!accountId) return { error: "Account ID required" };
+  try {
+    const check = (await getBankAccount(userId, accountId)) as
+      | { account: Record<string, unknown> }
+      | { error: string };
+    if ("error" in check) return check;
+    const databases = getAdminDatabases();
+    await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.bankCollectionId,
+      accountId,
+      { priority, updatedAt: new Date() }
+    );
+    revalidatePath(`/cards/${accountId}`);
+    revalidatePath(`/cards-accounts`);
+    return { ok: true } as const;
+  } catch (error) {
+    console.error("Failed to update account priority:", error);
+    return { error: "Failed to update priority" };
+  }
+}
+
+// Server Actions (form-data based) for use from Client Components via props
+export async function toggleCardActiveAction(_: unknown, formData: FormData) {
+  // This file runs on the server; can resolve user here
+  try {
+    const auth = await requireUserId();
+    if ("error" in auth) return auth;
+    const accountId = String(formData.get("accountId") || "");
+    const isActive = String(formData.get("isActive") || "false") === "true";
+    if (!accountId) return { error: "Account ID required" } as const;
+    const res = await setBankAccountActive(auth.userId, accountId, isActive);
+    if ("error" in res) return res;
+    return {
+      ok: true as const,
+      action: "active" as const,
+      id: accountId,
+      isActive,
+    };
+  } catch (err) {
+    console.error("toggleCardActiveAction error", err);
+    return { error: "Failed to toggle active" } as const;
+  }
+}
+
+export async function toggleCardPriorityAction(_: unknown, formData: FormData) {
+  try {
+    const auth = await requireUserId();
+    if ("error" in auth) return auth;
+    const accountId = String(formData.get("accountId") || "");
+    const priority = String(formData.get("priority") || "false") === "true";
+    if (!accountId) return { error: "Account ID required" } as const;
+    const res = await setBankAccountPriority(auth.userId, accountId, priority);
+    if ("error" in res) return res;
+    return {
+      ok: true as const,
+      action: "priority" as const,
+      id: accountId,
+      priority,
+    };
+  } catch (err) {
+    console.error("toggleCardPriorityAction error", err);
+    return { error: "Failed to toggle priority" } as const;
+  }
+}
+
+// Server Action: fetch filtered transactions for the authenticated user
+export async function fetchTransactionsAction(
+  _prev: unknown,
+  formData: FormData
+) {
+  try {
+    const auth = await requireUserId();
+    if ("error" in auth) return auth;
+
+    const q = String(formData.get("q") || "").trim();
+    const type =
+      (formData.get("type") as "all" | "income" | "expense" | null) || "all";
+    const from = (formData.get("from") as string | null) || null;
+    const to = (formData.get("to") as string | null) || null;
+    const sort =
+      (formData.get("sort") as
+        | "date-desc"
+        | "date-asc"
+        | "amount-desc"
+        | "amount-asc") || "date-desc";
+    const page = Math.max(1, Number(formData.get("page") || 1));
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number(formData.get("pageSize") || 10))
+    );
+
+    const queries: string[] = [
+      Query.equal("userId", auth.userId),
+      Query.limit(pageSize),
+      Query.offset((page - 1) * pageSize),
+    ];
+
+    if (type && type !== "all") {
+      if (type === "income") queries.push(Query.greaterThanEqual("amount", 0));
+      if (type === "expense") queries.push(Query.lessThan("amount", 0));
+    }
+    if (q) {
+      queries.push(Query.search("description", q));
+    }
+    if (from) {
+      const fromIso = new Date(from).toISOString();
+      queries.push(Query.greaterThanEqual("$createdAt", fromIso));
+    }
+    if (to) {
+      const toIso = new Date(to).toISOString();
+      queries.push(Query.lessThanEqual("$createdAt", toIso));
+    }
+
+    switch (sort) {
+      case "date-asc":
+        queries.push(Query.orderAsc("$createdAt"));
+        break;
+      case "amount-desc":
+        queries.push(Query.orderDesc("amount"));
+        break;
+      case "amount-asc":
+        queries.push(Query.orderAsc("amount"));
+        break;
+      case "date-desc":
+      default:
+        queries.push(Query.orderDesc("$createdAt"));
+    }
+
+    const databases = getAdminDatabases();
+    const res = await databases.listDocuments<TransactionDoc>(
+      appwriteConfig.databaseId,
+      appwriteConfig.transactionCollectionId,
+      queries
+    );
+
+    const items = res.documents.map((doc: TransactionDoc) => ({
+      id: doc.$id as string,
+      date: (doc.$createdAt as string) || new Date().toISOString(),
+      description: (doc.description as string) ?? (doc.name as string) ?? "",
+      category:
+        (doc.type as string) ?? (doc.category as string) ?? "Transaction",
+      amount:
+        typeof doc.amount === "number"
+          ? (doc.amount as number)
+          : Number(doc.amount ?? 0),
+    }));
+
+    return { ok: true as const, items, total: res.total as number };
+  } catch (err) {
+    console.error("fetchTransactionsAction error", err);
+    return { error: "Failed to fetch transactions" } as const;
   }
 }

@@ -1,8 +1,101 @@
-export default function DepositsPage() {
+type AccountDoc = {
+  $id: string;
+  name?: string;
+  accountType?: string;
+};
+import BeneficiaryBankFields from "@/components/bank/BeneficiaryBankFields";
+import { DateField } from "@/components/ui/DateField";
+import { getServerAccount } from "@/lib/appwrite/server-config";
+import { getUserBankAccounts } from "@/lib/actions/banking.actions";
+import { createTransactionAction } from "@/lib/actions/banking.actions";
+
+export const dynamic = "force-dynamic";
+
+export default async function DepositsPage() {
+  let userId: string | null = null;
+  try {
+    const account = getServerAccount();
+    const user = await account.get();
+    userId = user.$id;
+  } catch {}
+
+  let accounts: Array<{ id: string; name: string }> = [];
+  if (userId) {
+    const res = await getUserBankAccounts(userId);
+    if (!("error" in res) && res.accounts) {
+      accounts = res.accounts.map((doc: AccountDoc) => ({
+        id: doc.$id,
+        name:
+          doc.name ||
+          `${(doc.accountType || "")[0] || "A"}${(
+            doc.accountType || "account"
+          ).slice(1)} Account`,
+      }));
+    }
+  }
+
   return (
-    <section className="p-6">
-      <h1 className="text-2xl font-semibold mb-2">Deposits</h1>
+    <section className="p-6 space-y-6">
+      <h1 className="text-2xl font-semibold">Deposits</h1>
       <p className="text-gray-600">Review and make deposits.</p>
+      {!userId ? (
+        <p className="text-sm text-gray-600">
+          Please sign in to make a deposit.
+        </p>
+      ) : accounts.length === 0 ? (
+        <p className="text-sm text-gray-600">
+          No accounts found. Connect a bank first.
+        </p>
+      ) : (
+        <form
+          action={async (formData) => {
+            "use server";
+            await createTransactionAction(null, formData);
+          }}
+          className="bg-white rounded-lg border border-gray-100 p-4 grid gap-3 max-w-md"
+        >
+          <DateField />
+          <input type="hidden" name="type" value="deposit" />
+          <label className="text-sm text-gray-700">
+            Amount
+            <input
+              name="amount"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              required
+              className="mt-1 w-full rounded-lg border border-gray-300 p-2"
+            />
+          </label>
+          <label className="text-sm text-gray-700">
+            To Account
+            <select
+              name="accountId"
+              required
+              className="mt-1 w-full rounded-lg border border-gray-300 p-2"
+            >
+              {accounts.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <BeneficiaryBankFields
+            className="pt-1"
+            ifscFieldName="destination_ifsc"
+            bankFieldName="destination_bank"
+            branchFieldName="destination_branch"
+          />
+          <button
+            type="submit"
+            className="bg-blue-600 text-white rounded-lg px-4 py-2 font-medium"
+          >
+            Deposit
+          </button>
+        </form>
+      )}
     </section>
   );
 }

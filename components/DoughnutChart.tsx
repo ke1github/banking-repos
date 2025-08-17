@@ -71,15 +71,11 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
               16
             )}, ${parseInt(c.substring(4, 6), 16)}, 0.85)`;
           }),
-        hoverOffset: 12,
+        hoverOffset: 6,
         borderRadius: 4,
         hoverBorderWidth: 3,
         hoverBorderColor: "#ffffff",
-        // Add shadow effect
-        shadowOffsetX: 0,
-        shadowOffsetY: 4,
-        shadowBlur: 12,
-        shadowColor: "rgba(0, 0, 0, 0.25)",
+        // Note: shadow styles not supported by Chart.js out of the box
       },
     ],
   };
@@ -87,13 +83,13 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
   // Chart options
   const options: ChartOptions<"doughnut"> = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     layout: {
       padding: {
-        top: 30,
-        bottom: 30,
-        left: 30,
-        right: 30,
+        top: 8,
+        bottom: 8,
+        left: 8,
+        right: 8,
       },
     },
     // Add animation
@@ -140,9 +136,9 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
         caretPadding: 10,
         borderWidth: 2,
         borderColor: "rgba(255, 255, 255, 0.2)",
-        position: "average",
-        intersect: false,
-        mode: "index",
+        position: "nearest",
+        intersect: true,
+        mode: "nearest",
         callbacks: {
           title: (tooltipItems) => {
             return `${tooltipItems[0].label}`;
@@ -153,17 +149,10 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
               (sum, val) => sum + (val as number),
               0
             );
-            const percentage = ((value / total) * 100).toFixed(1);
-
-            // Format value with thousands separator
-            const formattedValue = new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            }).format(value);
-
-            return [`Amount: ${formattedValue}`, `Percentage: ${percentage}%`];
+            const percentage = total
+              ? ((value / total) * 100).toFixed(1)
+              : "0.0";
+            return [`Share: ${percentage}%`];
           },
           labelTextColor: () => "#ffffff",
         },
@@ -189,7 +178,6 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
         flexDirection: "column",
         alignItems: "center",
         position: "relative",
-        padding: "15px", // Use padding instead of margin for better tooltip space
         overflow: "visible", // Ensure tooltips aren't cut off
       }}
     >
@@ -210,14 +198,22 @@ const DoughnutChart: React.FC<DoughnutChartProps> = ({
             className="absolute inset-0 flex flex-col items-center justify-center"
             style={{
               pointerEvents: "none",
-              filter: "drop-shadow(0px 1px 1px rgba(0,0,0,0.1))",
             }}
           >
-            <div className="text-2xl font-bold text-gray-900">
+            {/* Dynamic font sizing to avoid overlap for small charts */}
+            <div
+              className={`${
+                size <= 110 ? "text-lg" : size <= 130 ? "text-xl" : "text-2xl"
+              } font-bold text-gray-900`}
+            >
               {centerText.value}
             </div>
             {centerText.label && (
-              <div className="text-xs font-medium text-gray-600">
+              <div
+                className={`${
+                  size <= 110 ? "text-[10px]" : "text-xs"
+                } font-medium text-gray-600`}
+              >
                 {centerText.label}
               </div>
             )}

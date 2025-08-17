@@ -23,6 +23,7 @@ interface CardData {
   animateOnHover?: boolean;
   priority?: boolean; // Highlights important cards
   onClick?: () => void;
+  extraActions?: React.ReactNode;
 }
 
 const BankCard = ({
@@ -40,6 +41,7 @@ const BankCard = ({
   animateOnHover = true,
   priority = false,
   onClick,
+  extraActions,
 }: CardData) => {
   // Get appropriate card background styles based on variant and type
   const getCardStyles = () => {
@@ -130,6 +132,11 @@ const BankCard = ({
               : ""
           }`}
       >
+        {extraActions && (
+          <div className="absolute top-2 right-2 z-20 flex items-center gap-1">
+            {extraActions}
+          </div>
+        )}
         {priority && (
           <div className="absolute -top-2 -right-2 bg-yellow-500 text-xs font-bold text-white px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs whitespace-nowrap">
             PRIORITY

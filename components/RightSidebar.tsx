@@ -9,7 +9,7 @@ import AccountCard from "./AccountCard";
 
 interface CardData {
   id: string;
-  type: "visa" | "mastercard" | "amex";
+  type: "visa" | "mastercard" | "amex" | "rupay";
   lastFourDigits: string;
   expiryDate: string;
   cardholderName: string;
