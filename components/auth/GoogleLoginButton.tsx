@@ -45,6 +45,7 @@ export default function GoogleLoginButton({
     <button
       type="button"
       onClick={handleClick}
+      suppressHydrationWarning
       className={`inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 ${className}`}
     >
       <svg
