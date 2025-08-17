@@ -2,8 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { ID, Query } from "appwrite";
-import { account, appwriteConfig } from "@/lib/appwrite/config";
-import { getServerDatabases } from "@/lib/appwrite/server-config";
+import { appwriteConfig } from "@/lib/appwrite/config";
+import {
+  getServerDatabases,
+  getServerAccount,
+} from "@/lib/appwrite/server-config";
 
 // Type definitions
 export interface UserAccount {
@@ -46,8 +49,11 @@ export async function signUp(formData: FormData) {
       ? `${firstName} ${middleName} ${lastName}`
       : `${firstName} ${lastName}`;
 
+    // Get server-side account instance
+    const serverAccount = getServerAccount();
+
     // Create Appwrite account
-    const newUser = await account.create(
+    const newUser = await serverAccount.create(
       ID.unique(),
       email,
       password,
@@ -55,7 +61,7 @@ export async function signUp(formData: FormData) {
     );
 
     // Create email session
-    await account.createEmailPasswordSession(email, password);
+    await serverAccount.createEmailPasswordSession(email, password);
 
     // Create user profile document in database
     const serverDatabases = getServerDatabases();
@@ -105,13 +111,14 @@ export async function signIn(formData: FormData) {
       return { error: "Email and password are required" };
     }
 
+    // Get server-side account instance
+    const serverAccount = getServerAccount();
+
     // Create email session
-    await account.createEmailPasswordSession(email, password);
+    await serverAccount.createEmailPasswordSession(email, password);
 
     // Get current user
-    const user = await account.get();
-
-    // Revalidate paths that might show user info
+    const user = await serverAccount.get(); // Revalidate paths that might show user info
     revalidatePath("/");
     revalidatePath("/dashboard");
 
@@ -135,12 +142,13 @@ export async function signIn(formData: FormData) {
  */
 export async function signOut() {
   try {
+    // Get server-side account instance
+    const serverAccount = getServerAccount();
+
     // Delete current session
-    await account.deleteSession("current");
+    await serverAccount.deleteSession("current");
 
-    revalidatePath("/");
-
-    // Redirect to sign-in page
+    revalidatePath("/"); // Redirect to sign-in page
     return { success: true };
   } catch (error) {
     console.error("Logout error:", error);
@@ -158,7 +166,10 @@ export async function getCurrentUser() {
   try {
     // Try to get the current user
     try {
-      const user = await account.get();
+      // Get server-side account instance
+      const serverAccount = getServerAccount();
+
+      const user = await serverAccount.get();
 
       // If we have a user, get their profile from database
       const serverDbService = getServerDatabases();
