@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { Account, Client, Models, Storage, ID } from "appwrite";
+import { Account, Client, Models, Storage } from "appwrite";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ function UserProfileClient() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  // Removed unused avatarFile state
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -50,7 +50,7 @@ function UserProfileClient() {
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    setAvatarFile(file);
+    // setAvatarFile(file); // removed unused state
     setSaving(true);
     setSuccess("");
     setError("");
@@ -72,7 +72,7 @@ function UserProfileClient() {
       const account = new Account(client);
       await account.updatePrefs({ avatarUrl: url });
       setSuccess("Avatar updated!");
-    } catch (err) {
+    } catch {
       setError("Failed to upload avatar.");
     } finally {
       setSaving(false);
@@ -112,7 +112,7 @@ function UserProfileClient() {
       setUser(updated);
       setName(updated.name);
       setEmail(updated.email);
-    } catch (err) {
+    } catch {
       setError("Failed to update profile.");
     } finally {
       setSaving(false);

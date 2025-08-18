@@ -91,7 +91,7 @@ export default function CashManagementClient() {
         }
       );
       setForm({ amount: "", type: "in", date: "", note: "" });
-    } catch (err) {
+    } catch {
       setError("Failed to add cash record.");
     } finally {
       setSaving(false);

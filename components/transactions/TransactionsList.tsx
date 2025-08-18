@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export type Transaction = {
@@ -19,9 +20,11 @@ export default function TransactionsList({ items }: TransactionsListProps) {
   if (!items?.length) {
     return (
       <div className="flex flex-col items-center justify-center mt-8 mb-12 p-8 bg-white rounded-lg border border-gray-100 shadow-sm">
-        <img
+        <Image
           src="/icons/transaction.svg"
           alt="No transactions"
+          width={80}
+          height={80}
           className="w-20 h-20 mb-4 opacity-60"
           draggable={false}
         />

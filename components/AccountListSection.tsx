@@ -4,7 +4,7 @@ import React from "react";
 import AccountCard from "./AccountCard";
 
 import { accountDetailsPath, ROUTES } from "@/constants/route";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 interface AccountData {
   id: string;
@@ -50,6 +50,7 @@ export default function AccountListSection({
   animateCards = true,
   showEmptyState = true,
 }: AccountListSectionProps) {
+  const router = useRouter();
   // Default click handler if none provided
   const handleAccountClick = (id: string) => {
     if (onAccountClick) {

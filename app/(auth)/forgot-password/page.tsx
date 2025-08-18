@@ -4,9 +4,10 @@ import React from "react";
 
 import { ROUTES } from "@/constants/route";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [message, setMessage] = React.useState<string | null>(null);

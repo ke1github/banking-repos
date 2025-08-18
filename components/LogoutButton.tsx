@@ -7,7 +7,7 @@ import { signOut } from "@/lib/actions/user.actions";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
 
 import { ROUTES } from "@/constants/route";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 interface LogoutButtonProps {
   variant?: "icon" | "text";
@@ -26,6 +26,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
   className = "",
   buttonVariant = "outline",
 }) => {
+  const router = useRouter();
   const handleLogout = async () => {
     // Clear client session cookie first to avoid guest scope errors
     try {

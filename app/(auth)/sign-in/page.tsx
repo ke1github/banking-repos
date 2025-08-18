@@ -8,9 +8,10 @@ import { account as appwriteAccount } from "@/lib/appwrite/config";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
 import { setAuthCookie } from "@/lib/actions/user.actions";
 import { ROUTES } from "@/constants/route";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
+  const router = useRouter();
   const [submitLoading, setSubmitLoading] = React.useState(false);
   const [error, setError] = React.useState("");
 

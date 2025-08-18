@@ -4,9 +4,10 @@ import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ROUTES } from "@/constants/route";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 function ResetPasswordInner() {
+  const router = useRouter();
   const params = useSearchParams();
 
   const [password, setPassword] = React.useState("");

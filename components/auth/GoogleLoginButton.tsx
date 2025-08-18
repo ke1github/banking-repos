@@ -5,7 +5,7 @@ import { account as appwriteAccount } from "@/lib/appwrite/config";
 import type { OAuthProvider } from "appwrite";
 
 import { ROUTES } from "@/constants/route";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 interface GoogleLoginButtonProps {
   remember?: boolean;
@@ -16,6 +16,7 @@ export default function GoogleLoginButton({
   remember = true,
   className = "",
 }: GoogleLoginButtonProps) {
+  const router = useRouter();
   const handleClick = async () => {
     try {
       // Start the OAuth2 flow

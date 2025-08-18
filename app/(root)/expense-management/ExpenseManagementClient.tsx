@@ -102,7 +102,7 @@ export default function ExpenseManagementClient() {
         }
       );
       setForm({ amount: "", category: "Food", date: "", note: "" });
-    } catch (err) {
+    } catch {
       setError("Failed to add expense.");
     } finally {
       setSaving(false);

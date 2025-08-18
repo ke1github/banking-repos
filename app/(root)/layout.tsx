@@ -9,13 +9,14 @@ import { account as appwriteAccount } from "@/lib/appwrite/config";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import MobileNavbar from "@/components/MobileNavbar";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
   const { user: clientUser, isLoading: isClientLoading } = useAppwrite();
 
   const redirectingRef = React.useRef(false);

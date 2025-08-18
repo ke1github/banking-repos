@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import qs from "query-string";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export type HistoryMode = "push" | "replace";
 
@@ -29,6 +29,7 @@ export function useUrlState<T extends Record<string, unknown>>(
 ) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const history: HistoryMode = options.history ?? "replace";
   const arrayFormat = options.arrayFormat ?? "comma";
@@ -92,8 +93,8 @@ export function useUrlState<T extends Record<string, unknown>>(
       });
 
       const url = search ? `${pathname}?${search}` : pathname;
-      if (history === "push") router.push(url, { scroll: false });
-      else router.replace(url, { scroll: false });
+      if (history === "push") router.push(url);
+      else router.replace(url);
     },
     [arrayFormat, defaults, history, options.serialize, pathname, router]
   );
