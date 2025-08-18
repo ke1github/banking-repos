@@ -18,7 +18,9 @@ export default async function TransfersPage() {
     const account = getServerAccount();
     const user = await account.get();
     userId = user.$id;
-  } catch {}
+  } catch (e) {
+    console.error("Error getting server account:", e);
+  }
 
   let accounts: Array<{ id: string; name: string }> = [];
   if (userId) {

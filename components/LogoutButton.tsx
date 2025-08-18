@@ -1,13 +1,14 @@
 "use client";
 
-import React from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { signOut } from "@/lib/actions/user.actions";
+import { logoutAction } from "@/lib/actions/auth.actions";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
-
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useAppwrite } from "@/lib/hooks/useAppwrite";
 
 interface LogoutButtonProps {
   variant?: "icon" | "text";
@@ -21,25 +22,55 @@ interface LogoutButtonProps {
     | "link";
 }
 
-const LogoutButton: React.FC<LogoutButtonProps> = ({
+const LogoutButton = ({
   variant = "text",
   className = "",
   buttonVariant = "outline",
-}) => {
+}: LogoutButtonProps) => {
   const router = useRouter();
+  const { logout: clientLogout } = useAppwrite();
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleLogout = async () => {
-    // Clear client session cookie first to avoid guest scope errors
-    try {
-      await appwriteAccount.deleteSession("current");
-    } catch {
-      // ignore if no session
-    }
-    try {
-      localStorage.removeItem("remember");
-      sessionStorage.removeItem("session-started");
-    } catch {}
-    await signOut();
-    router.push(ROUTES.SIGN_IN);
+    if (isPending || isLoading) return;
+
+    setIsLoading(true);
+
+    startTransition(async () => {
+      try {
+        // Call server action to delete server-side auth first
+        // This ensures the server session is properly deleted
+        await logoutAction();
+
+        // Clear client session after server action completes
+        try {
+          await appwriteAccount.deleteSession("current");
+        } catch (e) {
+          console.error("Error deleting client session:", e);
+          // ignore if no session - server already handled it
+        }
+
+        // Clear local storage items
+        try {
+          localStorage.removeItem("remember");
+          sessionStorage.removeItem("session-started");
+        } catch (e) {
+          console.error("Error clearing storage:", e);
+        }
+
+        // Sync client-side auth state
+        await clientLogout();
+
+        toast.info("Logged out successfully");
+        router.push(ROUTES.SIGN_IN);
+      } catch (error) {
+        console.error("Logout error:", error);
+        toast.error("Failed to log out. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    });
   };
 
   if (variant === "icon") {
@@ -50,6 +81,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
         onClick={handleLogout}
         className={`p-2 hover:bg-gray-100 ${className}`}
         aria-label="Logout"
+        disabled={isPending || isLoading}
       >
         <Image src="/icons/logout.svg" alt="Logout" width={24} height={24} />
       </Button>
@@ -61,9 +93,10 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
       variant={buttonVariant}
       onClick={handleLogout}
       className={`flex items-center gap-2 ${className}`}
+      disabled={isPending || isLoading}
     >
       <Image src="/icons/logout.svg" alt="Logout" width={20} height={20} />
-      Logout
+      {isPending || isLoading ? "Logging out..." : "Logout"}
     </Button>
   );
 };

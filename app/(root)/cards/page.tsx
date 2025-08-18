@@ -23,7 +23,9 @@ export default async function CardsIndexPage() {
     const user = await account.get();
     userId = user.$id;
     userName = user.name || undefined;
-  } catch {}
+  } catch (e) {
+    console.error("Error fetching user account:", e);
+  }
 
   const cards: Array<{
     id: string;

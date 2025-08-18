@@ -41,7 +41,10 @@ export default function ExpenseManagementClient() {
     account
       .get()
       .then(setUser)
-      .catch(() => setUser(null));
+      .catch((e) => {
+        console.error("Error fetching user account:", e);
+        setUser(null);
+      });
   }, []);
 
   useEffect(() => {
@@ -60,7 +63,10 @@ export default function ExpenseManagementClient() {
       ["userId=" + user.$id]
     )
       .then((res) => setExpenses(res.documents as ExpenseDoc[]))
-      .catch(() => setExpenses([]))
+      .catch((e) => {
+        console.error("Error fetching expenses:", e);
+        setExpenses([]);
+      })
       .finally(() => setLoading(false));
   }, [user, saving]);
 
@@ -102,7 +108,8 @@ export default function ExpenseManagementClient() {
         }
       );
       setForm({ amount: "", category: "Food", date: "", note: "" });
-    } catch {
+    } catch (e) {
+      console.error("Failed to add expense:", e);
       setError("Failed to add expense.");
     } finally {
       setSaving(false);
@@ -193,6 +200,71 @@ export default function ExpenseManagementClient() {
                   )}
                 </div>
                 {/* TODO: Add edit/delete actions */}
+                <button
+                  className="text-blue-600 hover:underline text-sm mr-2"
+                  onClick={() => {
+                    const newAmount = prompt(
+                      "Edit amount",
+                      exp.amount.toString()
+                    );
+                    if (newAmount === null) return;
+                    const newNote = prompt("Edit note", exp.note || "");
+                    if (newNote === null) return;
+                    setSaving(true);
+                    setError("");
+                    const client = new Client()
+                      .setEndpoint(
+                        process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
+                          "https://cloud.appwrite.io/v1"
+                      )
+                      .setProject(
+                        process.env.NEXT_PUBLIC_APPWRITE_PROJECT || ""
+                      );
+                    const db = new Databases(client);
+                    db.updateDocument(
+                      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+                      process.env.NEXT_PUBLIC_APPWRITE_EXPENSE_COLLECTION_ID!,
+                      exp.$id,
+                      {
+                        amount: parseFloat(newAmount),
+                        note: newNote,
+                        updatedAt: new Date().toISOString(),
+                      }
+                    )
+                      .catch(() => setError("Failed to edit expense."))
+                      .finally(() => setSaving(false));
+                  }}
+                  disabled={saving}
+                >
+                  Edit
+                </button>
+                <button
+                  className="text-red-600 hover:underline text-sm"
+                  onClick={() => {
+                    if (!confirm("Delete this expense?")) return;
+                    setSaving(true);
+                    setError("");
+                    const client = new Client()
+                      .setEndpoint(
+                        process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
+                          "https://cloud.appwrite.io/v1"
+                      )
+                      .setProject(
+                        process.env.NEXT_PUBLIC_APPWRITE_PROJECT || ""
+                      );
+                    const db = new Databases(client);
+                    db.deleteDocument(
+                      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+                      process.env.NEXT_PUBLIC_APPWRITE_EXPENSE_COLLECTION_ID!,
+                      exp.$id
+                    )
+                      .catch(() => setError("Failed to delete expense."))
+                      .finally(() => setSaving(false));
+                  }}
+                  disabled={saving}
+                >
+                  Delete
+                </button>
               </li>
             ))}
           </ul>

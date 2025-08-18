@@ -1,137 +1,135 @@
 "use client";
 
-import React from "react";
-
-import AuthForm from "@/components/auth/AuthForm";
-import { SignInFormValues } from "@/lib/validations";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
-import { setAuthCookie } from "@/lib/actions/user.actions";
+import { loginAction } from "@/lib/actions/auth.actions";
 import { ROUTES } from "@/constants/route";
-import { useRouter } from "next/navigation";
+import AuthForm from "@/components/auth/AuthForm";
+import { SignInFormValues } from "@/lib/validations";
+import { toast } from "sonner";
 
 export default function SignIn() {
   const router = useRouter();
-  const [submitLoading, setSubmitLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
-  const [success, setSuccess] = React.useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const { login, isAuthenticated, isLoading: authLoading } = useAppwrite();
 
-  // Only redirect after explicit sign-in
+  // Handle sign-in form submission
   const handleSignIn = async (data: SignInFormValues) => {
-    try {
-      setSubmitLoading(true);
-      setError("");
+    if (isPending) return;
 
-      // Avoid duplicate session creation when already logged in
+    setError("");
+
+    startTransition(async () => {
       try {
-        const existing = await appwriteAccount.get();
-        if (existing && existing.email !== data.email) {
-          try {
+        // Check if already logged in with a different account
+        try {
+          const existing = await appwriteAccount.get();
+          if (existing && existing.email !== data.email) {
             await appwriteAccount.deleteSession("current");
-          } catch {}
-        } else if (existing && existing.email === data.email) {
-          // Sync auth context then navigate
-          try {
+          } else if (existing && existing.email === data.email) {
+            // Already logged in with the same email
             await login(data.email, data.password);
-          } catch {}
-          // No server cookie change here; already signed in previously
-          try {
-            await new Promise((r) => setTimeout(r, 300));
-          } catch {}
+            setSuccess(true);
+            toast.success("Already signed in");
+            setTimeout(() => router.push(ROUTES.HOME), 1000);
+            return;
+          }
+        } catch (e) {
+          console.error("Error checking existing account:", e);
+          // Continue with login if there was an error checking existing account
+        }
 
-          // Show success state and prepare for redirect
-          setSuccess(true);
+        // Use server action to create session
+        const result = await loginAction({
+          email: data.email,
+          password: data.password,
+          remember: data.remember,
+        });
 
-          // Use a delay before redirecting to show success message
-          setTimeout(() => {
-            // Use window.location for full page reload to ensure fresh auth state
-            window.location.href = ROUTES.HOME;
-          }, 1000);
+        if (!result.success) {
+          setError(result.error || "Authentication failed");
+          toast.error("Login failed");
           return;
         }
-      } catch {}
 
-      await appwriteAccount.createEmailPasswordSession(
-        data.email,
-        data.password
-      );
-      // Update auth context so root layout doesn't redirect back
-      try {
+        // Update auth context
         await login(data.email, data.password);
-      } catch {}
-      // Persist remember preference for cross-session handling
-      try {
-        localStorage.setItem("remember", String(Boolean(data.remember)));
-        sessionStorage.setItem("session-started", "1");
-      } catch {}
-      // Set server cookie for middleware gating; persistent only if remember
-      try {
-        await setAuthCookie(Boolean(data.remember));
-      } catch {}
-      // Client fallback cookie for immediate middleware recognition (session cookie if not remember)
-      try {
-        if (data.remember) {
-          document.cookie = `auth=1; Path=/; SameSite=Lax; Max-Age=${
-            60 * 60 * 24 * 30
-          }`;
-        } else {
-          document.cookie = `auth=1; Path=/; SameSite=Lax`;
+
+        // Store remember preference
+        try {
+          localStorage.setItem("remember", String(Boolean(data.remember)));
+          sessionStorage.setItem("session-started", "1");
+        } catch (e) {
+          console.error("Error setting storage:", e);
         }
-      } catch {}
 
-      // Allow cookies to be set before redirect
-      try {
-        await new Promise((r) => setTimeout(r, 300));
-      } catch {}
+        // Set client cookie for immediate middleware recognition
+        try {
+          if (data.remember) {
+            document.cookie = `auth=1; Path=/; SameSite=Lax; Max-Age=${
+              60 * 60 * 24 * 30
+            }`;
+          } else {
+            document.cookie = `auth=1; Path=/; SameSite=Lax`;
+          }
+        } catch (e) {
+          console.error("Error setting document cookie:", e);
+        }
 
-      // Show success state and prepare for redirect
-      setSuccess(true);
-
-      // Use a delay before redirecting to show success message
-      setTimeout(() => {
-        // Use window.location for full page reload to ensure fresh auth state
-        window.location.href = ROUTES.HOME;
-      }, 1000);
-    } catch (e) {
-      console.error("Sign in error:", e);
-      const msg =
-        e instanceof Error
-          ? e.message
-          : "Failed to sign in. Please check your credentials.";
-      setError(msg);
-    } finally {
-      setSubmitLoading(false);
-    }
+        setSuccess(true);
+        toast.success("Login successful");
+        setTimeout(() => router.push(ROUTES.HOME), 1000);
+      } catch (e) {
+        console.error("Sign in error:", e);
+        const msg =
+          e instanceof Error
+            ? e.message
+            : "Failed to sign in. Please check your credentials.";
+        setError(msg);
+        toast.error(msg);
+      }
+    });
   };
 
-  // Redirect if already authenticated (useEffect prevents loop)
-  React.useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      const timer = setTimeout(() => {
-        window.location.href = ROUTES.HOME;
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [authLoading, isAuthenticated]);
-
-  // If login is successful, show success message
+  // Show success message
   if (success) {
-    return <div>Login successful! Redirecting...</div>;
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <div className="text-center">
+          <div className="bg-green-50 text-green-700 p-4 rounded-lg mb-4">
+            <h3 className="text-lg font-medium">Login successful!</h3>
+            <p>You are being redirected to the dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  // If already authenticated, show message (no redirect logic here)
+  // Show already authenticated message
   if (!authLoading && isAuthenticated) {
-    return <div>Already signed in. Redirecting...</div>;
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <div className="text-center">
+          <div className="bg-blue-50 text-blue-700 p-4 rounded-lg mb-4">
+            <h3 className="text-lg font-medium">Already signed in</h3>
+            <p>Redirecting to dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  // Otherwise, show sign-in form
+  // Show sign-in form
   return (
     <AuthForm
       mode="signin"
       onSubmit={handleSignIn}
-      isLoading={submitLoading}
+      isLoading={isPending}
       error={error}
     />
   );

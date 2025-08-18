@@ -64,7 +64,9 @@ export default async function CardDetailsPage({
     const account = getServerAccount();
     const user = await account.get();
     userId = user.$id;
-  } catch {}
+  } catch (e) {
+    console.error("Error fetching user account:", e);
+  }
 
   if (!userId) {
     return (

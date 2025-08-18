@@ -39,7 +39,8 @@ function UserProfileClient() {
         }
         setLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error("Error fetching user account:", e);
         setUser(null);
         setLoading(false);
         setError("You must be signed in to view your profile.");
@@ -72,7 +73,8 @@ function UserProfileClient() {
       const account = new Account(client);
       await account.updatePrefs({ avatarUrl: url });
       setSuccess("Avatar updated!");
-    } catch {
+    } catch (e) {
+      console.error("Failed to upload avatar:", e);
       setError("Failed to upload avatar.");
     } finally {
       setSaving(false);
@@ -112,7 +114,8 @@ function UserProfileClient() {
       setUser(updated);
       setName(updated.name);
       setEmail(updated.email);
-    } catch {
+    } catch (e) {
+      console.error("Failed to update profile:", e);
       setError("Failed to update profile.");
     } finally {
       setSaving(false);

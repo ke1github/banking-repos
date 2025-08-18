@@ -2,27 +2,50 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isPublicRoute, ROUTES } from "@/constants/route";
 
-export function middleware(request: NextRequest) {
-  const currentUser = request.cookies.get("auth")?.value;
+/**
+ * Middleware function for handling authentication and route protection
+ *
+ * This middleware runs on every request that matches the config.matcher pattern
+ * and determines whether to allow access or redirect based on authentication state.
+ */
+export async function middleware(request: NextRequest) {
+  // Get auth cookie (set by server actions and client code)
+  const hasAuthCookie = request.cookies.has("auth");
+  const currentPath = request.nextUrl.pathname;
 
-  // Define auth routes (that don't require authentication)
-  const isAuthRoute = isPublicRoute(request.nextUrl.pathname);
+  // Check if current route is public (doesn't require authentication)
+  const isAuthRoute = isPublicRoute(currentPath);
 
   // Redirect logic
-  if (!currentUser && !isAuthRoute) {
+  if (!hasAuthCookie && !isAuthRoute) {
     // If not logged in and trying to access a protected route, redirect to login
-    return NextResponse.redirect(new URL(ROUTES.SIGN_IN, request.url));
+    const signInUrl = new URL(ROUTES.SIGN_IN, request.url);
+
+    // Store the original URL to redirect back after login
+    if (currentPath !== "/") {
+      signInUrl.searchParams.set("callbackUrl", currentPath);
+    }
+
+    return NextResponse.redirect(signInUrl);
   }
 
-  // Note: We do NOT redirect authenticated users away from auth routes based solely on the cookie.
-  // This avoids loops when the cookie is stale but the client session expired.
+  // Redirect users who are logged in and trying to access login/signup pages
+  if (
+    hasAuthCookie &&
+    isAuthRoute &&
+    (currentPath === ROUTES.SIGN_IN || currentPath === ROUTES.SIGN_UP)
+  ) {
+    return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
+  }
 
+  // For all other cases, proceed with the request
   return NextResponse.next();
 }
 
 // Configure which routes use this middleware
 export const config = {
   matcher: [
+    // Match all routes except static assets, API routes, etc.
     "/((?!api|_next/static|_next/image|_next/server-actions|icons|favicon.ico).*)",
   ],
 };

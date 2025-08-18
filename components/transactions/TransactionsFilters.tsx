@@ -1,7 +1,18 @@
 "use client";
 
+import { useTransition } from "react";
 import { useUrlState } from "@/lib/url-state";
 import { DateField } from "@/components/ui/DateField";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 type Filters = {
   q: string;
@@ -22,6 +33,7 @@ const defaults: Filters = {
 };
 
 export default function TransactionsFilters() {
+  const [isPending, startTransition] = useTransition();
   const [filters, setFilters] = useUrlState<Filters>(defaults, {
     parse: {
       page: (v) => (typeof v === "string" ? Number(v) || 1 : 1),
@@ -41,44 +53,72 @@ export default function TransactionsFilters() {
     history: "replace",
   });
 
+  // Optimized update function that uses useTransition for better user experience
+  const updateFilters = (newFilters: Partial<Filters>) => {
+    startTransition(() => {
+      setFilters({ ...newFilters, page: 1 });
+    });
+  };
+
+  // Count active filters (excluding defaults)
+  const activeFilterCount = Object.entries(filters).filter(([key, value]) => {
+    if (key === "page") return false; // Don't count page as a filter
+    return value !== defaults[key as keyof Filters];
+  }).length;
+
   return (
-    <div className="flex flex-wrap gap-3 items-center">
-      <input
-        className="border rounded px-3 py-2 text-sm"
-        placeholder="Search description"
-        value={filters.q}
-        onChange={(e) => setFilters({ q: e.target.value, page: 1 })}
-      />
-      <select
-        className="border rounded px-3 py-2 text-sm"
+    <div className="flex flex-wrap gap-3 items-center p-4 bg-slate-50 rounded-lg">
+      <div className="flex flex-col gap-1 w-full sm:w-auto">
+        <Input
+          className="h-9"
+          placeholder="Search description"
+          value={filters.q}
+          onChange={(e) => updateFilters({ q: e.target.value })}
+          disabled={isPending}
+        />
+      </div>
+
+      <Select
         value={filters.type}
-        onChange={(e) =>
-          setFilters({ type: e.target.value as Filters["type"], page: 1 })
+        onValueChange={(value: string) =>
+          updateFilters({ type: value as Filters["type"] })
         }
+        disabled={isPending}
       >
-        <option value="all">All</option>
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
-      <select
-        className="border rounded px-3 py-2 text-sm"
+        <SelectTrigger className="w-[110px] h-9">
+          <SelectValue placeholder="Type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="income">Income</SelectItem>
+          <SelectItem value="expense">Expense</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Select
         value={filters.sort}
-        onChange={(e) =>
-          setFilters({ sort: e.target.value as Filters["sort"], page: 1 })
+        onValueChange={(value: string) =>
+          updateFilters({ sort: value as Filters["sort"] })
         }
-        aria-label="Sort by"
+        disabled={isPending}
       >
-        <option value="date-desc">Newest</option>
-        <option value="date-asc">Oldest</option>
-        <option value="amount-desc">Amount: High to Low</option>
-        <option value="amount-asc">Amount: Low to High</option>
-      </select>
+        <SelectTrigger className="w-[180px] h-9">
+          <SelectValue placeholder="Sort by" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="date-desc">Newest</SelectItem>
+          <SelectItem value="date-asc">Oldest</SelectItem>
+          <SelectItem value="amount-desc">Amount: High to Low</SelectItem>
+          <SelectItem value="amount-asc">Amount: Low to High</SelectItem>
+        </SelectContent>
+      </Select>
+
       <div className="flex gap-2 items-end">
         <DateField
           label="From"
           value={filters.from || ""}
           onChange={(date: string | undefined) =>
-            setFilters({ from: date || undefined, page: 1 })
+            updateFilters({ from: date || undefined })
           }
           className="w-[140px]"
           aria-label="From date"
@@ -87,31 +127,47 @@ export default function TransactionsFilters() {
           label="To"
           value={filters.to || ""}
           onChange={(date: string | undefined) =>
-            setFilters({ to: date || undefined, page: 1 })
+            updateFilters({ to: date || undefined })
           }
           className="w-[140px]"
           aria-label="To date"
         />
       </div>
-      <select
-        className="border rounded px-3 py-2 text-sm"
+
+      <Select
         value={String(filters.pageSize)}
-        onChange={(e) =>
-          setFilters({ pageSize: Number(e.target.value), page: 1 })
+        onValueChange={(value: string) =>
+          updateFilters({ pageSize: Number(value) })
         }
-        aria-label="Page size"
+        disabled={isPending}
       >
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-      </select>
-      <button
-        className="border rounded px-3 py-2 text-sm"
+        <SelectTrigger className="w-[90px] h-9">
+          <SelectValue placeholder="Page size" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="10">10 rows</SelectItem>
+          <SelectItem value="25">25 rows</SelectItem>
+          <SelectItem value="50">50 rows</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Button
+        variant="outline"
         onClick={() => setFilters({ ...defaults })}
+        disabled={isPending || activeFilterCount === 0}
+        className="h-9"
       >
-        Reset
-      </button>
-      <span className="text-xs text-gray-500 ml-2">Page: {filters.page}</span>
+        Reset{" "}
+        {activeFilterCount > 0 && (
+          <Badge variant="secondary" className="ml-1">
+            {activeFilterCount}
+          </Badge>
+        )}
+      </Button>
+
+      <Badge variant="outline" className="ml-auto text-xs text-slate-500">
+        Page: {filters.page}
+      </Badge>
     </div>
   );
 }

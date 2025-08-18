@@ -1,12 +1,13 @@
 "use client";
 
+import { ReactNode } from "react";
 import {
   AppwriteAuthContext,
   useProvideAppwrite,
 } from "@/lib/hooks/useAppwrite";
 
 interface AppwriteProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**

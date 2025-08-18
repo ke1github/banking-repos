@@ -31,7 +31,9 @@ export default async function HOME() {
     userId = user.$id;
     userName = user.name || undefined;
     userEmail = user.email || undefined;
-  } catch {}
+  } catch (e) {
+    console.error("Error getting server account:", e);
+  }
 
   // Fetch accounts from Appwrite
   let bankDocs: AccountDoc[] = [];

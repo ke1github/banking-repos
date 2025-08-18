@@ -26,7 +26,8 @@ function ConnectBankClient() {
         setUser(u);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error("Error fetching user account:", e);
         setUser(null);
         setLoading(false);
       });

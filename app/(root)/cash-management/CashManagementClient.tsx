@@ -30,7 +30,10 @@ export default function CashManagementClient() {
     account
       .get()
       .then(setUser)
-      .catch(() => setUser(null));
+      .catch((e) => {
+        console.error("Error fetching user account:", e);
+        setUser(null);
+      });
   }, []);
 
   useEffect(() => {
@@ -49,7 +52,10 @@ export default function CashManagementClient() {
       ["userId=" + user.$id]
     )
       .then((res) => setCash(res.documents as CashDoc[]))
-      .catch(() => setCash([]))
+      .catch((e) => {
+        console.error("Error fetching cash records:", e);
+        setCash([]);
+      })
       .finally(() => setLoading(false));
   }, [user, saving]);
 
@@ -91,7 +97,8 @@ export default function CashManagementClient() {
         }
       );
       setForm({ amount: "", type: "in", date: "", note: "" });
-    } catch {
+    } catch (e) {
+      console.error("Failed to add cash record:", e);
       setError("Failed to add cash record.");
     } finally {
       setSaving(false);
