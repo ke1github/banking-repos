@@ -14,16 +14,11 @@ export default function SignIn() {
   const router = useRouter();
   const [submitLoading, setSubmitLoading] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [success, setSuccess] = React.useState(false);
 
   const { login, isAuthenticated, isLoading: authLoading } = useAppwrite();
 
-  // Post-login guard: if a session is already active, send user Home
-  React.useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.replace(ROUTES.HOME);
-    }
-  }, [authLoading, isAuthenticated, router]);
-
+  // Only redirect after explicit sign-in
   const handleSignIn = async (data: SignInFormValues) => {
     try {
       setSubmitLoading(true);
@@ -43,9 +38,17 @@ export default function SignIn() {
           } catch {}
           // No server cookie change here; already signed in previously
           try {
-            await new Promise((r) => setTimeout(r, 50));
+            await new Promise((r) => setTimeout(r, 300));
           } catch {}
-          router.replace(ROUTES.HOME);
+
+          // Show success state and prepare for redirect
+          setSuccess(true);
+
+          // Use a delay before redirecting to show success message
+          setTimeout(() => {
+            // Use window.location for full page reload to ensure fresh auth state
+            window.location.href = ROUTES.HOME;
+          }, 1000);
           return;
         }
       } catch {}
@@ -77,10 +80,20 @@ export default function SignIn() {
           document.cookie = `auth=1; Path=/; SameSite=Lax`;
         }
       } catch {}
+
+      // Allow cookies to be set before redirect
       try {
-        await new Promise((r) => setTimeout(r, 50));
+        await new Promise((r) => setTimeout(r, 300));
       } catch {}
-      router.replace(ROUTES.HOME);
+
+      // Show success state and prepare for redirect
+      setSuccess(true);
+
+      // Use a delay before redirecting to show success message
+      setTimeout(() => {
+        // Use window.location for full page reload to ensure fresh auth state
+        window.location.href = ROUTES.HOME;
+      }, 1000);
     } catch (e) {
       console.error("Sign in error:", e);
       const msg =
@@ -93,6 +106,27 @@ export default function SignIn() {
     }
   };
 
+  // Redirect if already authenticated (useEffect prevents loop)
+  React.useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      const timer = setTimeout(() => {
+        window.location.href = ROUTES.HOME;
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [authLoading, isAuthenticated]);
+
+  // If login is successful, show success message
+  if (success) {
+    return <div>Login successful! Redirecting...</div>;
+  }
+
+  // If already authenticated, show message (no redirect logic here)
+  if (!authLoading && isAuthenticated) {
+    return <div>Already signed in. Redirecting...</div>;
+  }
+
+  // Otherwise, show sign-in form
   return (
     <AuthForm
       mode="signin"
