@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+
 import AuthForm from "@/components/auth/AuthForm";
 import { SignUpFormValues } from "@/lib/validations";
 import { signUp } from "@/lib/actions/user.actions";
@@ -9,11 +9,12 @@ import { account as appwriteAccount } from "@/lib/appwrite/config";
 import { ROUTES } from "@/constants/route";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
 import { setAuthCookie } from "@/lib/actions/user.actions";
+import router from "next/router";
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
-  const router = useRouter();
+
   const { register: syncRegister } = useAppwrite();
 
   // Ensure we only have one active session; if a different user is logged in,

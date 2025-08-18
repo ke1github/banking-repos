@@ -136,9 +136,7 @@ export default function TransactionsList({ items }: TransactionsListProps) {
                 )}
               >
                 {tx.amount > 0 ? "+" : tx.amount < 0 ? "-" : ""}₹
-                {Math.abs(tx.amount).toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                })}
+                {Math.abs(tx.amount).toLocaleString("en-IN")}
               </p>
             </div>
           </div>

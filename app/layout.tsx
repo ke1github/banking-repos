@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import { Inter, IBM_Plex_Serif } from "next/font/google";
 import { AppwriteAuthProvider } from "@/components/providers/AppwriteProvider";
 import { ToastProvider } from "@/components/providers/SonnerToastProvider";

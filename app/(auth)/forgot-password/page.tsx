@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+
 import { ROUTES } from "@/constants/route";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
+import router from "next/router";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [message, setMessage] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -103,7 +103,7 @@ const RightSidebar = ({
       <div className="px-4 py-3 border-y border-gray-100">
         <p className="text-12 text-gray-500 mb-1">Total Balance</p>
         <h3 className="text-18 font-semibold text-blue-700">
-          ₹{totalBalance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+          ₹{totalBalance.toLocaleString("en-IN")}
         </h3>
         <p className="text-12 text-gray-500 mt-1">
           {bankAccounts.length}{" "}

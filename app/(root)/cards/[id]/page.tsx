@@ -134,8 +134,7 @@ export default async function CardDetailsPage({
           Number: <span className="font-medium">•••• {mask}</span>
         </div>
         <div className="text-base font-semibold mt-1">
-          Available: ₹
-          {available.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+          Available: ₹{available.toLocaleString("en-IN")}
         </div>
         <div className="text-sm text-gray-700">
           Status: {acc.isActive ? "Active" : "Inactive"}{" "}

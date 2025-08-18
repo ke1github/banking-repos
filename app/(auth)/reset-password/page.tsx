@@ -1,13 +1,14 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ROUTES } from "@/constants/route";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
+import router from "next/router";
 
 function ResetPasswordInner() {
   const params = useSearchParams();
-  const router = useRouter();
+
   const [password, setPassword] = React.useState("");
   const [confirm, setConfirm] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);

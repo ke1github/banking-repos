@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/components/providers/SonnerToastProvider";
 import {
   toggleCardActiveAction,
@@ -26,7 +25,7 @@ export default function QuickCardActions({
   isActive,
   priority,
 }: Props) {
-  const router = useRouter();
+  // No router, use window.location.reload() if needed
   const { showSuccess, showError } = useToast();
 
   const [activeState, activeAction, activePending] = useActionState(
@@ -55,7 +54,7 @@ export default function QuickCardActions({
       }
     } else if (activeState.ok && activeState.action === "active") {
       showSuccess(activeState.isActive ? "Card activated" : "Card deactivated");
-      router.refresh();
+      window.location.reload();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeState]);
@@ -72,7 +71,7 @@ export default function QuickCardActions({
       showSuccess(
         prioState.priority ? "Marked as priority" : "Priority removed"
       );
-      router.refresh();
+      window.location.reload();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prioState]);

@@ -142,8 +142,7 @@ export default async function AccountDetailsPage({
           </span>
         </div>
         <div className="text-base font-semibold mt-1">
-          Balance: ₹
-          {balance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+          Balance: ₹{balance.toLocaleString("en-IN")}
         </div>
       </div>
 

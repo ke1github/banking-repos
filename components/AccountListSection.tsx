@@ -2,8 +2,9 @@
 
 import React from "react";
 import AccountCard from "./AccountCard";
-import { useRouter } from "next/navigation";
+
 import { accountDetailsPath, ROUTES } from "@/constants/route";
+import router from "next/router";
 
 interface AccountData {
   id: string;
@@ -49,8 +50,6 @@ export default function AccountListSection({
   animateCards = true,
   showEmptyState = true,
 }: AccountListSectionProps) {
-  const router = useRouter();
-
   // Default click handler if none provided
   const handleAccountClick = (id: string) => {
     if (onAccountClick) {
@@ -102,8 +101,7 @@ export default function AccountListSection({
         <div className="text-left sm:text-right">
           <p className="text-xs sm:text-sm text-gray-500">Total Balance</p>
           <p className="text-base sm:text-lg md:text-xl font-semibold">
-            ₹
-            {totalBalance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+            ₹{totalBalance.toLocaleString("en-IN")}
           </p>
         </div>
       </div>

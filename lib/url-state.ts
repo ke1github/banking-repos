@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import qs from "query-string";
+import router from "next/router";
 
 export type HistoryMode = "push" | "replace";
 
@@ -26,7 +27,6 @@ export function useUrlState<T extends Record<string, unknown>>(
   defaults: T,
   options: UrlStateOptions<T> = {}
 ) {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 

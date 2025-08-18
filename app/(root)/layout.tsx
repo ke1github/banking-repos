@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
 import { ROUTES } from "@/constants/route";
 import { signOut } from "@/lib/actions/user.actions";
@@ -9,6 +9,7 @@ import { account as appwriteAccount } from "@/lib/appwrite/config";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import MobileNavbar from "@/components/MobileNavbar";
+import router from "next/router";
 
 export default function RootLayout({
   children,
@@ -16,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const { user: clientUser, isLoading: isClientLoading } = useAppwrite();
-  const router = useRouter();
+
   const redirectingRef = React.useRef(false);
 
   // Redirect if unauthenticated (client-side check avoids guest-scope errors)

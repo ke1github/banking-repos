@@ -228,7 +228,8 @@ const BankCard = ({
                     : 0
                   ).toLocaleString("en-IN", {
                     minimumFractionDigits: 2,
-                  })}
+                    maximumFractionDigits: 2,
+                  } as Intl.NumberFormatOptions)}
                 </span>
               </div>
             </div>

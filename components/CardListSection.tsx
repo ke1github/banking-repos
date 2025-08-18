@@ -2,7 +2,7 @@
 
 import React from "react";
 import BankCard from "./BankCard";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { cardDetailsPath, ROUTES } from "@/constants/route";
 import QuickCardActions from "@/components/cards/QuickCardActions";
 
@@ -37,6 +37,7 @@ interface CardListSectionProps {
  * CardListSection - A component to display a list of bank cards with different styling based on card type
  * This is an example of how to use the BankCard component with different variants
  */
+
 export default function CardListSection({
   cards,
   onCardClick,
@@ -45,14 +46,12 @@ export default function CardListSection({
   animateCards = true,
   showEmptyState = true,
 }: CardListSectionProps) {
-  const router = useRouter();
-
   // Default click handler if none provided
   const handleCardClick = (id: string) => {
     if (onCardClick) {
       onCardClick(id);
     } else {
-      router.push(cardDetailsPath(id));
+      window.location.href = cardDetailsPath(id);
     }
   };
 
@@ -86,12 +85,12 @@ export default function CardListSection({
     return (
       <div className="py-8 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center">
         <p className="text-gray-500 mb-2">No cards available</p>
-        <button
-          onClick={() => router.push(ROUTES.ADD_CARD)}
+        <Link
+          href={ROUTES.ADD_CARD}
           className="text-blue-600 text-sm font-medium"
         >
           + Add a card
-        </button>
+        </Link>
       </div>
     );
   }
@@ -111,10 +110,12 @@ export default function CardListSection({
             </p>
             <p className="text-base sm:text-lg md:text-xl font-semibold">
               ₹
-              {(totalAvailableCredit > 0
-                ? totalAvailableCredit
-                : totalBalance
-              ).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+              {(totalAvailableCredit > 0 ? totalAvailableCredit : totalBalance)
+                ? (totalAvailableCredit > 0
+                    ? totalAvailableCredit
+                    : totalBalance
+                  ).toLocaleString("en-IN")
+                : ""}
             </p>
           </div>
         )}

@@ -1,18 +1,19 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+
 import AuthForm from "@/components/auth/AuthForm";
 import { SignInFormValues } from "@/lib/validations";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
 import { setAuthCookie } from "@/lib/actions/user.actions";
 import { ROUTES } from "@/constants/route";
+import router from "next/router";
 
 export default function SignIn() {
   const [submitLoading, setSubmitLoading] = React.useState(false);
   const [error, setError] = React.useState("");
-  const router = useRouter();
+
   const { login, isAuthenticated, isLoading: authLoading } = useAppwrite();
 
   // Post-login guard: if a session is already active, send user Home
