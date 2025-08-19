@@ -28,6 +28,11 @@ export const sidebarLinks: {
       label: "Dashboard",
     },
     {
+      imgURL: "/icons/data-visualization.svg",
+      route: ROUTES.STATE_MANAGEMENT_DEMO,
+      label: "State Management",
+    },
+    {
       imgURL: "/icons/transaction.svg",
       route: ROUTES.TRANSACTIONS,
       label: "Transactions",

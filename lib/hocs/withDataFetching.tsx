@@ -45,6 +45,7 @@ export function withDataFetching<TData, P extends { data: TData }>(
       emptyMessage = "No data available",
     } = options;
 
+    // Disabling the rule for specific instances where we need to use the any type
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, isLoading, error, retryFetch } =
       useDataFetching<TData>(fetchDataFn);

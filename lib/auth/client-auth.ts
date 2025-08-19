@@ -4,7 +4,7 @@
 import { translateAppwriteError } from "@/lib/utils/appwrite-errors";
 import { logAuthError } from "@/lib/utils/client-logger";
 import { account } from "@/lib/appwrite/config";
-import { AppwriteException, Models } from "appwrite";
+import { AppwriteException, ID } from "appwrite";
 
 /**
  * Helper for handling Appwrite operations with standardized error handling
@@ -21,6 +21,20 @@ export async function withErrorHandling<T>(
     // Translate error to a consistent format
     const translatedError = translateAppwriteError(error);
 
+    // Add additional specific handling for common issues
+    let userMessage = translatedError.userMessage;
+
+    // Handle specific cases with more helpful messages
+    if (error instanceof Error) {
+      if (error.message?.includes("Invalid `userId` param")) {
+        userMessage =
+          "There was a problem with your account ID. Please try again or contact support.";
+      } else if (error.message?.includes("Invalid credentials")) {
+        userMessage =
+          "The email or password you entered is incorrect. Please try again.";
+      }
+    }
+
     // Log the error
     logAuthError(error, context, {
       ...metadata,
@@ -29,7 +43,7 @@ export async function withErrorHandling<T>(
 
     return {
       success: false,
-      error: translatedError.userMessage,
+      error: userMessage,
     };
   }
 }
@@ -90,7 +104,7 @@ export async function createUser(
   name: string
 ) {
   return await withErrorHandling(
-    () => account.create("unique()", email, password, name),
+    () => account.create(ID.unique(), email, password, name),
     "register",
     { email }
   );

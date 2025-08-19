@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isPublicRoute, ROUTES } from "@/constants/route";
+import { applySecurityHeaders } from "@/lib/middleware/security-headers";
 
 /**
  * Middleware function for handling authentication and route protection
@@ -26,7 +27,9 @@ export async function middleware(request: NextRequest) {
       signInUrl.searchParams.set("callbackUrl", currentPath);
     }
 
-    return NextResponse.redirect(signInUrl);
+    const response = NextResponse.redirect(signInUrl);
+    // Apply security headers to redirect response
+    return applySecurityHeaders(response);
   }
 
   // Redirect users who are logged in and trying to access login/signup pages
@@ -35,11 +38,14 @@ export async function middleware(request: NextRequest) {
     isAuthRoute &&
     (currentPath === ROUTES.SIGN_IN || currentPath === ROUTES.SIGN_UP)
   ) {
-    return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
+    const response = NextResponse.redirect(new URL(ROUTES.HOME, request.url));
+    // Apply security headers to redirect response
+    return applySecurityHeaders(response);
   }
 
-  // For all other cases, proceed with the request
-  return NextResponse.next();
+  // For all other cases, proceed with the request but still apply security headers
+  const response = NextResponse.next();
+  return applySecurityHeaders(response);
 }
 
 // Configure which routes use this middleware

@@ -72,9 +72,25 @@ export const serverAuth = {
    */
   async login(email: string, password: string, remember = false) {
     try {
+      // Input validation before even calling Appwrite
+      if (!email || !email.includes("@")) {
+        return {
+          success: false,
+          error: "Please enter a valid email address",
+        };
+      }
+
+      if (!password || password.length < 6) {
+        return {
+          success: false,
+          error: "Password must be at least 6 characters long",
+        };
+      }
+
       const account = getServerAccount();
 
-      // Create session
+      // Create session with email and password
+      // Need to use the correct signature for createSession
       const session = await account.createSession(email, password);
 
       // Set cookie for server authentication

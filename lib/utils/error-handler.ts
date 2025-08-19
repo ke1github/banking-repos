@@ -120,7 +120,7 @@ export const ERROR_MAP: Record<string, { code: ErrorCode; message: string }> = {
   general_argument_invalid: {
     code: ErrorCode.VALIDATION_ERROR,
     message:
-      "One or more fields contain invalid information. Please check your inputs and try again.",
+      "One or more fields contain invalid information. Please check your email and password and try again.",
   },
 
   // Database errors
@@ -233,6 +233,16 @@ export function handleAppwriteError(error: unknown): AppError {
     // Check if we have a direct mapping for this error type
     if (error.type && ERROR_MAP[error.type]) {
       const errorInfo = ERROR_MAP[error.type];
+
+      // Special handling for userId validation issues
+      if (error.message?.includes("Invalid `userId` param")) {
+        return new AppError(
+          ErrorCode.VALIDATION_ERROR,
+          error.message,
+          "There was an issue with your account ID. Please try again or contact support."
+        );
+      }
+
       return new AppError(
         errorInfo.code,
         error.message || `Appwrite error: ${error.type}`,
