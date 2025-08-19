@@ -8,6 +8,7 @@ import { DateField } from "@/components/ui/DateField";
 import { getServerAccount } from "@/lib/appwrite/server-config";
 import { getUserBankAccounts } from "@/lib/actions/banking.actions";
 import { createTransactionAction } from "@/lib/actions/banking.actions";
+import { NoPermissionState, EmptyState } from "@/components/ui/data-states";
 
 export const dynamic = "force-dynamic";
 
@@ -44,13 +45,15 @@ export default async function TransfersPage() {
         Move money between your accounts or to others.
       </p>
       {!userId ? (
-        <p className="text-sm text-gray-600">
-          Please sign in to transfer funds.
-        </p>
+        <NoPermissionState
+          message="Please sign in to transfer funds."
+          className="my-4"
+        />
       ) : accounts.length === 0 ? (
-        <p className="text-sm text-gray-600">
-          No accounts found. Connect a bank first.
-        </p>
+        <EmptyState
+          message="No accounts found. Connect a bank first to make transfers."
+          className="bg-white p-6 rounded-lg border border-gray-100"
+        />
       ) : (
         <form
           action={async (formData) => {

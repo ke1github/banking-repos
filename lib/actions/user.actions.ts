@@ -158,23 +158,10 @@ export async function signIn(formData: FormData) {
  * Logout a user
  */
 export async function signOut() {
-  // Best-effort: client deletes its own session; here we only clear our cookie
+  // Use the shared auth logout functionality for consistency
   try {
-    try {
-      const serverAccount = getServerAccount();
-      await serverAccount.deleteSession("current");
-    } catch {
-      // Ignore server-side deletion failures (no session context on server)
-    }
-
-    // Clear our auth hint cookie so middleware treats user as logged out
-    try {
-      const cookieStore = await cookies();
-      cookieStore.delete("auth");
-    } catch {}
-
-    revalidatePath("/");
-    return { success: true };
+    const { serverAuth } = await import("@/lib/auth/server-auth");
+    return await serverAuth.logout();
   } catch (error) {
     console.error("Logout error:", error);
     // Still return success to avoid trapping the user in a logged-in UI state
@@ -188,19 +175,11 @@ export async function signOut() {
  */
 export async function setAuthCookie(remember: boolean = true) {
   try {
-    const cookieStore = await cookies();
-    const options: Parameters<typeof cookieStore.set>[2] = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-    };
-    if (remember) {
-      options.maxAge = 60 * 60 * 24 * 30; // 30 days
-    }
-    cookieStore.set("auth", "1", options);
-    revalidatePath("/");
-    return { success: true } as const;
+    // Use the auth.actions.ts implementation for consistency
+    const { setAuthCookie: authSetCookie } = await import(
+      "@/lib/actions/auth.actions"
+    );
+    return await authSetCookie(remember);
   } catch (error) {
     console.error("setAuthCookie error:", error);
     return { success: false } as const;

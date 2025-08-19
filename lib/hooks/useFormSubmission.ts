@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { parseActionError, AppError } from "@/lib/utils/error-utils";
+import { AppError } from "@/lib/utils/error-utils";
+import { parseActionError } from "@/lib/utils/error-handler";
 
 interface UseFormSubmissionOptions<T> {
   onSuccess?: (data: T) => void;
@@ -33,7 +34,7 @@ export function useFormSubmission<T = unknown, D = unknown>(
 
         // Check if the result has an error property (server action error format)
         if (result && typeof result === "object" && "error" in result) {
-          const actionError = parseActionError(result as { error?: string });
+          const actionError = parseActionError({ error: String(result.error) });
           if (actionError) {
             setError(actionError);
             options?.onError?.(actionError);
@@ -45,7 +46,9 @@ export function useFormSubmission<T = unknown, D = unknown>(
         options?.onSuccess?.(result as T);
         return true;
       } catch (err: unknown) {
-        const appError = parseActionError({ error: (err as Error).message });
+        const appError = parseActionError({
+          error: err instanceof Error ? err.message : String(err),
+        });
         setError(appError);
         options?.onError?.(appError!);
         return false;

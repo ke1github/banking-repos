@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/data-states";
 
 export type Transaction = {
   id: string;
@@ -19,22 +20,10 @@ interface TransactionsListProps {
 export default function TransactionsList({ items }: TransactionsListProps) {
   if (!items?.length) {
     return (
-      <div className="flex flex-col items-center justify-center mt-8 mb-12 p-8 bg-white rounded-lg border border-gray-100 shadow-sm">
-        <Image
-          src="/icons/transaction.svg"
-          alt="No transactions"
-          width={80}
-          height={80}
-          className="w-20 h-20 mb-4 opacity-60"
-          draggable={false}
-        />
-        <div className="text-gray-500 text-base font-medium mb-1">
-          No transactions found
-        </div>
-        <div className="text-gray-400 text-sm">
-          Your recent transactions will appear here.
-        </div>
-      </div>
+      <EmptyState
+        message="No transactions found. Your recent transactions will appear here."
+        className="flex flex-col items-center justify-center mt-8 mb-12 p-8 bg-white rounded-lg border border-gray-100 shadow-sm"
+      />
     );
   }
 

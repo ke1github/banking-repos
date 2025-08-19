@@ -8,6 +8,8 @@ import {
 import { ID, Query } from "appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import type { Models } from "node-appwrite";
+import { validateWithZod } from "@/lib/utils/validation-utils";
+import { transferFormSchema, TransferFormValues } from "@/lib/validations";
 
 export type TransactionType = "deposit" | "withdrawal" | "transfer";
 
@@ -385,6 +387,25 @@ export async function createTransactionAction(
   try {
     const auth = await requireUserId();
     if ("error" in auth) return auth;
+
+    // Convert FormData to object
+    const formDataObj = Object.fromEntries(formData.entries());
+
+    // Validate using our schema
+    try {
+      validateWithZod(transferFormSchema, {
+        fromAccount: formDataObj.fromAccountId,
+        toAccount: formDataObj.toAccountId,
+        amount: formDataObj.amount,
+        description: formDataObj.description || "",
+      });
+    } catch (validationError) {
+      return {
+        error:
+          "Invalid transaction data: " + (validationError as Error).message,
+      };
+    }
+
     const res = await createTransaction(auth.userId, formData);
     if ("error" in res) return res;
     return { ok: true as const, transactionId: res.transaction.$id };

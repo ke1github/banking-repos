@@ -2,7 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { httpClient, HttpError } from "@/lib/utils/http-error";
-import { logError, ErrorCode } from "@/lib/utils/error-utils";
+import { ErrorCode } from "@/lib/utils/error-utils";
+import { logError } from "@/lib/utils/logger";
 
 interface UseHttpRequestOptions<T> {
   onSuccess?: (data: T) => void;
@@ -103,7 +104,7 @@ export function useHttpRequest<T, D = Record<string, unknown>>({
           );
           setError(httpError);
           onError?.(httpError);
-          logError(err, { method, url });
+          logError(err, "HTTP Request", { method, url });
         }
         return undefined;
       } finally {

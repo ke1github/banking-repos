@@ -10,88 +10,31 @@ A modern banking application built with Next.js and Appwrite.
 - Fund transfers between accounts
 - Responsive dashboard interface
 
-## Getting Started
+## Quick Start
 
-### Prerequisites
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Create `.env.local` with your Appwrite credentials
+4. Run the development server: `npm run dev`
 
-1. Create an Appwrite account and project at [cloud.appwrite.io](https://cloud.appwrite.io)
-2. Set up Appwrite collections for users, bank accounts, and transactions
-3. Configure your environment variables in `.env.local` file
+## Documentation
 
-### Environment Setup
+For detailed documentation, including:
 
-Create a `.env.local` file in the root of your project with the following variables:
+- Setup instructions
+- Architecture overview
+- Authentication system
+- Data rendering components
+- Implementation examples
 
-```
-NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
-NEXT_PUBLIC_APPWRITE_PROJECT=your_project_id
-APPWRITE_DATABASE_ID=your_database_id
-APPWRITE_USER_COLLECTION_ID=your_user_collection_id
-APPWRITE_BANK_COLLECTION_ID=your_bank_collection_id
-APPWRITE_TRANSACTION_COLLECTION_ID=your_transaction_collection_id
-```
+Please see the [DOCUMENTATION.md](./DOCUMENTATION.md) file.
 
-### Installation
+### Additional Documentation
 
-Install the dependencies:
+- [Validation System](./docs/VALIDATION.md) - Guide to the validation system
+- [Validation Examples](./docs/VALIDATION-EXAMPLES.md) - Practical examples of using the validation system
+- [Auth Testing Guide](./docs/AUTH-TESTING.md) - Guide for testing authentication flows
 
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
+## License
 
-Then, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Authentication Components
-
-This project includes a modular, multi-step authentication UI built with React Hook Form and Zod.
-
-- Form fields: reusable `TextField`, `PasswordField`, and `CheckboxField` components with validation, icons, and accessibility states.
-- Form scaffolding: `FormStep`, `StepIndicator`, and `FormNavigation` to power the multi-step sign-up flow.
-- Hook: `useAuthForm` centralizes step logic, validation, and submission; integrates Zod schemas from `lib/validations.ts`.
-- Main UI: `components/auth/AuthForm.tsx` renders sign-in and a 3-step sign-up (Personal, Address, Financial).
-
-Validation
-
-- Sign-in: email, password, remember-me.
-- Sign-up: personal info, address, PAN/terms. PAN is normalized to uppercase and schema-validated.
-
-Best practices in use
-
-- Separation of concerns: presentational components vs. form logic vs. validation schemas.
-- Accessibility: labeled inputs, focus styles, clear error states.
-- Type safety: TypeScript throughout; Zod schemas generate types for form values.
-
-Single README policy: all documentation is consolidated here to avoid drift. If you add new docs, integrate them into this file rather than creating additional READMEs.
+This project is licensed under the MIT License - see the LICENSE file for details.

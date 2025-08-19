@@ -83,6 +83,25 @@ export default function RootLayout({
         {children}
         <Footer />
       </main>
+
+      {/* Implementation toggle for demos */}
+      <div className="hidden lg:block">
+        <div className="relative">
+          {process.env.NODE_ENV !== "production" && (
+            <React.Suspense fallback={null}>
+              <div className="z-50">
+                {/* Dynamically import the toggle component */}
+                {(() => {
+                  const ImplementationToggle = React.lazy(
+                    () => import("@/components/ImplementationToggle")
+                  );
+                  return <ImplementationToggle />;
+                })()}
+              </div>
+            </React.Suspense>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

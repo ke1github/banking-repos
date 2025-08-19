@@ -4,11 +4,12 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { logoutAction } from "@/lib/actions/auth.actions";
-import { account as appwriteAccount } from "@/lib/appwrite/config";
+import { safeAccount } from "@/lib/appwrite/config";
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
+import { logAuthError } from "@/lib/utils/logger";
 
 interface LogoutButtonProps {
   variant?: "icon" | "text";
@@ -45,9 +46,9 @@ const LogoutButton = ({
 
         // Clear client session after server action completes
         try {
-          await appwriteAccount.deleteSession("current");
+          await safeAccount.deleteSession("current");
         } catch (e) {
-          console.error("Error deleting client session:", e);
+          logAuthError(e, "client_logout_button");
           // ignore if no session - server already handled it
         }
 
@@ -56,7 +57,7 @@ const LogoutButton = ({
           localStorage.removeItem("remember");
           sessionStorage.removeItem("session-started");
         } catch (e) {
-          console.error("Error clearing storage:", e);
+          logAuthError(e, "client_logout_storage_clear");
         }
 
         // Sync client-side auth state
@@ -65,7 +66,10 @@ const LogoutButton = ({
         toast.info("Logged out successfully");
         router.push(ROUTES.SIGN_IN);
       } catch (error) {
-        console.error("Logout error:", error);
+        logAuthError(error, "client_logout", {
+          source: "logout_button",
+          attempt: "full_logout_flow",
+        });
         toast.error("Failed to log out. Please try again.");
       } finally {
         setIsLoading(false);

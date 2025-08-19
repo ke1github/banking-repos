@@ -8,6 +8,11 @@ import { useUrlState } from "@/lib/url-state";
 import React, { useEffect, useState, useTransition } from "react";
 import { useActionState } from "react";
 import { fetchTransactionsAction } from "@/lib/actions/banking.actions";
+import {
+  LoadingState,
+  ErrorState,
+  NoPermissionState,
+} from "@/components/ui/data-states";
 
 export default function TransactionsPage() {
   type Filters = {
@@ -155,20 +160,27 @@ export default function TransactionsPage() {
         </div>
       </div>
       {authError ? (
-        <div className="mt-4 text-amber-700 bg-amber-50 border border-amber-200 p-3 rounded text-sm">
-          Please sign in to view your transactions.
-          <a href="/sign-in" className="ml-2 underline">
-            Sign in
-          </a>
-        </div>
+        <NoPermissionState
+          message="Please sign in to view your transactions."
+          className="mt-4"
+        />
       ) : error ? (
-        <div className="mt-4 text-red-600 bg-red-50 border border-red-200 p-3 rounded">
-          {error}
-        </div>
+        <ErrorState
+          error={error}
+          title="Could not load transactions"
+          className="mt-4"
+          onRetry={() => {
+            const fd = new FormData();
+            Object.entries(filters).forEach(([key, value]) => {
+              if (value !== undefined) fd.set(key, String(value));
+            });
+            startTransition(() => {
+              formAction(fd);
+            });
+          }}
+        />
       ) : pending || isTransPending ? (
-        <div className="mt-4 text-gray-500 bg-white p-4 sm:p-6 rounded-lg border border-gray-100 text-sm">
-          Loading…
-        </div>
+        <LoadingState className="mt-4" height="h-72" />
       ) : (
         <TransactionsList items={items} />
       )}

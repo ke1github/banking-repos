@@ -42,12 +42,25 @@ export default function SignUp() {
         }
 
         // Call the server action to register
+        // Add the name property for backward compatibility
         const result = await registerAction({
           email: data.email,
           password: data.password,
           name: `${data.firstName} ${
             data.middleName ? data.middleName + " " : ""
-          }${data.lastName}`,
+          }${data.lastName}`, // Add name for registerAction
+          firstName: data.firstName,
+          lastName: data.lastName,
+          middleName: data.middleName,
+          mobile: data.mobile,
+          dateOfBirth: data.dateOfBirth,
+          addressLine1: data.addressLine1,
+          addressLine2: data.addressLine2,
+          city: data.city,
+          state: data.state,
+          pinCode: data.pinCode,
+          pan: data.pan,
+          terms: data.terms,
         });
 
         if (!result.success) {
