@@ -52,18 +52,7 @@ export default function SignIn() {
         });
 
         if (!result.success) {
-          // Provide more specific error messages
-          if (result.error?.includes("Invalid email or password")) {
-            setError(
-              "Invalid email or password. Please check your credentials."
-            );
-          } else if (result.error?.includes("userId")) {
-            setError(
-              "There was an issue with your account. Please try again or contact support."
-            );
-          } else {
-            setError(result.error || "Authentication failed");
-          }
+          setError(result.error || "Authentication failed");
           toast.error("Login failed");
           return;
         }
