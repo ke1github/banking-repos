@@ -85,7 +85,7 @@ export const useAuthStore = create<AuthState>()(
           // set({ isLoading: true });
 
           // Check for existing user in localStorage
-          const userJson = safeLocalStorage.getItem("banking-user");
+          const userJson = safeLocalStorage.getItem("auth-storage-user");
           if (userJson) {
             try {
               const authUser: AuthUser = JSON.parse(userJson);
@@ -103,7 +103,7 @@ export const useAuthStore = create<AuthState>()(
               return;
             } catch (e) {
               console.error("Error parsing user data", e);
-              safeLocalStorage.removeItem("banking-user");
+              safeLocalStorage.removeItem("auth-storage-user");
             }
           }
 
@@ -135,7 +135,10 @@ export const useAuthStore = create<AuthState>()(
             };
 
             // Store in localStorage for our hook to find
-            safeLocalStorage.setItem("banking-user", JSON.stringify(mockUser));
+            safeLocalStorage.setItem(
+              "auth-storage-user",
+              JSON.stringify(mockUser)
+            );
 
             // Update store state
             set({
@@ -163,7 +166,7 @@ export const useAuthStore = create<AuthState>()(
         logout: async () => {
           try {
             // Clear localStorage
-            safeLocalStorage.removeItem("banking-user");
+            safeLocalStorage.removeItem("auth-storage-user");
 
             // Clear auth cookie
             if (typeof document !== "undefined") {
@@ -203,7 +206,10 @@ export const useAuthStore = create<AuthState>()(
             };
 
             // Store in localStorage for our hook to find
-            safeLocalStorage.setItem("banking-user", JSON.stringify(mockUser));
+            safeLocalStorage.setItem(
+              "auth-storage-user",
+              JSON.stringify(mockUser)
+            );
 
             // Update store state
             set({
@@ -232,7 +238,7 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true });
 
           // Check localStorage for user data
-          const userJson = safeLocalStorage.getItem("banking-user");
+          const userJson = safeLocalStorage.getItem("auth-storage-user");
           if (userJson) {
             try {
               const authUser: AuthUser = JSON.parse(userJson);

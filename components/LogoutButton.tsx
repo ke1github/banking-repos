@@ -6,7 +6,7 @@ import Image from "next/image";
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useAuth } from "@/lib/hooks/useAuth-rewritten";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 interface LogoutButtonProps {
   variant?: "icon" | "text";
@@ -46,7 +46,7 @@ const LogoutButton = ({
 
         // Clear local storage items
         try {
-          localStorage.removeItem("remember");
+          localStorage.removeItem("auth-storage");
           sessionStorage.removeItem("session-started");
         } catch (e) {
           console.error("Error clearing storage:", e);

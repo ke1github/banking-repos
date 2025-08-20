@@ -1,89 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
-import { useAuth } from "@/lib/hooks/useAuth-rewritten";
+import AuthForm from "@/components/forms/AuthForm";
+import { SignInFormValues } from "@/lib/validations";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function SignIn() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const { login } = useAuth();
+  const [mounted, setMounted] = useState(true); // Initialize as true to prevent loading spinner
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Fix for hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    if (isLoading) return;
+  // Handle sign-in form submission
+  const handleSignIn = async (data: any) => {
+    if (isPending) return;
 
-    setIsLoading(true);
     setError("");
 
-    try {
-      const result = await login(email, password);
+    startTransition(async () => {
+      try {
+        // Use our consolidated auth hook
+        const result = await login(data.email, data.password);
 
-      if (result.success) {
-        router.push(ROUTES.HOME);
-        toast.success("Signed in successfully");
-      } else {
-        const errorMsg = result.error || "Failed to sign in";
-        setError(errorMsg);
-        toast.error(errorMsg);
+        if (result.success) {
+          // Navigate to the dashboard after successful login
+          router.push(ROUTES.HOME);
+          toast.success("Signed in successfully");
+        } else {
+          const errorMsg = result.error || "Failed to sign in";
+          setError(errorMsg);
+          toast.error(errorMsg);
+        }
+      } catch (e) {
+        console.error("Sign in error:", e);
+        const msg =
+          e instanceof Error
+            ? e.message
+            : "Failed to sign in. Please check your credentials.";
+        setError(msg);
+        toast.error(msg);
       }
-    } catch (e) {
-      console.error("Sign in error:", e);
-      const msg = e instanceof Error ? e.message : "Failed to sign in";
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-center">Sign In</h1>
-
-      {error && (
-        <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 rounded-lg">
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
-        >
-          {isLoading ? "Signing in..." : "Sign In"}
-        </button>
-      </form>
-    </div>
+    <AuthForm
+      mode="signin"
+      onSubmit={handleSignIn}
+      isLoading={isPending}
+      error={error}
+    />
   );
 }
