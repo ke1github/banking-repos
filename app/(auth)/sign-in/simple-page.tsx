@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
 import { useAuth } from "@/lib/hooks/useAuth-rewritten";
-import { toast } from "sonner";
 
-export default function SignIn() {
+export default function SimpleSignIn() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -14,7 +13,7 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isLoading) return;
@@ -27,17 +26,12 @@ export default function SignIn() {
 
       if (result.success) {
         router.push(ROUTES.HOME);
-        toast.success("Signed in successfully");
       } else {
-        const errorMsg = result.error || "Failed to sign in";
-        setError(errorMsg);
-        toast.error(errorMsg);
+        setError(result.error || "Failed to sign in");
       }
     } catch (e) {
       console.error("Sign in error:", e);
-      const msg = e instanceof Error ? e.message : "Failed to sign in";
-      setError(msg);
-      toast.error(msg);
+      setError(e instanceof Error ? e.message : "Failed to sign in");
     } finally {
       setIsLoading(false);
     }

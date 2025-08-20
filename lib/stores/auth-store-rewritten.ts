@@ -4,14 +4,14 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { AuthUser } from "@/lib/hooks/useAuth";
 
+// Define the user type
 interface User {
   id: string;
   email: string;
   name: string;
-  firstName?: string;
-  lastName?: string;
 }
 
+// Define the auth state
 interface AuthState {
   user: User | null;
   isLoading: boolean;
@@ -21,26 +21,15 @@ interface AuthState {
 
   // Actions
   initialize: () => Promise<void>;
-  login: (
-    email: string,
-    password: string,
-    remember?: boolean
-  ) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<boolean>;
   signup: (email: string, password: string, name: string) => Promise<boolean>;
   refreshUser: () => Promise<void>;
-  requestPasswordReset: (email: string) => Promise<boolean>;
-  resetPassword: (
-    userId: string,
-    secret: string,
-    password: string,
-    passwordConfirm: string
-  ) => Promise<boolean>;
   clearError: () => void;
 }
 
-// Safe localStorage access - prevents SSR issues
-const safeLocalStorage = {
+// Helper for safe localStorage access to prevent SSR issues
+const safeStorage = {
   getItem: (key: string): string | null => {
     if (typeof window === "undefined") return null;
     try {
@@ -68,28 +57,30 @@ const safeLocalStorage = {
   },
 };
 
-// Implementation that uses our consolidated hooks
+// Create the auth store
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
+        // Initial state
         user: null,
-        isLoading: false, // Initialize as false to prevent loading state
+        isLoading: false, // Always initialize as false to prevent loading issues
         error: null,
         isAuthenticated: false,
         lastUpdated: Date.now(),
 
+        // Initialize authentication from localStorage
         initialize: async () => {
           console.log("auth-store: Initialize called");
-          // Don't set loading to true here, as it causes loading issues
-          // set({ isLoading: true });
 
           // Check for existing user in localStorage
-          const userJson = safeLocalStorage.getItem("banking-user");
+          const userJson = safeStorage.getItem("banking-user");
           if (userJson) {
             try {
-              const authUser: AuthUser = JSON.parse(userJson);
+              const authUser = JSON.parse(userJson);
               console.log("auth-store: Found existing user", authUser.email);
+
+              // Update store with user data
               set({
                 user: {
                   id: authUser.id,
@@ -103,10 +94,11 @@ export const useAuthStore = create<AuthState>()(
               return;
             } catch (e) {
               console.error("Error parsing user data", e);
-              safeLocalStorage.removeItem("banking-user");
+              safeStorage.removeItem("banking-user");
             }
           }
 
+          // No user found, set unauthenticated state
           set({
             user: null,
             isAuthenticated: false,
@@ -115,176 +107,135 @@ export const useAuthStore = create<AuthState>()(
           });
         },
 
+        // Handle login
         login: async (email: string, password: string) => {
           set({ isLoading: true, error: null });
 
           try {
-            // In a real app, we would validate the password here
-            console.log(
-              `Attempted login with password: ${password.length} chars`
-            );
+            console.log(`Attempting login for: ${email}`);
 
             // Create mock user that matches our AuthUser structure
             const mockUser = {
               id: "mock-user-" + Math.random().toString(36).slice(2, 10),
               email,
               name: email.split("@")[0],
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              emailVerified: false,
             };
 
             // Store in localStorage for our hook to find
-            safeLocalStorage.setItem("banking-user", JSON.stringify(mockUser));
+            safeStorage.setItem("banking-user", JSON.stringify(mockUser));
 
-            // Update store state
+            // Update store state - important to set isLoading: false
             set({
-              user: {
-                id: mockUser.id,
-                email: mockUser.email,
-                name: mockUser.name,
-              },
+              user: mockUser,
               isAuthenticated: true,
               isLoading: false,
+              error: null,
               lastUpdated: Date.now(),
             });
 
             return true;
           } catch (e) {
-            console.error("Login error:", e);
+            const errorMessage =
+              e instanceof Error ? e.message : "Login failed";
             set({
-              error: e instanceof Error ? e.message : "Login failed",
               isLoading: false,
+              error: errorMessage,
+              isAuthenticated: false,
             });
             return false;
           }
         },
 
+        // Handle logout
         logout: async () => {
+          set({ isLoading: true });
+
           try {
-            // Clear localStorage
-            safeLocalStorage.removeItem("banking-user");
+            // Remove user from localStorage
+            safeStorage.removeItem("banking-user");
 
-            // Clear auth cookie
-            if (typeof document !== "undefined") {
-              document.cookie = "auth=; path=/; max-age=0";
-            }
-
+            // Reset auth state
             set({
               user: null,
               isAuthenticated: false,
               isLoading: false,
+              error: null,
               lastUpdated: Date.now(),
             });
 
             return true;
           } catch (e) {
-            console.error("Logout error:", e);
-            set({
-              error: e instanceof Error ? e.message : "Logout failed",
-              isLoading: false,
-            });
+            const errorMessage =
+              e instanceof Error ? e.message : "Logout failed";
+            set({ isLoading: false, error: errorMessage });
             return false;
           }
         },
 
+        // Handle signup
         signup: async (email: string, password: string, name: string) => {
           set({ isLoading: true, error: null });
 
           try {
-            // Create mock user that matches our AuthUser structure
+            // Create mock user
             const mockUser = {
               id: "mock-user-" + Math.random().toString(36).slice(2, 10),
               email,
               name,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              emailVerified: false,
             };
 
-            // Store in localStorage for our hook to find
-            safeLocalStorage.setItem("banking-user", JSON.stringify(mockUser));
+            // Store in localStorage
+            safeStorage.setItem("banking-user", JSON.stringify(mockUser));
 
             // Update store state
             set({
-              user: {
-                id: mockUser.id,
-                email: mockUser.email,
-                name: mockUser.name,
-              },
+              user: mockUser,
               isAuthenticated: true,
               isLoading: false,
+              error: null,
               lastUpdated: Date.now(),
             });
 
             return true;
           } catch (e) {
-            console.error("Signup error:", e);
-            set({
-              error: e instanceof Error ? e.message : "Signup failed",
-              isLoading: false,
-            });
+            const errorMessage =
+              e instanceof Error ? e.message : "Signup failed";
+            set({ isLoading: false, error: errorMessage });
             return false;
           }
         },
 
+        // Refresh user data
         refreshUser: async () => {
+          const currentUser = get().user;
+          if (!currentUser) return;
+
           set({ isLoading: true });
 
-          // Check localStorage for user data
-          const userJson = safeLocalStorage.getItem("banking-user");
-          if (userJson) {
-            try {
-              const authUser: AuthUser = JSON.parse(userJson);
-              set({
-                user: {
-                  id: authUser.id,
-                  email: authUser.email,
-                  name: authUser.name,
-                },
-                isAuthenticated: true,
-                isLoading: false,
-                lastUpdated: Date.now(),
-              });
-              return;
-            } catch (e) {
-              console.error("Error parsing user data", e);
-            }
+          try {
+            // In a real app, we would fetch the latest user data
+            // For now, just simulate a refresh
+            set({
+              isLoading: false,
+              lastUpdated: Date.now(),
+            });
+          } catch (e) {
+            const errorMessage =
+              e instanceof Error ? e.message : "Refresh failed";
+            set({ isLoading: false, error: errorMessage });
           }
-
-          set({
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-            lastUpdated: Date.now(),
-          });
         },
 
-        requestPasswordReset: async () => {
-          set({
-            error:
-              "Authentication functionality has been removed. This is UI only.",
-            isLoading: false,
-          });
-          return false;
+        // Clear error
+        clearError: () => {
+          set({ error: null });
         },
-
-        resetPassword: async () => {
-          set({
-            error:
-              "Authentication functionality has been removed. This is UI only.",
-            isLoading: false,
-          });
-          return false;
-        },
-
-        clearError: () => set({ error: null }),
       }),
       {
-        name: "auth-storage",
+        name: "auth-store",
+        // Only store minimal data in localStorage
         partialize: (state) => ({
           isAuthenticated: state.isAuthenticated,
-          lastUpdated: state.lastUpdated,
         }),
       }
     )

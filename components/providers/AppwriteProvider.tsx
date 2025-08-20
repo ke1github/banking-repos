@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  AppwriteAuthContext,
-  useProvideAppwrite,
-} from "@/lib/hooks/useAppwrite";
+import { AuthContext, useProvideAuth } from "@/lib/hooks/useAuth";
 import { useEffect } from "react";
 import { installErrorInterceptor } from "@/lib/handlers/error-interceptor";
 
@@ -12,10 +9,11 @@ interface AppwriteProviderProps {
 }
 
 /**
- * Provider component that wraps the application with Appwrite authentication context
+ * Provider component that wraps the application with authentication context
+ * This component is maintained for backward compatibility but uses the consolidated auth hook
  */
 export function AppwriteAuthProvider({ children }: AppwriteProviderProps) {
-  const auth = useProvideAppwrite();
+  const auth = useProvideAuth();
 
   // Install error interceptor for guest scope errors when component mounts
   useEffect(() => {
@@ -25,9 +23,5 @@ export function AppwriteAuthProvider({ children }: AppwriteProviderProps) {
     }
   }, []);
 
-  return (
-    <AppwriteAuthContext.Provider value={auth}>
-      {children}
-    </AppwriteAuthContext.Provider>
-  );
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }

@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import Logo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { transferFunds } from "@/lib/actions";
-// Removing the useFormStatus hook that's causing the issue
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { transferFormSchema, TransferFormValues } from "@/lib/validations";
 import {
   Card,
   CardHeader,
@@ -37,30 +39,68 @@ function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
 }
 
 export default function TransferForm({ accounts }: TransferFormProps) {
-  // Use local state to track form submission
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<{
+    success?: boolean;
+    message?: string;
+  }>({});
 
-  // Handle form submission manually
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
+  // Use react-hook-form with zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TransferFormValues>({
+    resolver: zodResolver(transferFormSchema),
+    defaultValues: {
+      fromAccount: "",
+      toAccount: "",
+      amount: undefined,
+      description: "",
+    },
+  });
 
-    // Get form data
-    const formData = new FormData(event.currentTarget);
+  // Handle form submission
+  const onSubmit = async (data: TransferFormValues) => {
+    setSubmissionStatus({});
 
     try {
+      // Convert data to FormData for server action
+      const formData = new FormData();
+      formData.append("fromAccount", data.fromAccount);
+      formData.append("toAccount", data.toAccount);
+      formData.append("amount", data.amount!.toString());
+      if (data.description) {
+        formData.append("description", data.description);
+      }
+
       // Call the server action
-      await transferFunds(formData);
+      const result = await transferFunds(formData);
+
+      if (result.success) {
+        setSubmissionStatus({
+          success: true,
+          message: result.message || "Transfer completed successfully",
+        });
+        reset(); // Reset form on success
+      } else {
+        setSubmissionStatus({
+          success: false,
+          message: result.message || "Transfer failed",
+        });
+      }
     } catch (error) {
       console.error("Transfer failed:", error);
-    } finally {
-      setIsSubmitting(false);
+      setSubmissionStatus({
+        success: false,
+        message: "An unexpected error occurred",
+      });
     }
   };
 
   return (
     <Card className="shadow-sm border border-gray-100">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <CardHeader className="pb-2 sm:pb-4">
           <div className="flex items-center gap-2 mb-3">
             <Logo variant="small" showText={false} />
@@ -73,6 +113,18 @@ export default function TransferForm({ accounts }: TransferFormProps) {
           </CardDescription>
         </CardHeader>
 
+        {submissionStatus.message && (
+          <div
+            className={`mx-6 p-2 text-sm rounded ${
+              submissionStatus.success
+                ? "bg-green-50 text-green-700 border border-green-200"
+                : "bg-red-50 text-red-700 border border-red-200"
+            }`}
+          >
+            {submissionStatus.message}
+          </div>
+        )}
+
         <CardContent className="space-y-4 sm:space-y-5">
           <div className="space-y-1.5 sm:space-y-2">
             <label
@@ -83,9 +135,8 @@ export default function TransferForm({ accounts }: TransferFormProps) {
             </label>
             <select
               id="fromAccount"
-              name="fromAccount"
+              {...register("fromAccount")}
               className="w-full rounded-lg border border-input p-2 sm:p-2.5 text-sm sm:text-base text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              required
             >
               <option value="">Select account</option>
               {accounts.map((account) => (
@@ -94,6 +145,11 @@ export default function TransferForm({ accounts }: TransferFormProps) {
                 </option>
               ))}
             </select>
+            {errors.fromAccount && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.fromAccount.message}
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5 sm:space-y-2">
@@ -105,9 +161,8 @@ export default function TransferForm({ accounts }: TransferFormProps) {
             </label>
             <select
               id="toAccount"
-              name="toAccount"
+              {...register("toAccount")}
               className="w-full rounded-lg border border-input p-2 sm:p-2.5 text-sm sm:text-base text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              required
             >
               <option value="">Select account</option>
               {accounts.map((account) => (
@@ -116,6 +171,11 @@ export default function TransferForm({ accounts }: TransferFormProps) {
                 </option>
               ))}
             </select>
+            {errors.toAccount && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.toAccount.message}
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5 sm:space-y-2">
@@ -131,15 +191,35 @@ export default function TransferForm({ accounts }: TransferFormProps) {
               </span>
               <input
                 id="amount"
-                name="amount"
+                {...register("amount", { valueAsNumber: true })}
                 type="number"
                 step="0.01"
                 min="0"
-                required
                 placeholder="0.00"
                 className="w-full rounded-lg border border-input p-2 sm:p-2.5 pl-7 text-sm sm:text-base text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               />
             </div>
+            {errors.amount && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.amount.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1.5 sm:space-y-2">
+            <label
+              className="text-xs sm:text-sm font-medium text-foreground"
+              htmlFor="description"
+            >
+              Description (Optional)
+            </label>
+            <input
+              id="description"
+              {...register("description")}
+              type="text"
+              placeholder="What's this transfer for?"
+              className="w-full rounded-lg border border-input p-2 sm:p-2.5 text-sm sm:text-base text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
           </div>
         </CardContent>
 

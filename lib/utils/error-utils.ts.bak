@@ -1,5 +1,14 @@
 // Simple error utility module for the banking app
 
+export interface AppError {
+  code: ErrorCode;
+  message: string;
+  userMessage: string;
+  details?: Record<string, unknown>;
+  stack?: string;
+  originalError?: unknown;
+}
+
 export enum ErrorCode {
   // Authentication errors
   UNAUTHORIZED = "UNAUTHORIZED",
@@ -11,12 +20,12 @@ export enum ErrorCode {
   EMAIL_ALREADY_EXISTS = "EMAIL_ALREADY_EXISTS",
   ACCOUNT_LOCKED = "ACCOUNT_LOCKED",
   WEAK_PASSWORD = "WEAK_PASSWORD",
-  
+
   // Data errors
   NOT_FOUND = "NOT_FOUND",
   VALIDATION_ERROR = "VALIDATION_ERROR",
   INVALID_DATA = "INVALID_DATA",
-  
+
   // API errors
   API_ERROR = "API_ERROR",
   SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE",
@@ -25,16 +34,16 @@ export enum ErrorCode {
   CONFLICT = "CONFLICT",
   SERVER_ERROR = "SERVER_ERROR",
   TOO_MANY_REQUESTS = "TOO_MANY_REQUESTS",
-  
+
   // Network errors
   NETWORK_ERROR = "NETWORK_ERROR",
   TIMEOUT_ERROR = "TIMEOUT_ERROR",
   CONNECTION_ERROR = "CONNECTION_ERROR",
-  
+
   // Application errors
   INTERNAL_ERROR = "INTERNAL_ERROR",
   NOT_IMPLEMENTED = "NOT_IMPLEMENTED",
-  
+
   // User input errors
   INVALID_INPUT = "INVALID_INPUT",
   MISSING_REQUIRED_FIELD = "MISSING_REQUIRED_FIELD",
@@ -45,47 +54,41 @@ export enum ErrorCode {
   INVALID_DATE_FORMAT = "INVALID_DATE_FORMAT",
   INVALID_AMOUNT = "INVALID_AMOUNT",
   PASSWORDS_DO_NOT_MATCH = "PASSWORDS_DO_NOT_MATCH",
-  
+
   // Transaction errors
   INSUFFICIENT_FUNDS = "INSUFFICIENT_FUNDS",
   TRANSACTION_FAILED = "TRANSACTION_FAILED",
-  
+
   // Unknown error
-  UNKNOWN_ERROR = "UNKNOWN_ERROR"
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
 
-export interface AppErrorOptions {
-  details?: Record<string, unknown>;
-  originalError?: unknown;
-  stack?: string;
-}
-
-// AppError class
-export class AppError extends Error {
-  code: ErrorCode;
-  userMessage: string;
-  details?: Record<string, unknown>;
-  originalError?: unknown;
-
-  constructor(
-    code: ErrorCode,
-    message: string,
-    userMessage?: string,
-    options: AppErrorOptions = {}
-  ) {
-    super(message);
-    this.name = "AppError";
-    this.code = code;
-    this.userMessage = userMessage || message;
-    this.details = options.details;
-    this.originalError = options.originalError;
-    this.stack = options.stack || new Error().stack;
-  }
+// Factory function to create AppError objects
+export function createAppError(
+  code: ErrorCode,
+  message: string,
+  userMessage?: string,
+  details?: Record<string, unknown>,
+  originalError?: unknown
+): AppError {
+  return {
+    code,
+    message,
+    userMessage: userMessage || message,
+    details,
+    stack: new Error().stack,
+    originalError,
+  };
 }
 
 // Function to check if an object is an AppError
 export function isAppError(error: unknown): error is AppError {
-  return error instanceof AppError;
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    "message" in error
+  );
 }
 
 // Function to convert any error to an AppError
@@ -95,29 +98,20 @@ export function toAppError(error: unknown): AppError {
   }
 
   if (error instanceof Error) {
-    return new AppError(
+    return createAppError(
       ErrorCode.UNKNOWN_ERROR,
       error.message,
       "An unexpected error occurred",
-      { originalError: error, stack: error.stack }
+      {},
+      error
     );
   }
 
-  return new AppError(
+  return createAppError(
     ErrorCode.UNKNOWN_ERROR,
     typeof error === "string" ? error : "Unknown error",
     "An unexpected error occurred",
-    { originalError: error }
+    {},
+    error
   );
-}
-
-// Factory function to create AppError objects (for backward compatibility)
-export function createAppError(
-  code: ErrorCode,
-  message: string,
-  userMessage?: string,
-  details?: Record<string, unknown>,
-  originalError?: unknown
-): AppError {
-  return new AppError(code, message, userMessage, { details, originalError });
 }

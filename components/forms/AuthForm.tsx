@@ -17,12 +17,16 @@ import {
 import { cn } from "@/lib/utils";
 import Logo from "@/components/ui/logo";
 import { useAuthForm } from "@/lib/hooks/useAuthForm";
-import { TextField, PasswordField, CheckboxField } from "./FormFields";
+import {
+  AdaptedTextField,
+  AdaptedPasswordField,
+  AdaptedCheckboxField,
+} from "./FormAdapter";
 import { StepIndicator, FormStep, FormNavigation } from "./FormComponents";
 import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
 import Link from "next/link";
 import { ROUTES } from "@/constants/route";
-import GoogleLoginButton from "@/components/foms/GoogleLoginButton";
+import GoogleLoginButton from "@/components/forms/GoogleLoginButton";
 
 export interface AuthFormProps {
   mode?: "signin" | "signup";
@@ -131,7 +135,7 @@ const AuthForm = ({
     validateStep,
   } = useAuthForm({
     mode,
-    onSubmit,
+    onSubmitAction: onSubmit,
     isLoading,
   });
 
@@ -176,7 +180,7 @@ const AuthForm = ({
                 isActive={currentStep === 0}
               >
                 {personalFields.map((f) => (
-                  <TextField
+                  <AdaptedTextField
                     key={f.name}
                     label={f.label}
                     name={f.name}
@@ -186,7 +190,7 @@ const AuthForm = ({
                     icon={f.icon}
                   />
                 ))}
-                <PasswordField
+                <AdaptedPasswordField
                   label="Password"
                   name="password"
                   form={form}
@@ -194,7 +198,7 @@ const AuthForm = ({
                   showPassword={showPassword}
                   togglePasswordVisibility={togglePasswordVisibility}
                 />
-                <TextField
+                <AdaptedTextField
                   label="Mobile Number"
                   name="mobile"
                   type="tel"
@@ -202,7 +206,7 @@ const AuthForm = ({
                   placeholder="+91 9876543210"
                   icon={<FiPhone />}
                 />
-                <TextField
+                <AdaptedTextField
                   label="Date of Birth"
                   name="dateOfBirth"
                   form={form}
@@ -218,7 +222,7 @@ const AuthForm = ({
                 isActive={currentStep === 1}
               >
                 {addressFields.map((f) => (
-                  <TextField
+                  <AdaptedTextField
                     key={f.name}
                     label={f.label}
                     name={f.name}
@@ -235,7 +239,7 @@ const AuthForm = ({
                 title="Financial Information"
                 isActive={currentStep === 2}
               >
-                <TextField
+                <AdaptedTextField
                   label="PAN Number"
                   name="pan"
                   type="text"
@@ -245,7 +249,7 @@ const AuthForm = ({
                   maxLength={10}
                   style={{ textTransform: "uppercase" }}
                 />
-                <CheckboxField
+                <AdaptedCheckboxField
                   name="terms"
                   form={form}
                   label={
@@ -271,7 +275,7 @@ const AuthForm = ({
             </>
           ) : (
             <>
-              <TextField
+              <AdaptedTextField
                 label="Email Address"
                 name="email"
                 type="email"
@@ -279,7 +283,7 @@ const AuthForm = ({
                 placeholder="john@example.com"
                 icon={<FiMail />}
               />
-              <PasswordField
+              <AdaptedPasswordField
                 label="Password"
                 name="password"
                 form={form}
@@ -289,7 +293,7 @@ const AuthForm = ({
               />
 
               <div className="flex items-center justify-between">
-                <CheckboxField
+                <AdaptedCheckboxField
                   name="remember"
                   form={form}
                   label="Remember me"

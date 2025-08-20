@@ -1,34 +1,32 @@
 "use server";
 
+import { transferFormSchema } from "./validations";
+
 // This is a server action that can be used to make a transfer between accounts
 export async function transferFunds(formData: FormData) {
-  // Validate the request
-  const fromAccount = formData.get("fromAccount") as string;
-  const toAccount = formData.get("toAccount") as string;
-  const amount = parseFloat(formData.get("amount") as string);
-
-  // Validation
-  if (!fromAccount || !toAccount) {
-    console.error("Both accounts are required");
-    return; // Return void to satisfy the type
-  }
-
-  if (isNaN(amount) || amount <= 0) {
-    console.error("Please enter a valid amount");
-    return; // Return void to satisfy the type
-  }
-
+  // Parse and validate form data
   try {
-    // Here you would make a database call or API request
-    // This is just a simulation
+    const rawData = {
+      fromAccount: formData.get("fromAccount") as string,
+      toAccount: formData.get("toAccount") as string,
+      amount: parseFloat(formData.get("amount") as string),
+      description: (formData.get("description") as string) || undefined,
+    };
+
+    // Validate with Zod schema
+    const validatedData = transferFormSchema.parse(rawData);
+
+    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     console.log(
-      `Successfully transferred $${amount} from ${fromAccount} to ${toAccount}`
+      `Successfully transferred $${validatedData.amount} from ${validatedData.fromAccount} to ${validatedData.toAccount}`
     );
-    // In a real app, you'd redirect or update UI state here
+
+    return { success: true, message: "Transfer completed successfully" };
   } catch (err) {
     console.error("Transfer failed", err);
+    return { success: false, message: "Transfer failed. Please try again." };
   }
 }
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import { Inter, IBM_Plex_Serif } from "next/font/google";
-import { AppwriteAuthProvider } from "@/components/providers/AppwriteProvider";
+import AuthProviderWrapper from "@/components/providers/AuthProvider";
 import { ToastProvider } from "@/components/providers/SonnerToastProvider";
 import "./globals.css";
 
@@ -33,9 +33,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${ibmPlexSerif.variable} antialiased`}
       >
-        <AppwriteAuthProvider>
+        <AuthProviderWrapper>
           <ToastProvider>{children}</ToastProvider>
-        </AppwriteAuthProvider>
+        </AuthProviderWrapper>
       </body>
     </html>
   );

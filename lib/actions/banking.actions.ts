@@ -9,7 +9,7 @@ import { ID, Query } from "appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import type { Models } from "node-appwrite";
 import { validateWithZod } from "@/lib/helpers/validation-utils";
-import { transferFormSchema, TransferFormValues } from "@/lib/validations";
+import { transferFormSchema } from "@/lib/validations";
 
 export type TransactionType = "deposit" | "withdrawal" | "transfer";
 
@@ -39,7 +39,7 @@ export interface Transaction {
   createdAt: Date;
 }
 
-type TransactionDoc = Models.Document & {
+type TransactionDocType = Models.Document & {
   description?: string;
   name?: string;
   type?: string;
@@ -585,13 +585,13 @@ export async function fetchTransactionsAction(
     }
 
     const databases = getAdminDatabases();
-    const res = await databases.listDocuments<TransactionDoc>(
+    const res = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.transactionCollectionId,
       queries
     );
 
-    const items = res.documents.map((doc: TransactionDoc) => ({
+    const items = res.documents.map((doc: TransactionDocType) => ({
       id: doc.$id as string,
       date: (doc.$createdAt as string) || new Date().toISOString(),
       description: (doc.description as string) ?? (doc.name as string) ?? "",

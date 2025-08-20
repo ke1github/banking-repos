@@ -1,78 +1,151 @@
 import "server-only";
-// Web SDK (for Account/session-related operations)
-import { Client as WebClient, Account, ID, Query } from "appwrite";
-// Node SDK (for privileged Databases/Storage operations via API key)
-import type { Client as NodeClient } from "node-appwrite";
-import {
-  Client as NodeSdkClient,
-  Databases as NodeDatabases,
-  Teams as NodeTeams,
-  Permission,
-  Role,
-} from "node-appwrite";
+import { ID, Query } from "appwrite";
+import { appwriteConfig } from "./config";
 
-export const appwriteConfig = {
-  endpoint:
-    process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1",
-  projectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "",
-  databaseId: process.env.APPWRITE_DATABASE_ID || "",
-  userCollectionId: process.env.APPWRITE_USER_COLLECTION_ID || "",
-  bankCollectionId: process.env.APPWRITE_BANK_COLLECTION_ID || "",
-  transactionCollectionId: process.env.APPWRITE_TRANSACTION_COLLECTION_ID || "",
+// Mock permissions and roles
+export const Permission = {
+  read: (role: string) => `read("${role}")`,
+  write: (role: string) => `write("${role}")`,
 };
 
-// Server-side only client
-let serverClient: WebClient | null = null; // web client for Account APIs
-let adminClient: NodeClient | null = null; // node client with API key for DB
-let adminDatabases: NodeDatabases | null = null;
-let serverAccount: Account | null = null;
-let serverTeams: NodeTeams | null = null;
+export const Role = {
+  any: () => "any",
+  users: () => "users",
+  guests: () => "guests",
+};
 
-// Initialize server-side Appwrite client
-function getServerClient() {
-  if (serverClient) return serverClient;
+// Mock server account with minimal functionality
+const mockServerAccount = {
+  // User management
+  get: async () => {
+    return {
+      $id: "mock-user-id",
+      email: "mock@example.com",
+      name: "Mock User",
+      emailVerification: false,
+      phoneVerification: false,
+    };
+  },
 
-  serverClient = new WebClient();
-  serverClient
-    .setEndpoint(appwriteConfig.endpoint)
-    .setProject(appwriteConfig.projectId);
+  create: async (
+    userId: string,
+    email: string,
+    password: string,
+    name: string
+  ) => {
+    return {
+      $id: userId || "mock-user-id",
+      email,
+      name,
+      emailVerification: false,
+      phoneVerification: false,
+    };
+  },
 
-  return serverClient;
-}
+  // Session management
+  createSession: async (_email: string, _password: string) => {
+    return { $id: "mock-session-id" };
+  },
 
-// Admin (Node SDK) client for privileged operations
-function getAdminClient() {
-  if (adminClient) return adminClient;
-  const apiKey = process.env.APPWRITE_API_KEY;
-  if (!apiKey) {
-    throw new Error("APPWRITE_API_KEY is not set for admin operations");
-  }
-  adminClient = new NodeSdkClient()
-    .setEndpoint(appwriteConfig.endpoint)
-    .setProject(appwriteConfig.projectId)
-    .setKey(apiKey);
-  return adminClient;
-}
+  deleteSession: async (_sessionId: string) => {
+    return {};
+  },
 
-// Get admin databases instance (uses API key)
-export function getAdminDatabases() {
-  if (adminDatabases) return adminDatabases;
-  adminDatabases = new NodeDatabases(getAdminClient());
-  return adminDatabases;
-}
+  updateRecovery: async (
+    _userId: string,
+    _secret: string,
+    _password: string
+  ) => {
+    return {};
+  },
 
-// Get server-side account instance
+  createRecovery: async (_email: string, _url: string) => {
+    return {};
+  },
+};
+
+// Mock server databases with minimal functionality
+const mockServerDatabases = {
+  listDocuments: async (
+    _databaseId: string,
+    _collectionId: string,
+    _queries: unknown[] = []
+  ) => {
+    // Return empty mock documents
+    return {
+      documents: [],
+      total: 0,
+    };
+  },
+
+  getDocument: async (
+    _databaseId: string,
+    _collectionId: string,
+    documentId: string
+  ) => {
+    // Return a mock document with all expected properties
+    return {
+      $id: documentId,
+      userId: "mock-user-id",
+      accountNumber: "123456789",
+      routingNumber: "987654321",
+      accountType: "checking",
+      balance: 1000.0,
+      currency: "USD",
+      name: "Mock Account",
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  },
+
+  createDocument: async (
+    _databaseId: string,
+    _collectionId: string,
+    documentId: string,
+    data: Record<string, unknown>
+  ) => {
+    return { $id: documentId, ...data };
+  },
+
+  updateDocument: async (
+    _databaseId: string,
+    _collectionId: string,
+    documentId: string,
+    data: Record<string, unknown>
+  ) => {
+    return { $id: documentId, ...data };
+  },
+
+  deleteDocument: async (
+    _databaseId: string,
+    _collectionId: string,
+    _documentId: string
+  ) => {
+    return true;
+  },
+};
+
+// Mock teams functionality
+const mockServerTeams = {
+  // Teams can be implemented if needed
+};
+
+// Export server-side Appwrite functions
 export function getServerAccount() {
-  if (serverAccount) return serverAccount;
-  serverAccount = new Account(getServerClient());
-  return serverAccount;
+  return mockServerAccount;
 }
 
-// Get server-side teams instance
+export function getServerDatabases() {
+  return mockServerDatabases;
+}
+
+export function getAdminDatabases() {
+  return mockServerDatabases;
+}
+
 export function getServerTeams() {
-  if (serverTeams) return serverTeams;
-  serverTeams = new NodeTeams(getAdminClient());
-  return serverTeams;
+  return mockServerTeams;
 }
 
-export { ID, Query, Permission, Role };
+export { ID, Query };

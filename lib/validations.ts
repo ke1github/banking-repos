@@ -1,86 +1,92 @@
 import { z } from "zod";
-import { CommonValidation } from "./commonValidation";
 
-/**
- * Auth Form Validation Schemas
- */
+// Login form validation schema
 export const signInSchema = z.object({
-  email: CommonValidation.email,
-  password: CommonValidation.simplePassword, // Using simpler password validation for login
-  remember: z.boolean().optional(),
-});
-
-export const signUpSchema = z.object({
-  // Personal Information
-  firstName: CommonValidation.firstName,
-  middleName: CommonValidation.middleName,
-  lastName: CommonValidation.lastName,
-  email: CommonValidation.email,
-  password: CommonValidation.password,
-  mobile: CommonValidation.phone,
-  dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
-
-  // Address Information
-  addressLine1: CommonValidation.address,
-  addressLine2: z
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z
     .string()
-    .optional()
-    .transform((val) => (val === "" ? undefined : val)),
-  city: CommonValidation.city,
-  state: CommonValidation.state,
-  pinCode: CommonValidation.pinCode,
-
-  // Financial Information
-  pan: CommonValidation.pan,
-
-  // Terms and Conditions
-  terms: z.boolean().refine((val) => val === true, {
-    message: "You must accept the terms and conditions",
-  }),
+    .min(6, { message: "Password must be at least 6 characters" }),
+  remember: z.boolean().optional().default(false),
 });
 
-// Form data types
-export type SignInFormValues = z.infer<typeof signInSchema>;
-export type SignUpFormValues = z.infer<typeof signUpSchema> & {
-  name?: string; // Add optional name property for backward compatibility
-  _firstName?: string; // Internal use
-  _lastName?: string; // Internal use
-  _middleName?: string; // Internal use
-};
+// Registration form validation schema
+export const signUpSchema = z
+  .object({
+    // Personal Information
+    firstName: z
+      .string()
+      .min(2, { message: "First name must be at least 2 characters" }),
+    middleName: z.string().optional(),
+    lastName: z
+      .string()
+      .min(2, { message: "Last name must be at least 2 characters" }),
+    email: z.string().email({ message: "Please enter a valid email address" }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+    confirmPassword: z.string(),
+    mobile: z
+      .string()
+      .min(10, { message: "Please enter a valid mobile number" }),
+    dateOfBirth: z.string().refine(
+      (val) => {
+        // Basic date validation - can be enhanced
+        return val && new Date(val).toString() !== "Invalid Date";
+      },
+      { message: "Please enter a valid date of birth" }
+    ),
 
-/**
- * Transfer Form Validation Schema
- */
+    // Address Information
+    addressLine1: z.string().min(1, { message: "Address is required" }),
+    addressLine2: z.string().optional(),
+    city: z.string().min(1, { message: "City is required" }),
+    state: z.string().min(1, { message: "State is required" }),
+    pinCode: z.string().min(6, { message: "Please enter a valid PIN code" }),
+
+    // Financial Information
+    pan: z
+      .string()
+      .min(10, { message: "Please enter a valid 10-character PAN" }),
+    terms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions",
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+// Password reset request validation schema
+export const resetRequestSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+});
+
+// Password reset validation schema
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+// Types for form values
+// Transfer form validation schema
 export const transferFormSchema = z.object({
-  fromAccount: CommonValidation.accountNumber,
-  toAccount: CommonValidation.accountNumber,
-  amount: CommonValidation.amount,
+  fromAccount: z.string().min(1, { message: "Source account is required" }),
+  toAccount: z.string().min(1, { message: "Destination account is required" }),
+  amount: z
+    .number()
+    .min(0.01, { message: "Amount is required and must be positive" }),
   description: z.string().optional(),
 });
 
+export type SignInFormValues = z.infer<typeof signInSchema>;
+export type SignUpFormValues = z.infer<typeof signUpSchema>;
+export type ResetRequestFormValues = z.infer<typeof resetRequestSchema>;
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 export type TransferFormValues = z.infer<typeof transferFormSchema>;
-
-/**
- * Profile Form Validation Schema
- */
-export const profileFormSchema = z.object({
-  name: CommonValidation.name,
-  email: CommonValidation.email,
-  phone: CommonValidation.phoneOptional,
-  address: z.string().optional(),
-});
-
-export type ProfileFormValues = z.infer<typeof profileFormSchema>;
-
-/**
- * Card Form Validation Schema
- */
-export const cardFormSchema = z.object({
-  cardholderName: CommonValidation.cardholderName,
-  cardNumber: CommonValidation.cardNumber,
-  expiryMonth: CommonValidation.expiryMonth,
-  expiryYear: CommonValidation.expiryYear,
-  cvv: CommonValidation.cvv,
-});
-
-export type CardFormValues = z.infer<typeof cardFormSchema>;

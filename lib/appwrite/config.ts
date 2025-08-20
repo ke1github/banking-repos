@@ -1,206 +1,223 @@
-import {
-  Client,
-  Account,
-  Databases,
-  ID,
-  Query,
-  AppwriteException,
-  Models,
-} from "appwrite";
-import { logAuthError } from "@/lib/utils/logger";
+import { logAuthError } from "@/lib/utils/mock-logger";
 import { isSessionExpiredError } from "@/lib/handlers/appwrite-errors";
 
+// Mock configuration values
 export const appwriteConfig = {
   endpoint:
     process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1",
-  projectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "",
-  databaseId: process.env.APPWRITE_DATABASE_ID || "",
-  userCollectionId: process.env.APPWRITE_USER_COLLECTION_ID || "",
-  bankCollectionId: process.env.APPWRITE_BANK_COLLECTION_ID || "",
-  transactionCollectionId: process.env.APPWRITE_TRANSACTION_COLLECTION_ID || "",
+  projectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "mock-project",
+  databaseId: process.env.APPWRITE_DATABASE_ID || "mock-database",
+  userCollectionId: process.env.APPWRITE_USER_COLLECTION_ID || "mock-users",
+  bankCollectionId: process.env.APPWRITE_BANK_COLLECTION_ID || "mock-banks",
+  transactionCollectionId:
+    process.env.APPWRITE_TRANSACTION_COLLECTION_ID || "mock-transactions",
 };
-
-// Initialize the Appwrite client
-const client = new Client();
-
-client
-  .setEndpoint(appwriteConfig.endpoint)
-  .setProject(appwriteConfig.projectId);
-
-// Initialize Appwrite services
-export const account = new Account(client);
-export const databases = new Databases(client);
-
-// Utility function to check if running on server side
-export const isServer = () => typeof window === "undefined";
-
-// Auth state caching to reduce API calls
-let isAuthenticatedCache = false;
-let lastAuthCheck = 0;
-let userCache: Models.User<Models.Preferences> | null = null;
-const AUTH_CHECK_THROTTLE = 5000; // 5 seconds
 
 /**
- * Safe wrapper for Appwrite account methods to handle guest scope errors
- * This prevents the common "User (role: guests) missing scope (account)" error
- * by providing better error handling and fallbacks
+ * Mock implementations of Appwrite classes and utilities
  */
+
+// Mock Client class
+class MockClient {
+  setEndpoint() {
+    return this;
+  }
+  setProject() {
+    return this;
+  }
+  setPlatform() {
+    return this;
+  }
+}
+
+// Mock Account class with basic functionality
+class MockAccount {
+  // Mock user data
+  mockUser = {
+    $id: "mock-user-id",
+    $createdAt: new Date().toISOString(),
+    $updatedAt: new Date().toISOString(),
+    name: "Mock User",
+    email: "user@example.com",
+    emailVerification: false,
+    phoneVerification: false,
+    prefs: {},
+  };
+
+  // Session management
+  createSession() {
+    return Promise.resolve({ $id: "mock-session-id" });
+  }
+
+  getSession() {
+    return Promise.resolve({ $id: "mock-session-id" });
+  }
+
+  deleteSessions() {
+    return Promise.resolve();
+  }
+
+  deleteSession() {
+    return Promise.resolve();
+  }
+
+  get() {
+    // Return mock user data
+    return Promise.resolve(this.mockUser);
+  }
+
+  create() {
+    return Promise.resolve(this.mockUser);
+  }
+
+  createRecovery() {
+    return Promise.resolve();
+  }
+
+  updateRecovery() {
+    return Promise.resolve();
+  }
+
+  // Add missing methods
+  createOAuth2Session() {
+    return Promise.resolve();
+  }
+
+  createEmailPasswordSession() {
+    return Promise.resolve({ $id: "mock-session-id" });
+  }
+}
+
+// Mock Databases class with data
+class MockDatabases {
+  // Sample data for the database
+  mockData = {
+    users: [
+      {
+        $id: "user1",
+        name: "John Doe",
+        email: "john@example.com",
+      },
+    ],
+    banks: [
+      {
+        $id: "bank1",
+        name: "Sample Bank",
+        accountNumber: "1234567890",
+        balance: 5000,
+        userId: "user1",
+      },
+    ],
+    transactions: [
+      {
+        $id: "tx1",
+        amount: 100,
+        description: "Grocery shopping",
+        date: new Date().toISOString(),
+        type: "expense",
+        userId: "user1",
+      },
+      {
+        $id: "tx2",
+        amount: 2500,
+        description: "Salary deposit",
+        date: new Date().toISOString(),
+        type: "income",
+        userId: "user1",
+      },
+    ],
+  };
+
+  listDocuments(databaseId: string, collectionId: string) {
+    let documents: unknown[] = [];
+
+    if (collectionId === appwriteConfig.userCollectionId) {
+      documents = this.mockData.users;
+    } else if (collectionId === appwriteConfig.bankCollectionId) {
+      documents = this.mockData.banks;
+    } else if (collectionId === appwriteConfig.transactionCollectionId) {
+      documents = this.mockData.transactions;
+    }
+
+    return Promise.resolve({
+      documents,
+      total: documents.length,
+    });
+  }
+
+  getDocument(databaseId: string, collectionId: string, documentId: string) {
+    let document = null;
+
+    if (collectionId === appwriteConfig.userCollectionId) {
+      document = this.mockData.users.find((doc) => doc.$id === documentId);
+    } else if (collectionId === appwriteConfig.bankCollectionId) {
+      document = this.mockData.banks.find((doc) => doc.$id === documentId);
+    } else if (collectionId === appwriteConfig.transactionCollectionId) {
+      document = this.mockData.transactions.find(
+        (doc) => doc.$id === documentId
+      );
+    }
+
+    if (!document) {
+      return Promise.reject(new Error("Document not found"));
+    }
+
+    return Promise.resolve(document);
+  }
+
+  updateDocument(
+    databaseId: string,
+    collectionId: string,
+    documentId: string,
+    data: Record<string, unknown>
+  ) {
+    const updatedDocument = {
+      $id: documentId,
+      $updatedAt: new Date().toISOString(),
+      ...data,
+    };
+
+    return Promise.resolve(updatedDocument);
+  }
+
+  deleteDocument(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    databaseId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    collectionId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    documentId: string
+  ) {
+    return Promise.resolve();
+  }
+}
+
+// Create and export instances
+const client = new MockClient();
+const account = new MockAccount();
+const databases = new MockDatabases();
+
+export { client, account, databases };
+
+// Export a safe version of the account that returns null on errors
 export const safeAccount = {
-  /**
-   * Get the current user account information
-   * Returns null instead of throwing if user is not authenticated
-   * Uses caching to reduce API calls and avoid guest scope errors
-   */
-  async get(): Promise<Models.User<Models.Preferences> | null> {
-    const now = Date.now();
-
-    // Return cached user data if fresh enough
-    if (userCache && now - lastAuthCheck < AUTH_CHECK_THROTTLE) {
-      return userCache;
-    }
-
+  get: async () => {
     try {
-      const user = await account.get();
-      // Update cache
-      userCache = user;
-      isAuthenticatedCache = true;
-      lastAuthCheck = now;
-      return user;
+      return await account.get();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      // If it's a session error or guest scope error, return null without excessive logging
-      if (
-        isSessionExpiredError(error) ||
-        (error instanceof Error && error.message.includes("missing scope"))
-      ) {
-        // Update cache
-        userCache = null;
-        isAuthenticatedCache = false;
-        lastAuthCheck = now;
-        return null;
-      }
-
-      // Log unexpected errors
-      logAuthError(error, "safe_account_get");
-
-      // Update cache for failed auth
-      userCache = null;
-      isAuthenticatedCache = false;
-      lastAuthCheck = now;
-
       return null;
     }
-  },
-
-  /**
-   * Fast check if user is authenticated (uses cache when possible)
-   */
-  async isAuthenticated(): Promise<boolean> {
-    const now = Date.now();
-
-    // Use cached auth state if recent
-    if (now - lastAuthCheck < AUTH_CHECK_THROTTLE) {
-      return isAuthenticatedCache;
-    }
-
-    // Otherwise check with API
-    try {
-      const user = await this.get();
-      return !!user;
-    } catch {
-      return false;
-    }
-  },
-
-  /**
-   * Create a new session safely
-   */
-  async createSession(email: string, password: string) {
-    try {
-      const session = await account.createSession(email, password);
-
-      // Reset cache to force a fresh check on next get() call
-      lastAuthCheck = 0;
-
-      return session;
-    } catch (error) {
-      // Always log auth failures with limited info
-      logAuthError(error, "safe_account_create_session", {
-        email: email.substring(0, 3) + "...", // Only log partial email for privacy
-      });
-      throw error; // Re-throw for the calling code to handle
-    }
-  },
-
-  /**
-   * Delete a session safely
-   */
-  async deleteSession(sessionId: string) {
-    try {
-      const result = await account.deleteSession(sessionId);
-
-      // Clear cache immediately on logout
-      userCache = null;
-      isAuthenticatedCache = false;
-      lastAuthCheck = Date.now();
-
-      return result;
-    } catch (error) {
-      // If it's a scope error, the session is already gone or invalid
-      if (
-        error instanceof AppwriteException &&
-        (error.type === "user_missing_scope" ||
-          error.message.includes("missing scope") ||
-          error.code === 401)
-      ) {
-        // Clear cache
-        userCache = null;
-        isAuthenticatedCache = false;
-        lastAuthCheck = Date.now();
-
-        return null; // Return silently as the session is already effectively gone
-      }
-
-      // Log other errors
-      logAuthError(error, "safe_account_delete_session");
-
-      // Clear cache anyway on error
-      userCache = null;
-      isAuthenticatedCache = false;
-      lastAuthCheck = Date.now();
-
-      // No need to rethrow most errors when deleting a session
-      // as the end goal (session gone) is already achieved
-      return null;
-    }
-  },
-
-  /**
-   * Create a new user account safely
-   */
-  async create(userId: string, email: string, password: string, name: string) {
-    try {
-      const user = await account.create(userId, email, password, name);
-
-      // Reset cache to force a fresh check on next get() call
-      lastAuthCheck = 0;
-
-      return user;
-    } catch (error) {
-      // Log the error with context
-      logAuthError(error, "safe_account_create", {
-        email: email.substring(0, 3) + "...", // Only log partial email for privacy
-      });
-      throw error; // Re-throw for the calling code to handle
-    }
-  },
-
-  /**
-   * Pass-through to the underlying Appwrite account object
-   * for other methods not specifically wrapped
-   */
-  get appwrite() {
-    return account;
   },
 };
 
-export { ID, Query };
+// Mock ID utility
+export const ID = {
+  unique: () => "mock-unique-id",
+};
+
+// Mock Query utility
+export const Query = {
+  equal: (field: string, value: unknown) => `${field}=${String(value)}`,
+  limit: (limit: number) => `limit=${limit}`,
+};

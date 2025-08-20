@@ -1,102 +1,71 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AuthForm from "@/components/foms/AuthForm";
-import { SignUpFormValues } from "@/lib/validations";
-import { account as appwriteAccount } from "@/lib/appwrite/config";
+import AuthForm from "@/components/forms/AuthForm";
 import { ROUTES } from "@/constants/route";
-import { useAppwrite } from "@/lib/hooks/useAppwrite";
-import { registerAction } from "@/lib/actions/auth.actions";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function SignUp() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
-  const { register: syncRegister } = useAppwrite();
+  const { signup } = useAuth();
+  const [mounted, setMounted] = useState(false);
 
-  const handleSignUp = (data: SignUpFormValues) => {
+  // Fix for hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleSignUp = (data: any) => {
     if (isPending) return;
 
     setError("");
 
     startTransition(async () => {
       try {
-        // Check if already signed in
-        try {
-          const existing = await appwriteAccount.get();
-          if (existing) {
-            if (existing.email === data.email) {
-              toast.info("You're already signed up with this email");
-              setTimeout(() => router.push(ROUTES.HOME), 1000);
-              return;
-            }
+        // Use our consolidated auth hook
+        const result = await signup(data);
 
-            // If logged in as a different user, log out first
-            await appwriteAccount.deleteSession("current");
-          }
-        } catch (e) {
-          // Not logged in, which is the expected case for sign-up
-          console.error("Error checking existing account:", e);
+        if (result.success) {
+          // Navigate to the dashboard after successful signup
+          router.push(ROUTES.HOME);
+          toast.success("Account created successfully");
+        } else {
+          const errorMsg = result.error || "Failed to create account";
+          setError(errorMsg);
+          toast.error(errorMsg);
         }
-
-        // Call the server action to register
-        const result = await registerAction({
-          email: data.email,
-          password: data.password,
-          name: `${data.firstName} ${
-            data.middleName ? data.middleName + " " : ""
-          }${data.lastName}`,
-        });
-
-        if (!result.success) {
-          // Check for user already exists error
-          if (result.error?.includes("exists")) {
-            try {
-              // Try to log in instead
-              await appwriteAccount.createSession(data.email, data.password);
-              await syncRegister(data.email, data.password, "");
-
-              toast.success("Logged in with existing account");
-              setTimeout(() => router.push(ROUTES.HOME), 1000);
-              return;
-            } catch (e) {
-              console.error("Error logging in with existing account:", e);
-              setError(
-                "An account with this email already exists. Please sign in."
-              );
-              return;
-            }
-          }
-
-          setError(result.error || "Registration failed");
-          return;
-        }
-
-        // Sync client-side state
-        await syncRegister(data.email, data.password, "");
-
-        // No need to set cookies on client as server action already sets them
-        // and middleware will pick them up on the next navigation
-
-        toast.success("Account created successfully!");
-        setTimeout(() => router.push(ROUTES.HOME), 1000);
       } catch (e) {
         console.error("Sign up error:", e);
         const msg =
           e instanceof Error
             ? e.message
-            : "An unexpected error occurred. Please try again.";
+            : "Failed to sign up. Please try again.";
         setError(msg);
+        toast.error(msg);
       }
     });
   };
 
+  // Show sign-up form with hydration fix
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-pulse text-center">
+          <div className="h-12 w-12 mx-auto rounded-full bg-blue-200"></div>
+          <p className="mt-2 text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AuthForm
       mode="signup"
-      onSubmit={(data) => handleSignUp(data as SignUpFormValues)}
+      onSubmit={handleSignUp}
       isLoading={isPending}
       error={error}
     />
