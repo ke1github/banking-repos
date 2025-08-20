@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import BankDetails from "@/components/bank/BankDetails";
+import BankDetails from "@/components/BankDetails";
 
 export type BeneficiaryValues = {
   ifsc: string;

@@ -1,5 +1,5 @@
 import { HeaderBox } from "@/components/HeaderBox";
-import BalanceCard from "@/components/BalanceCard";
+import BalanceCard from "@/components/cards/BalanceCard";
 import TransferForm from "@/components/TransferForm";
 import RightSidebar from "@/components/RightSidebar";
 import { getServerAccount } from "@/lib/appwrite/server-config";

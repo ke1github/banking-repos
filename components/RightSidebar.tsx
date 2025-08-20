@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/constants/route";
-import BankCard from "./BankCard";
+import BankCard from "./cards/BankCard";
 import AccountCard from "./AccountCard";
 
 interface CardData {

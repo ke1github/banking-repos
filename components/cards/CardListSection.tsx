@@ -4,7 +4,7 @@ import React from "react";
 import BankCard from "./BankCard";
 import Link from "next/link";
 import { cardDetailsPath, ROUTES } from "@/constants/route";
-import QuickCardActions from "@/components/cards/QuickCardActions";
+import QuickCardActions from "@/components/QuickCardActions";
 
 interface CardData {
   id: string;

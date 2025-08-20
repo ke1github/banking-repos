@@ -1,4 +1,4 @@
-import CardListSection from "@/components/CardListSection";
+import CardListSection from "@/components/cards/CardListSection";
 import { getServerAccount } from "@/lib/appwrite/server-config";
 import { getUserBankAccounts } from "@/lib/actions/banking.actions";
 

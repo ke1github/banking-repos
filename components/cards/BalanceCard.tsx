@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import DoughnutChart from "./DoughnutChart";
-import AnimatedCounter from "./AnimatedCounter";
+import DoughnutChart from "../DoughnutChart";
+import AnimatedCounter from "../AnimatedCounter";
 import { Badge } from "@/components/ui/badge";
 import { ROUTES } from "@/constants/route";
 

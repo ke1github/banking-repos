@@ -3,7 +3,7 @@ type AccountDoc = {
   name?: string;
   accountType?: string;
 };
-import BeneficiaryBankFields from "@/components/bank/BeneficiaryBankFields";
+import BeneficiaryBankFields from "@/components/BeneficiaryBankFields";
 import { DateField } from "@/components/ui/DateField";
 import { getServerAccount } from "@/lib/appwrite/server-config";
 import { getUserBankAccounts } from "@/lib/actions/banking.actions";

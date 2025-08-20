@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Logo from "@/components/ui/logo";
-import CardListSection from "@/components/CardListSection";
+import CardListSection from "@/components/cards/CardListSection";
 import AccountListSection from "@/components/AccountListSection";
 import { getServerAccount } from "@/lib/appwrite/server-config";
 import { getUserBankAccounts } from "@/lib/actions/banking.actions";
