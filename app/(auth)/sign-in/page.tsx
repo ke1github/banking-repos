@@ -6,7 +6,7 @@ import { account as appwriteAccount } from "@/lib/appwrite/config";
 import { useAppwrite } from "@/lib/hooks/useAppwrite";
 import { loginAction } from "@/lib/actions/auth.actions";
 import { ROUTES } from "@/constants/route";
-import AuthForm from "@/components/auth/AuthForm";
+import AuthForm from "@/components/foms/AuthForm";
 import { SignInFormValues } from "@/lib/validations";
 import { toast } from "sonner";
 

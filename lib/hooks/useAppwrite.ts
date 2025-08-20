@@ -13,7 +13,7 @@ import { Models } from "appwrite";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
-import { isSessionExpiredError } from "@/lib/utils/appwrite-errors";
+import { isSessionExpiredError } from "@/lib/handlers/appwrite-errors";
 import { logAuthError } from "@/lib/utils/logger";
 
 // Session check interval (5 minutes)

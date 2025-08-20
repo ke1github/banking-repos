@@ -4,7 +4,7 @@
  */
 
 import { AppwriteException } from "appwrite";
-import { ErrorCode, AppError } from "./error-utils";
+import { ErrorCode, AppError } from "../utils/error-utils";
 
 // HTTP status code ranges
 export const HTTP_STATUS = {

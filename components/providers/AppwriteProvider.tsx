@@ -5,7 +5,7 @@ import {
   useProvideAppwrite,
 } from "@/lib/hooks/useAppwrite";
 import { useEffect } from "react";
-import { installErrorInterceptor } from "@/lib/utils/error-interceptor";
+import { installErrorInterceptor } from "@/lib/handlers/error-interceptor";
 
 interface AppwriteProviderProps {
   children: React.ReactNode;

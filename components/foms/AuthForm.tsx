@@ -22,7 +22,7 @@ import { StepIndicator, FormStep, FormNavigation } from "./FormComponents";
 import { SignInFormValues, SignUpFormValues } from "@/lib/validations";
 import Link from "next/link";
 import { ROUTES } from "@/constants/route";
-import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
+import GoogleLoginButton from "@/components/foms/GoogleLoginButton";
 
 export interface AuthFormProps {
   mode?: "signin" | "signup";

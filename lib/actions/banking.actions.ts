@@ -8,7 +8,7 @@ import {
 import { ID, Query } from "appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import type { Models } from "node-appwrite";
-import { validateWithZod } from "@/lib/utils/validation-utils";
+import { validateWithZod } from "@/lib/helpers/validation-utils";
 import { transferFormSchema, TransferFormValues } from "@/lib/validations";
 
 export type TransactionType = "deposit" | "withdrawal" | "transfer";

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CommonValidation } from "./utils/common-validations";
+import { CommonValidation } from "./commonValidation";
 
 /**
  * Auth Form Validation Schemas

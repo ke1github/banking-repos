@@ -22,7 +22,6 @@ export const ROUTES = {
   ACCOUNTS: "/accounts",
   ADD_CARD: "/add-card",
   CARDS: "/cards",
-  STATE_MANAGEMENT_DEMO: "/state-management-demo",
 } as const;
 
 // Public (unauthenticated) routes

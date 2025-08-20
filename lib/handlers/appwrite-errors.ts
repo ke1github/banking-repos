@@ -7,7 +7,7 @@
  */
 
 import { AppwriteException } from "appwrite";
-import { AppError, ErrorCode } from "./error-utils";
+import { AppError, ErrorCode } from "../utils/error-utils";
 import { handleAppwriteError } from "./error-handler";
 
 // Re-export the handleAppwriteError function from error-handler.ts

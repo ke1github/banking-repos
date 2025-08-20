@@ -8,11 +8,11 @@ import {
   Models,
 } from "appwrite";
 import { logAuthError } from "@/lib/utils/logger";
-import { isSessionExpiredError } from "@/lib/utils/appwrite-errors";
+import { isSessionExpiredError } from "@/lib/handlers/appwrite-errors";
 
 export const appwriteConfig = {
   endpoint:
-  process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1",
+    process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1",
   projectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "",
   databaseId: process.env.APPWRITE_DATABASE_ID || "",
   userCollectionId: process.env.APPWRITE_USER_COLLECTION_ID || "",

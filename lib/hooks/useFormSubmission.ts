@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { AppError } from "@/lib/utils/error-utils";
-import { parseActionError } from "@/lib/utils/error-handler";
+import { parseActionError } from "@/lib/handlers/error";
 
 interface UseFormSubmissionOptions<T> {
   onSuccess?: (data: T) => void;

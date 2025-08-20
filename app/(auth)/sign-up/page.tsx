@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import AuthForm from "@/components/auth/AuthForm";
+import AuthForm from "@/components/foms/AuthForm";
 import { SignUpFormValues } from "@/lib/validations";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
 import { ROUTES } from "@/constants/route";
