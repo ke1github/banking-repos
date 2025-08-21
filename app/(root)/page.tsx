@@ -12,10 +12,10 @@ export default function RootPage() {
   useEffect(() => {
     // Redirect based on the current sidebar mode
     if (mode === "investment") {
-      router.replace(ROUTES.INVESTMENTS);
+      router.push(ROUTES.INVESTMENTS);
     } else {
       // Default to banking
-      router.replace(ROUTES.BANKING_HOME);
+      router.push(ROUTES.BANKING_HOME);
     }
   }, [mode, router]);
 

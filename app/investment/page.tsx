@@ -36,20 +36,39 @@ export default function InvestmentHome() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$128,430.00</div>
+            <div className="text-2xl font-bold">$249,500.00</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              +18.2% from last month
             </p>
-            <Button className="w-full mt-4" variant="outline" size="sm">
-              View Details
-            </Button>
           </CardContent>
         </Card>
-
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">YTD Returns</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M16 3v4M8 3v4M4 11h16M11 15h1M11 19h1" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">+12.4%</div>
+            <p className="text-xs text-muted-foreground">
+              +2.1% above market index
+            </p>
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Year-to-Date Return
+              Asset Allocation
             </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -61,43 +80,43 @@ export default function InvestmentHome() {
               strokeWidth="2"
               className="h-4 w-4 text-muted-foreground"
             >
-              <path d="M16 3h5v5M8 3H3v5M3 16v5h5M16 21h5v-5" />
+              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+              <path d="M13 2v7h7" />
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+15.3%</div>
-            <p className="text-xs text-muted-foreground">+2.5% from S&P 500</p>
-            <Button className="w-full mt-4" variant="outline" size="sm">
-              Performance Details
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Cash Available
-            </CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <rect width="20" height="14" x="2" y="5" rx="2" />
-              <path d="M2 10h20" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$12,234.56</div>
-            <p className="text-xs text-muted-foreground">Ready to invest</p>
-            <Button className="w-full mt-4" variant="outline" size="sm">
-              Invest Now
-            </Button>
+            <div className="flex items-center space-x-2">
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-blue-600 h-2.5 rounded-full w-[45%]"></div>
+              </div>
+              <span className="text-xs font-medium text-muted-foreground">
+                45% Stocks
+              </span>
+            </div>
+            <div className="flex items-center space-x-2 mt-2">
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-green-500 h-2.5 rounded-full w-[30%]"></div>
+              </div>
+              <span className="text-xs font-medium text-muted-foreground">
+                30% Bonds
+              </span>
+            </div>
+            <div className="flex items-center space-x-2 mt-2">
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-purple-500 h-2.5 rounded-full w-[15%]"></div>
+              </div>
+              <span className="text-xs font-medium text-muted-foreground">
+                15% Cash
+              </span>
+            </div>
+            <div className="flex items-center space-x-2 mt-2">
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-yellow-500 h-2.5 rounded-full w-[10%]"></div>
+              </div>
+              <span className="text-xs font-medium text-muted-foreground">
+                10% Alternative
+              </span>
+            </div>
           </CardContent>
         </Card>
       </div>

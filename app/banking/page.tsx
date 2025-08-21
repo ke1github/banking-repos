@@ -31,20 +31,10 @@ export default function BankingHome() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-6">
-          <TransferForm accounts={[]} />
-        </div>
+        <TransferForm />
       </div>
-
-      <div className="hidden lg:block">
-        <RightSidebar
-          user={{
-            firstName: "",
-            lastName: undefined,
-            email: undefined,
-            avatar: undefined,
-          }}
-        />
+      <div className="lg:col-span-1">
+        <RightSidebar />
       </div>
     </div>
   );
