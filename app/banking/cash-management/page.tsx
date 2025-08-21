@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Account, Client, Databases, ID, Models } from "appwrite";
+import { Account, Client, Databases, Models } from "appwrite";
+import { account, databases, ID } from "@/lib/appwrite/config";
 import { CashDoc } from "@/types/cash";
 import { DateField } from "@/components/ui/DateField";
 

@@ -132,7 +132,7 @@ const BalanceCard = ({
 
       {/* Desktop (hidden on mobile) */}
       <section
-        className={`hidden md:block w-full md:max-w-[520px] lg:max-w-[560px] xl:max-w-[600px] rounded-2xl overflow-hidden shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl relative ${
+        className={`hidden md:block w-full rounded-2xl overflow-hidden shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl relative ${
           isCompact ? "bg-white" : "bg-gradient-to-br from-white to-blue-50"
         }`}
         onMouseEnter={() => setIsHovered(true)}

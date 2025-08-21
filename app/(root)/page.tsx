@@ -1,23 +1,33 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
 import { ROUTES } from "@/constants/route";
 
 export default function RootPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { mode } = useSidebarMode();
 
   useEffect(() => {
-    // Redirect based on the current sidebar mode
+    // Check if there's a specific redirect after auth
+    const callbackUrl = searchParams.get("callbackUrl");
+
+    if (callbackUrl) {
+      // If there's a callback URL, use it
+      router.push(callbackUrl);
+      return;
+    }
+
+    // Otherwise redirect based on the current sidebar mode
     if (mode === "investment") {
       router.push(ROUTES.INVESTMENTS);
     } else {
       // Default to banking
       router.push(ROUTES.BANKING_HOME);
     }
-  }, [mode, router]);
+  }, [mode, router, searchParams]);
 
   // Return a loading state while redirecting
   return (

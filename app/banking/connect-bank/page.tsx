@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Account, Client, Databases, ID, Models } from "appwrite";
+import { Models } from "appwrite";
 import BankDetails from "@/components/BankDetails";
 import { DateField } from "@/components/ui/DateField";
+import { account, databases, ID } from "@/lib/appwrite/config";
 
 function ConnectBankClient() {
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
@@ -13,17 +14,10 @@ function ConnectBankClient() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const client = new Client()
-      .setEndpoint(
-        process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
-          "https://cloud.appwrite.io/v1"
-      )
-      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "");
-    const account = new Account(client);
     account
       .get()
       .then((u) => {
-        setUser(u);
+        setUser(u as Models.User<Models.Preferences>);
         setLoading(false);
       })
       .catch((e) => {
@@ -40,13 +34,7 @@ function ConnectBankClient() {
     const formData = new FormData(e.currentTarget);
     try {
       if (!user) throw new Error("User not loaded");
-      const client = new Client()
-        .setEndpoint(
-          process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
-            "https://cloud.appwrite.io/v1"
-        )
-        .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "");
-      const databases = new Databases(client);
+
       const userId = user.$id;
       const name = formData.get("name") as string;
       const accountType = (formData.get("accountType") as string) || "checking";
@@ -72,8 +60,8 @@ function ConnectBankClient() {
         updatedAt: new Date().toISOString(),
       };
       await databases.createDocument(
-        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_BANK_COLLECTION_ID!,
+        "mock-database",
+        "mock-banks",
         ID.unique(),
         data
       );

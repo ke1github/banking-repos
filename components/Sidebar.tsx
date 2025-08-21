@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import NavLink from "./NavLink";
 import Logo from "@/components/ui/logo";
 import UserAvatar from "@/components/ui/UserAvatar";
@@ -28,6 +29,19 @@ interface SidebarProps {
 
 const Sidebar = ({ user }: SidebarProps) => {
   const { mode, setMode } = useSidebarMode();
+  const router = useRouter();
+
+  const handleTabChange = (value: string) => {
+    const newMode = value as "banking" | "investment";
+    setMode(newMode);
+
+    // Navigate to the appropriate dashboard
+    if (newMode === "investment") {
+      router.push(ROUTES.INVESTMENTS);
+    } else {
+      router.push(ROUTES.BANKING_HOME);
+    }
+  };
 
   return (
     <aside className="sidebar h-screen w-[256px] fixed left-0 top-0 border-r border-gray-200 shadow-sm hidden lg:flex flex-col overflow-hidden bg-white">
@@ -41,13 +55,7 @@ const Sidebar = ({ user }: SidebarProps) => {
 
         {/* Tabs for Banking and Investment */}
         <div className="px-4 pt-4">
-          <Tabs
-            defaultValue={mode}
-            className="w-full"
-            onValueChange={(value) =>
-              setMode(value as "banking" | "investment")
-            }
-          >
+          <Tabs value={mode} className="w-full" onValueChange={handleTabChange}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="banking">Banking</TabsTrigger>
               <TabsTrigger value="investment">Investment</TabsTrigger>
@@ -154,6 +162,12 @@ const Sidebar = ({ user }: SidebarProps) => {
                   Portfolio
                 </h3>
                 <div className="flex flex-col gap-1">
+                  <NavLink
+                    key="dashboard"
+                    href={ROUTES.INVESTMENTS}
+                    label="Dashboard"
+                    iconSrc="/icons/home.svg"
+                  />
                   <NavLink
                     key="portfolio"
                     href={ROUTES.PORTFOLIO}

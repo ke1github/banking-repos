@@ -51,12 +51,12 @@ export default function BankingLayout({
       </div>
 
       {/* Main content area */}
-      <main className="flex-1 mt-16 lg:mt-0">
-        {children}
+      <main className="flex-1 mt-16 lg:mt-0 lg:mr-80">
+        <div className="min-h-screen">{children}</div>
         <Footer />
       </main>
 
-      {/* Right sidebar (if used) */}
+      {/* Right sidebar */}
       <RightSidebar user={userDisplayData} />
     </div>
   );

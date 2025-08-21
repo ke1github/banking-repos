@@ -1,6 +1,3 @@
-import { logAuthError } from "@/lib/utils/mock-logger";
-import { isSessionExpiredError } from "@/lib/handlers/appwrite-errors";
-
 // Mock configuration values
 export const appwriteConfig = {
   endpoint:
@@ -178,6 +175,24 @@ class MockDatabases {
     };
 
     return Promise.resolve(updatedDocument);
+  }
+
+  createDocument(
+    databaseId: string,
+    collectionId: string,
+    documentId: string,
+    data: Record<string, unknown>
+  ) {
+    const newDocument = {
+      $id: documentId,
+      $createdAt: new Date().toISOString(),
+      $updatedAt: new Date().toISOString(),
+      ...data,
+    };
+
+    // For this mock implementation, we'll just return the document
+    // without trying to persist it to the mock data arrays
+    return Promise.resolve(newDocument);
   }
 
   deleteDocument(

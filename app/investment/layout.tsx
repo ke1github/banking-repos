@@ -3,7 +3,7 @@
 import React from "react";
 import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
 import Sidebar from "@/components/Sidebar";
-import RightSidebar from "@/components/RightSidebar";
+import InvestmentRightSidebar from "@/components/InvestmentRightSidebar";
 import MobileNavbar from "@/components/MobileNavbar";
 import Footer from "@/components/Footer";
 import { useAuthStore } from "@/lib/stores/auth-store";
@@ -51,13 +51,13 @@ export default function InvestmentLayout({
       </div>
 
       {/* Main content area */}
-      <main className="flex-1 mt-16 lg:mt-0">
-        {children}
+      <main className="flex-1 mt-16 lg:mt-0 lg:mr-80">
+        <div className="min-h-screen">{children}</div>
         <Footer />
       </main>
 
-      {/* Right sidebar (if used) */}
-      <RightSidebar user={userDisplayData} />
+      {/* Right sidebar */}
+      <InvestmentRightSidebar user={userDisplayData} />
     </div>
   );
 }
