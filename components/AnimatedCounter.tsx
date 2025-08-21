@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import CountUp from "react-countup";
 
 interface AnimatedCounterProps {
@@ -51,8 +51,33 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   scrollSpyDelay = 0,
   preserveValue = true,
 }) => {
+  const counterRef = useRef<HTMLSpanElement>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // Set isClient to true once component mounts (client-side)
+    setIsClient(true);
+  }, []);
+
+  // Don't render CountUp until we're on the client side and have a valid ref
+  if (!isClient) {
+    // Return a placeholder with the end value
+    return (
+      <span className={className}>
+        {prefix}
+        {typeof end === "number"
+          ? end.toLocaleString("en-US", {
+              minimumFractionDigits: decimals,
+              maximumFractionDigits: decimals,
+            })
+          : "0"}
+        {suffix}
+      </span>
+    );
+  }
+
   return (
-    <span className={className}>
+    <span className={className} ref={counterRef}>
       <CountUp
         start={start}
         end={end}

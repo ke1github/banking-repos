@@ -1,14 +1,29 @@
 # SP Banking App
 
-A modern banking application built with Next.js and Appwrite.
+A modern banking and investment application built with Next.js and Appwrite.
 
 ## Features
 
 - User authentication (sign-up, sign-in, logout)
 - Banking account management
+- Investment portfolio management
 - Transaction history
 - Fund transfers between accounts
 - Responsive dashboard interface
+- Toggle between Banking and Investment modes
+
+## Application Structure
+
+The application is organized into two main sections:
+
+1. **Banking Section** (`/banking/*`)
+
+   - Dashboard, accounts, transactions, transfers, etc.
+
+2. **Investment Section** (`/investment/*`)
+   - Portfolio, stocks, mutual funds, bonds, crypto, etc.
+
+Users can switch between Banking and Investment modes using the sidebar tabs.
 
 ## Quick Start
 
@@ -45,37 +60,39 @@ Our banking app uses two complementary state management approaches:
 ### Examples
 
 **Zustand:**
+
 ```tsx
 const { user, login, logout } = useAuthStore();
 return user ? (
-    <div>
-        <h1>Welcome, {user.name}</h1>
-        <button onClick={logout}>Logout</button>
-    </div>
+  <div>
+    <h1>Welcome, {user.name}</h1>
+    <button onClick={logout}>Logout</button>
+  </div>
 ) : (
-    <LoginForm onSubmit={login} />
+  <LoginForm onSubmit={login} />
 );
 ```
 
 **URL State:**
+
 ```tsx
 const [filters, setFilters] = useTransactionFiltersState();
 return (
-    <div>
-        <select
-            value={filters.type}
-            onChange={(e) => setFilters({ type: e.target.value })}
-        >
-            <option value="all">All Transactions</option>
-            <option value="deposit">Deposits</option>
-            <option value="withdrawal">Withdrawals</option>
-        </select>
-        <input
-            type="date"
-            value={filters.dateFrom}
-            onChange={(e) => setFilters({ dateFrom: e.target.value })}
-        />
-    </div>
+  <div>
+    <select
+      value={filters.type}
+      onChange={(e) => setFilters({ type: e.target.value })}
+    >
+      <option value="all">All Transactions</option>
+      <option value="deposit">Deposits</option>
+      <option value="withdrawal">Withdrawals</option>
+    </select>
+    <input
+      type="date"
+      value={filters.dateFrom}
+      onChange={(e) => setFilters({ dateFrom: e.target.value })}
+    />
+  </div>
 );
 ```
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import DoughnutChart from "../DoughnutChart";
@@ -35,7 +35,13 @@ const BalanceCard = ({
   variant = "full",
 }: BalanceCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const isCompact = variant === "compact";
+
+  useEffect(() => {
+    // Set isClient to true once component mounts (client-side)
+    setIsClient(true);
+  }, []);
 
   const accountDistribution = [
     { type: "Checking", percentage: 40, color: "#0047B3" },
