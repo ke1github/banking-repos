@@ -15,9 +15,14 @@ interface Account {
 
 interface BalanceCardProps {
   accounts?: Array<Account>;
-  totalBanks: number;
-  totalCurrentBalance: number;
+  totalBanks?: number;
+  totalCurrentBalance?: number;
   variant?: "full" | "compact";
+  title?: string;
+  amount?: number;
+  currency?: string;
+  trend?: string;
+  percentage?: number;
 }
 
 const counterConfig = {
@@ -30,9 +35,14 @@ const counterConfig = {
 
 const BalanceCard = ({
   accounts = [],
-  totalBanks,
-  totalCurrentBalance,
+  totalBanks = 0,
+  totalCurrentBalance = 0,
   variant = "full",
+  title,
+  amount,
+  currency,
+  trend,
+  percentage,
 }: BalanceCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isClient, setIsClient] = useState(false);

@@ -2,18 +2,20 @@ import React from "react";
 import Logo from "@/components/ui/logo";
 
 interface HeaderBoxProps {
-  type: string;
+  type?: string;
   title: string;
   user?: string;
-  subtext: string;
+  subtext?: string;
+  subtitle?: string;
   showLogo?: boolean;
 }
 
 export const HeaderBox: React.FC<HeaderBoxProps> = ({
-  type,
+  type = "default",
   title,
   user,
   subtext,
+  subtitle,
   showLogo = false,
 }) => (
   <div className="mb-2">
@@ -26,6 +28,6 @@ export const HeaderBox: React.FC<HeaderBoxProps> = ({
         )}
       </h1>
     </div>
-    <p className="text-sm text-gray-600 max-w-2xl">{subtext}</p>
+    <p className="text-sm text-gray-600 max-w-2xl">{subtitle || subtext}</p>
   </div>
 );

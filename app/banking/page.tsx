@@ -10,6 +10,7 @@ export default function BankingHome() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
       <div className="lg:col-span-2 space-y-6">
         <HeaderBox
+          type="default"
           title="Banking Dashboard"
           subtitle="Manage your accounts, cards and transactions"
         />
@@ -21,6 +22,8 @@ export default function BankingHome() {
             currency="USD"
             trend="up"
             percentage={3.2}
+            totalBanks={3}
+            totalCurrentBalance={42567.89}
           />
           <BalanceCard
             title="This Month"
@@ -28,10 +31,12 @@ export default function BankingHome() {
             currency="USD"
             trend="down"
             percentage={1.5}
+            totalBanks={3}
+            totalCurrentBalance={8234.56}
           />
         </div>
 
-        <TransferForm />
+        <TransferForm accounts={[]} />
       </div>
       <div className="lg:col-span-1">
         <RightSidebar />

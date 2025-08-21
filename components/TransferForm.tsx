@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 
 interface TransferFormProps {
-  accounts: Array<{
+  accounts?: Array<{
     id: string;
     name: string;
   }>;
@@ -38,7 +38,7 @@ function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   );
 }
 
-export default function TransferForm({ accounts }: TransferFormProps) {
+export default function TransferForm({ accounts = [] }: TransferFormProps) {
   const [submissionStatus, setSubmissionStatus] = useState<{
     success?: boolean;
     message?: string;

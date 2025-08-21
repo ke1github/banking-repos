@@ -33,7 +33,7 @@ interface BankAccountData {
 }
 
 interface RightSidebarProps {
-  user: {
+  user?: {
     firstName: string;
     lastName?: string;
     email?: string;
@@ -44,7 +44,7 @@ interface RightSidebarProps {
 }
 
 const RightSidebar = ({
-  user,
+  user = { firstName: "Guest" },
   bankAccounts = [],
   cards = [],
 }: RightSidebarProps) => {
