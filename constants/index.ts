@@ -75,6 +75,11 @@ export const sidebarLinks: {
       label: "Portfolio",
     },
     {
+      imgURL: "/icons/search.svg",
+      route: ROUTES.INVESTMENT_SCREENER,
+      label: "Screener",
+    },
+    {
       imgURL: "/icons/trending-up.svg",
       route: ROUTES.STOCKS,
       label: "Stocks",

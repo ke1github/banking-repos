@@ -31,6 +31,7 @@ export const ROUTES = {
   MUTUAL_FUNDS: "/investment/mutual-funds",
   BONDS: "/investment/bonds",
   CRYPTO: "/investment/crypto",
+  INVESTMENT_SCREENER: "/investment/screener",
   INVESTMENT_PERFORMANCE: "/investment/performance",
   INVESTMENT_PLANNER: "/investment/planner",
   INVESTMENT_CALCULATORS: "/investment/calculators",
@@ -59,4 +60,3 @@ export const isRoutePath = (href: string): href is RoutePath =>
 // Public-route check helper
 export const isPublicRoute = (pathname: string): boolean =>
   PUBLIC_ROUTES.some((path) => pathname.startsWith(path));
-

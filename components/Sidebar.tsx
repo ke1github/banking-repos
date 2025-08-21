@@ -223,6 +223,12 @@ const Sidebar = ({ user }: SidebarProps) => {
                 </h3>
                 <div className="flex flex-col gap-1">
                   <NavLink
+                    key="screener"
+                    href={ROUTES.INVESTMENT_SCREENER}
+                    label="Screener"
+                    iconSrc="/icons/search.svg"
+                  />
+                  <NavLink
                     key="planner"
                     href={ROUTES.INVESTMENT_PLANNER}
                     label="Investment Planner"
