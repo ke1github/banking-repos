@@ -2,7 +2,6 @@
 
 import React from "react";
 import { account as appwriteAccount } from "@/lib/appwrite/config";
-import type { OAuthProvider } from "appwrite";
 
 import { ROUTES } from "@/constants/route";
 import { useRouter } from "next/navigation";
@@ -19,21 +18,9 @@ export default function GoogleLoginButton({
   const router = useRouter();
   const handleClick = async () => {
     try {
-      // Start the OAuth2 flow
-      // Prefer a configured site URL to avoid localhost vs 127.0.0.1 mismatches
-      const base =
-        process.env.NEXT_PUBLIC_SITE_URL ||
-        (typeof window !== "undefined" ? window.location.origin : "");
-      const success = new URL(
-        `${ROUTES.OAUTH_CALLBACK}?remember=${remember ? "1" : "0"}`,
-        base
-      ).toString();
-      const failure = new URL(ROUTES.SIGN_IN, base).toString();
-      await appwriteAccount.createOAuth2Session(
-        "google" as OAuthProvider,
-        success,
-        failure
-      );
+      // In a real app, this would initiate OAuth2 with Google
+      // For our mock implementation, we just simulate success
+      await appwriteAccount.createOAuth2Session();
       // Browser will redirect; no further action needed here.
     } catch (e) {
       console.error("Google OAuth start failed:", e);

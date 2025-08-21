@@ -4,6 +4,8 @@ import { ID, Query } from "appwrite";
 export const Permission = {
   read: (role: string) => `read("${role}")`,
   write: (role: string) => `write("${role}")`,
+  update: (role: string) => `update("${role}")`,
+  delete: (role: string) => `delete("${role}")`,
 };
 
 export const Role = {
@@ -42,6 +44,10 @@ const mockServerAccount = {
 
   // Session management
   createSession: async (_email: string, _password: string) => {
+    return { $id: "mock-session-id" };
+  },
+
+  createEmailPasswordSession: async (_email: string, _password: string) => {
     return { $id: "mock-session-id" };
   },
 
@@ -101,7 +107,8 @@ const mockServerDatabases = {
     _databaseId: string,
     _collectionId: string,
     documentId: string,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
+    _permissions?: string[]
   ) => {
     return { $id: documentId, ...data };
   },

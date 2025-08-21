@@ -5,7 +5,7 @@ import TransactionsList, {
   type Transaction,
 } from "@/components/transactions/TransactionsList";
 import { useUrlState } from "@/lib/url-state";
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition, Suspense } from "react";
 import { useActionState } from "react";
 import { fetchTransactionsAction } from "@/lib/actions/banking.actions";
 import {
@@ -14,7 +14,7 @@ import {
   NoPermissionState,
 } from "@/components/ui/data-states";
 
-export default function TransactionsPage() {
+function TransactionsPageContent() {
   type Filters = {
     q: string;
     type: "all" | "income" | "expense";
@@ -185,5 +185,13 @@ export default function TransactionsPage() {
         <TransactionsList items={items} />
       )}
     </section>
+  );
+}
+
+export default function TransactionsPage() {
+  return (
+    <Suspense fallback={<LoadingState className="mt-4" height="h-96" />}>
+      <TransactionsPageContent />
+    </Suspense>
   );
 }
