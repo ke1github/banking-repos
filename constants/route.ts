@@ -1,27 +1,39 @@
 // Centralized route constants and helpers to avoid hard-coded strings
 
 export const ROUTES = {
-  EXPENSE_MANAGEMENT: "/expense-management",
-  CASH_MANAGEMENT: "/cash-management",
+  EXPENSE_MANAGEMENT: "/banking/expense-management",
+  CASH_MANAGEMENT: "/banking/cash-management",
   HOME: "/",
+  BANKING_HOME: "/banking",
   SIGN_IN: "/sign-in",
   SIGN_UP: "/sign-up",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
   OAUTH_CALLBACK: "/auth/callback",
-  TRANSACTIONS: "/transactions",
-  TRANSFERS: "/transfers",
-  CARDS_ACCOUNTS: "/cards-accounts",
-  MY_BANKS: "/my-banks",
-  CONNECT_BANK: "/connect-bank",
-  SEND_MONEY: "/send-money",
-  DEPOSITS: "/deposits",
-  PROFILE: "/profile",
-  SETTINGS: "/settings",
+  TRANSACTIONS: "/banking/transactions",
+  TRANSFERS: "/banking/transfers",
+  CARDS_ACCOUNTS: "/banking/cards-accounts",
+  MY_BANKS: "/banking/my-banks",
+  CONNECT_BANK: "/banking/connect-bank",
+  SEND_MONEY: "/banking/send-money",
+  DEPOSITS: "/banking/deposits",
+  PROFILE: "/banking/profile",
+  SETTINGS: "/banking/settings",
   LOGOUT: "/logout",
-  ACCOUNTS: "/accounts",
-  ADD_CARD: "/add-card",
-  CARDS: "/cards",
+  ACCOUNTS: "/banking/accounts",
+  ADD_CARD: "/banking/add-card",
+  CARDS: "/banking/cards",
+
+  // Investment routes
+  INVESTMENTS: "/investment",
+  PORTFOLIO: "/investment/portfolio",
+  STOCKS: "/investment/stocks",
+  MUTUAL_FUNDS: "/investment/mutual-funds",
+  BONDS: "/investment/bonds",
+  CRYPTO: "/investment/crypto",
+  INVESTMENT_PERFORMANCE: "/investment/performance",
+  INVESTMENT_PLANNER: "/investment/planner",
+  INVESTMENT_CALCULATORS: "/investment/calculators",
 } as const;
 
 // Public (unauthenticated) routes
@@ -47,3 +59,4 @@ export const isRoutePath = (href: string): href is RoutePath =>
 // Public-route check helper
 export const isPublicRoute = (pathname: string): boolean =>
   PUBLIC_ROUTES.some((path) => pathname.startsWith(path));
+

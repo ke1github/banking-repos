@@ -140,6 +140,11 @@ export const useAuthStore = create<AuthState>()(
               JSON.stringify(mockUser)
             );
 
+            // Set auth cookie for server-side checks
+            if (typeof document !== "undefined") {
+              document.cookie = "auth=true; path=/; max-age=86400";
+            }
+
             // Update store state
             set({
               user: {
@@ -210,6 +215,11 @@ export const useAuthStore = create<AuthState>()(
               "auth-storage-user",
               JSON.stringify(mockUser)
             );
+
+            // Set auth cookie for server-side checks
+            if (typeof document !== "undefined") {
+              document.cookie = "auth=true; path=/; max-age=86400";
+            }
 
             // Update store state
             set({

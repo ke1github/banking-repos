@@ -6,6 +6,7 @@ export const sidebarLinks: {
   paymentLinks: SidebarLink[];
   expenseLinks: SidebarLink[];
   cashLinks: SidebarLink[];
+  investmentLinks: SidebarLink[];
 } = {
   expenseLinks: [
     {
@@ -24,7 +25,7 @@ export const sidebarLinks: {
   mainLinks: [
     {
       imgURL: "/icons/home.svg",
-      route: ROUTES.HOME,
+      route: ROUTES.BANKING_HOME,
       label: "Dashboard",
     },
     {
@@ -65,6 +66,43 @@ export const sidebarLinks: {
       imgURL: "/icons/deposit.svg",
       route: ROUTES.DEPOSITS,
       label: "Deposits",
+    },
+  ],
+  investmentLinks: [
+    {
+      imgURL: "/icons/chart-line.svg",
+      route: ROUTES.PORTFOLIO,
+      label: "Portfolio",
+    },
+    {
+      imgURL: "/icons/trending-up.svg",
+      route: ROUTES.STOCKS,
+      label: "Stocks",
+    },
+    {
+      imgURL: "/icons/pie-chart.svg",
+      route: ROUTES.MUTUAL_FUNDS,
+      label: "Mutual Funds",
+    },
+    {
+      imgURL: "/icons/briefcase.svg",
+      route: ROUTES.BONDS,
+      label: "Bonds",
+    },
+    {
+      imgURL: "/icons/bitcoin.svg",
+      route: ROUTES.CRYPTO,
+      label: "Crypto",
+    },
+    {
+      imgURL: "/icons/activity.svg",
+      route: ROUTES.INVESTMENT_PERFORMANCE,
+      label: "Performance",
+    },
+    {
+      imgURL: "/icons/calculator.svg",
+      route: ROUTES.INVESTMENT_PLANNER,
+      label: "Investment Planner",
     },
   ],
 };

@@ -14,6 +14,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
 
 interface SidebarProps {
   user?: {
@@ -25,6 +27,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ user }: SidebarProps) => {
+  const { mode, setMode } = useSidebarMode();
+
   return (
     <aside className="sidebar h-screen w-[256px] fixed left-0 top-0 border-r border-gray-200 shadow-sm hidden lg:flex flex-col overflow-hidden bg-white">
       <div className="flex flex-col h-full">
@@ -35,92 +39,185 @@ const Sidebar = ({ user }: SidebarProps) => {
           </Link>
         </div>
 
+        {/* Tabs for Banking and Investment */}
+        <div className="px-4 pt-4">
+          <Tabs
+            defaultValue={mode}
+            className="w-full"
+            onValueChange={(value) =>
+              setMode(value as "banking" | "investment")
+            }
+          >
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="banking">Banking</TabsTrigger>
+              <TabsTrigger value="investment">Investment</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
         {/* Scrollable nav content */}
         <div className="flex-1 px-4 overflow-y-auto py-4">
-          {/* Main navigation section */}
-          <div className="mb-6">
-            <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-              Main
-            </h3>
-            <div className="flex flex-col gap-1">
-              {sidebarLinks.mainLinks.map((link) => (
-                <NavLink
-                  key={link.label}
-                  href={link.route}
-                  label={link.label}
-                  iconSrc={link.imgURL}
-                />
-              ))}
-            </div>
-          </div>
+          {mode === "banking" ? (
+            // Banking links
+            <>
+              {/* Main navigation section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Main
+                </h3>
+                <div className="flex flex-col gap-1">
+                  {sidebarLinks.mainLinks.map((link) => (
+                    <NavLink
+                      key={link.label}
+                      href={link.route}
+                      label={link.label}
+                      iconSrc={link.imgURL}
+                    />
+                  ))}
+                </div>
+              </div>
 
-          {/* Accounts section */}
-          <div className="mb-6">
-            <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-              Accounts & Cards
-            </h3>
-            <div className="flex flex-col gap-1">
-              {sidebarLinks.accountsLinks.map((link) => (
-                <NavLink
-                  key={link.label}
-                  href={link.route}
-                  label={link.label}
-                  iconSrc={link.imgURL}
-                />
-              ))}
-            </div>
-          </div>
+              {/* Accounts section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Accounts & Cards
+                </h3>
+                <div className="flex flex-col gap-1">
+                  {sidebarLinks.accountsLinks.map((link) => (
+                    <NavLink
+                      key={link.label}
+                      href={link.route}
+                      label={link.label}
+                      iconSrc={link.imgURL}
+                    />
+                  ))}
+                </div>
+              </div>
 
-          {/* Payments section */}
-          <div className="mb-6">
-            <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-              Payments
-            </h3>
-            <div className="flex flex-col gap-1">
-              {sidebarLinks.paymentLinks.map((link) => (
-                <NavLink
-                  key={link.label}
-                  href={link.route}
-                  label={link.label}
-                  iconSrc={link.imgURL}
-                />
-              ))}
-            </div>
-          </div>
+              {/* Payments section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Payments
+                </h3>
+                <div className="flex flex-col gap-1">
+                  {sidebarLinks.paymentLinks.map((link) => (
+                    <NavLink
+                      key={link.label}
+                      href={link.route}
+                      label={link.label}
+                      iconSrc={link.imgURL}
+                    />
+                  ))}
+                </div>
+              </div>
 
-          {/* Expense Management section */}
-          <div className="mb-6">
-            <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-              Expense Management
-            </h3>
-            <div className="flex flex-col gap-1">
-              {sidebarLinks.expenseLinks.map((link) => (
-                <NavLink
-                  key={link.label}
-                  href={link.route}
-                  label={link.label}
-                  iconSrc={link.imgURL}
-                />
-              ))}
-            </div>
-          </div>
+              {/* Expense Management section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Expense Management
+                </h3>
+                <div className="flex flex-col gap-1">
+                  {sidebarLinks.expenseLinks.map((link) => (
+                    <NavLink
+                      key={link.label}
+                      href={link.route}
+                      label={link.label}
+                      iconSrc={link.imgURL}
+                    />
+                  ))}
+                </div>
+              </div>
 
-          {/* Cash Management section */}
-          <div className="mb-6">
-            <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-              Cash Management
-            </h3>
-            <div className="flex flex-col gap-1">
-              {sidebarLinks.cashLinks.map((link) => (
-                <NavLink
-                  key={link.label}
-                  href={link.route}
-                  label={link.label}
-                  iconSrc={link.imgURL}
-                />
-              ))}
-            </div>
-          </div>
+              {/* Cash Management section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Cash Management
+                </h3>
+                <div className="flex flex-col gap-1">
+                  {sidebarLinks.cashLinks.map((link) => (
+                    <NavLink
+                      key={link.label}
+                      href={link.route}
+                      label={link.label}
+                      iconSrc={link.imgURL}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            // Investment links
+            <>
+              {/* Portfolio section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Portfolio
+                </h3>
+                <div className="flex flex-col gap-1">
+                  <NavLink
+                    key="portfolio"
+                    href={ROUTES.PORTFOLIO}
+                    label="My Portfolio"
+                    iconSrc="/icons/chart-line.svg"
+                  />
+                  <NavLink
+                    key="performance"
+                    href={ROUTES.INVESTMENT_PERFORMANCE}
+                    label="Performance"
+                    iconSrc="/icons/activity.svg"
+                  />
+                </div>
+              </div>
+
+              {/* Investments section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Investments
+                </h3>
+                <div className="flex flex-col gap-1">
+                  <NavLink
+                    key="stocks"
+                    href={ROUTES.STOCKS}
+                    label="Stocks"
+                    iconSrc="/icons/trending-up.svg"
+                  />
+                  <NavLink
+                    key="mutual-funds"
+                    href={ROUTES.MUTUAL_FUNDS}
+                    label="Mutual Funds"
+                    iconSrc="/icons/pie-chart.svg"
+                  />
+                  <NavLink
+                    key="bonds"
+                    href={ROUTES.BONDS}
+                    label="Bonds"
+                    iconSrc="/icons/briefcase.svg"
+                  />
+                  <NavLink
+                    key="crypto"
+                    href={ROUTES.CRYPTO}
+                    label="Crypto"
+                    iconSrc="/icons/bitcoin.svg"
+                  />
+                </div>
+              </div>
+
+              {/* Tools section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Tools
+                </h3>
+                <div className="flex flex-col gap-1">
+                  <NavLink
+                    key="planner"
+                    href={ROUTES.INVESTMENT_PLANNER}
+                    label="Investment Planner"
+                    iconSrc="/icons/calculator.svg"
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* User and profile section */}
