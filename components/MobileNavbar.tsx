@@ -354,11 +354,28 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                         <div className="flex flex-col">
                           <SheetClose asChild>
                             <Link
+                              href={ROUTES.INVESTMENT_SCREENER}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
+                            >
+                              <Image
+                                src="/icons/search.svg"
+                                alt="Investment Screener"
+                                width={20}
+                                height={20}
+                                className="opacity-75"
+                              />
+                              <span className="text-sm font-medium text-gray-700">
+                                Investment Screener
+                              </span>
+                            </Link>
+                          </SheetClose>
+                          <SheetClose asChild>
+                            <Link
                               href={ROUTES.INVESTMENT_PLANNER}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
                               <Image
-                                src="/icons/target.svg"
+                                src="/icons/trending-up.svg"
                                 alt="Investment Planner"
                                 width={20}
                                 height={20}

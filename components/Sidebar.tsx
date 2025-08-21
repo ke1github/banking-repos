@@ -232,6 +232,12 @@ const Sidebar = ({ user }: SidebarProps) => {
                     key="planner"
                     href={ROUTES.INVESTMENT_PLANNER}
                     label="Investment Planner"
+                    iconSrc="/icons/trending-up.svg"
+                  />
+                  <NavLink
+                    key="calculators"
+                    href={ROUTES.INVESTMENT_CALCULATORS}
+                    label="Calculators"
                     iconSrc="/icons/calculator.svg"
                   />
                 </div>
