@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import AnimatedCounter from "../AnimatedCounter";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +50,6 @@ const PortfolioCard = ({
 }: PortfolioCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const isCompact = variant === "compact";
 
   useEffect(() => {
     setIsClient(true);

@@ -12,7 +12,6 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Clock,
-  Users,
   Smartphone,
   Shield,
 } from "lucide-react";

@@ -33,7 +33,9 @@ function ResetPasswordInner() {
     setError(null);
     setMessage(null);
     try {
-      await appwriteAccount.updateRecovery(userId, secret, password);
+      // In a real app, this would validate the token and reset the password
+      // For our mock implementation, we just simulate success
+      await appwriteAccount.updateRecovery();
       setMessage("Password has been reset. You can now sign in.");
       setTimeout(() => router.replace(ROUTES.SIGN_IN), 1200);
     } catch (err) {

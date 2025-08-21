@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import LoadingFallback from "@/components/LoadingFallback";
+import React, { useEffect } from "react";
 import { AuthContext, useProvideAuth } from "@/lib/hooks/useAuth";
 import { installErrorInterceptor } from "@/lib/handlers/error-interceptor";
 import { useInitializeStores } from "@/lib/stores";

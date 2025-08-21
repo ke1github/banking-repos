@@ -1,275 +1,64 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Account, Client, Databases, Models } from "appwrite";
-import { account, databases, ID } from "@/lib/appwrite/config";
-import { ExpenseDoc, ExpenseCategory } from "@/types/expense";
-import { DateField } from "@/components/ui/DateField";
-
-const CATEGORIES: ExpenseCategory[] = [
-  "Food",
-  "Transport",
-  "Shopping",
-  "Bills",
-  "Health",
-  "Entertainment",
-  "Travel",
-  "Other",
-];
+import { account } from "@/lib/appwrite/config";
 
 export default function ExpenseManagementClient() {
-  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
-    null
-  );
-  const [expenses, setExpenses] = useState<ExpenseDoc[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({
-    amount: "",
-    category: "Food",
-    date: "",
-    note: "",
-  });
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    const client = new Client()
-      .setEndpoint(
-        process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
-          "https://cloud.appwrite.io/v1"
-      )
-      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "");
-    const account = new Account(client);
     account
       .get()
-      .then(setUser)
-      .catch((e) => {
-        console.error("Error fetching user account:", e);
-        setUser(null);
+      .then(() => {
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
       });
   }, []);
 
-  useEffect(() => {
-    if (!user) return;
-    setLoading(true);
-    const client = new Client()
-      .setEndpoint(
-        process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
-          "https://cloud.appwrite.io/v1"
-      )
-      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "");
-    const db = new Databases(client);
-    db.listDocuments(
-      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-      process.env.NEXT_PUBLIC_APPWRITE_EXPENSE_COLLECTION_ID!,
-      ["userId=" + user.$id]
-    )
-      .then((res) => setExpenses(res.documents as ExpenseDoc[]))
-      .catch((e) => {
-        console.error("Error fetching expenses:", e);
-        setExpenses([]);
-      })
-      .finally(() => setLoading(false));
-  }, [user, saving]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  };
-
-  const handleDateChange = (date: string | undefined) => {
-    setForm((f) => ({ ...f, date: date || "" }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    setSaving(true);
-    setError("");
-    try {
-      const client = new Client()
-        .setEndpoint(
-          process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
-            "https://cloud.appwrite.io/v1"
-        )
-        .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || "");
-      const db = new Databases(client);
-      await db.createDocument(
-        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_EXPENSE_COLLECTION_ID!,
-        ID.unique(),
-        {
-          userId: user.$id,
-          amount: parseFloat(form.amount),
-          category: form.category,
-          date: form.date,
-          note: form.note,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }
-      );
-      setForm({ amount: "", category: "Food", date: "", note: "" });
-    } catch (e) {
-      console.error("Failed to add expense:", e);
-      setError("Failed to add expense.");
-    } finally {
-      setSaving(false);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white rounded-lg border border-gray-100 p-4 grid gap-3 max-w-md"
-      >
-        <h2 className="text-lg font-semibold mb-2">Add Expense</h2>
-        <label className="text-sm text-gray-700">
-          Amount
-          <input
-            name="amount"
-            type="number"
-            step="0.01"
-            min="0"
-            required
-            value={form.amount}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
-          />
-        </label>
-        <label className="text-sm text-gray-700">
-          Category
-          <select
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
-          >
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </label>
-        <DateField
-          label="Date"
-          value={form.date}
-          onChange={handleDateChange}
-          className="w-full"
-        />
-        <label className="text-sm text-gray-700">
-          Note
-          <input
-            name="note"
-            value={form.note}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
-            placeholder="Optional"
-          />
-        </label>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white rounded-lg px-4 py-2 font-medium"
-          disabled={saving}
-        >
-          {saving ? "Saving..." : "Add Expense"}
-        </button>
-        {error && <div className="text-red-600 mt-2">{error}</div>}
-      </form>
-      <div>
-        <h2 className="text-lg font-semibold mb-2">Your Expenses</h2>
-        {loading ? (
-          <div className="text-gray-500">Loading…</div>
-        ) : !expenses.length ? (
-          <div className="text-gray-400">No expenses yet.</div>
-        ) : (
-          <ul className="divide-y divide-gray-100 bg-white rounded-lg border border-gray-100">
-            {expenses.map((exp) => (
-              <li key={exp.$id} className="flex items-center gap-4 p-4">
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-gray-900">
-                    ₹{exp.amount.toFixed(2)}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
-                    {exp.category} • {exp.date}
-                  </div>
-                  {exp.note && (
-                    <div className="text-xs text-gray-400 mt-0.5">
-                      {exp.note}
-                    </div>
-                  )}
-                </div>
-                {/* TODO: Add edit/delete actions */}
-                <button
-                  className="text-blue-600 hover:underline text-sm mr-2"
-                  onClick={() => {
-                    const newAmount = prompt(
-                      "Edit amount",
-                      exp.amount.toString()
-                    );
-                    if (newAmount === null) return;
-                    const newNote = prompt("Edit note", exp.note || "");
-                    if (newNote === null) return;
-                    setSaving(true);
-                    setError("");
-                    const client = new Client()
-                      .setEndpoint(
-                        process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
-                          "https://cloud.appwrite.io/v1"
-                      )
-                      .setProject(
-                        process.env.NEXT_PUBLIC_APPWRITE_PROJECT || ""
-                      );
-                    const db = new Databases(client);
-                    db.updateDocument(
-                      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-                      process.env.NEXT_PUBLIC_APPWRITE_EXPENSE_COLLECTION_ID!,
-                      exp.$id,
-                      {
-                        amount: parseFloat(newAmount),
-                        note: newNote,
-                        updatedAt: new Date().toISOString(),
-                      }
-                    )
-                      .catch(() => setError("Failed to edit expense."))
-                      .finally(() => setSaving(false));
-                  }}
-                  disabled={saving}
-                >
-                  Edit
-                </button>
-                <button
-                  className="text-red-600 hover:underline text-sm"
-                  onClick={() => {
-                    if (!confirm("Delete this expense?")) return;
-                    setSaving(true);
-                    setError("");
-                    const client = new Client()
-                      .setEndpoint(
-                        process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ||
-                          "https://cloud.appwrite.io/v1"
-                      )
-                      .setProject(
-                        process.env.NEXT_PUBLIC_APPWRITE_PROJECT || ""
-                      );
-                    const db = new Databases(client);
-                    db.deleteDocument(
-                      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-                      process.env.NEXT_PUBLIC_APPWRITE_EXPENSE_COLLECTION_ID!,
-                      exp.$id
-                    )
-                      .catch(() => setError("Failed to delete expense."))
-                      .finally(() => setSaving(false));
-                  }}
-                  disabled={saving}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+    <div className="p-6">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+          Expense Management
+        </h1>
+        <div className="bg-white rounded-lg border shadow-sm p-6">
+          <div className="text-center py-8">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+              <svg
+                className="h-6 w-6 text-orange-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Expense Management
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Comprehensive expense tracking and budget management tools will be
+              available here.
+            </p>
+            <p className="text-sm text-gray-500">
+              Categorize expenses, set budgets, and analyze spending patterns.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

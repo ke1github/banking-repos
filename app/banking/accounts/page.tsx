@@ -6,7 +6,7 @@ import { ROUTES } from "@/constants/route";
 import AccountListSection from "@/components/AccountListSection";
 import { HeaderBox } from "@/components/HeaderBox";
 import { getUserBankAccounts } from "@/lib/actions/banking.actions";
-import { getServerAccount } from "@/lib/appwrite/server-config";
+import { account } from "@/lib/appwrite/config";
 
 // Define types based on the actual structure
 interface AccountType {
@@ -30,8 +30,8 @@ export default function AccountsPage() {
     const fetchAccounts = async () => {
       try {
         // Get the current user ID
-        const account = await getServerAccount().get();
-        const userId = account.$id;
+        const userAccount = await account.get();
+        const userId = userAccount.$id;
 
         // Fetch accounts for this user
         const result = await getUserBankAccounts(userId);

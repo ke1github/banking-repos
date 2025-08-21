@@ -20,9 +20,9 @@ export default function ForgotPasswordPage() {
     setMessage(null);
 
     try {
-      // Appwrite requires a URL to send the reset link to; use our reset route
-      const redirectUrl = `${window.location.origin}${ROUTES.RESET_PASSWORD}`;
-      await appwriteAccount.createRecovery(email, redirectUrl);
+      // In a real app, this would send an email with reset link
+      // For our mock implementation, we just simulate success
+      await appwriteAccount.createRecovery();
       setMessage(
         "If an account exists for this email, a reset link has been sent."
       );

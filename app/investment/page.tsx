@@ -4,7 +4,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HeaderBox } from "@/components/HeaderBox";
-import { Badge } from "@/components/ui/badge";
 import PortfolioCard from "@/components/cards/PortfolioCard";
 import {
   TrendingUp,
@@ -12,7 +11,6 @@ import {
   DollarSign,
   PieChart,
   Target,
-  Calendar,
 } from "lucide-react";
 
 export default function InvestmentHome() {

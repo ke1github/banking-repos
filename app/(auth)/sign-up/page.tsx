@@ -19,7 +19,7 @@ export default function SignUp() {
     setMounted(true);
   }, []);
 
-  const handleSignUp = (data: any) => {
+  const handleSignUp = (data: Record<string, unknown>) => {
     if (isPending) return;
 
     setError("");
@@ -27,7 +27,12 @@ export default function SignUp() {
     startTransition(async () => {
       try {
         // Use our consolidated auth hook
-        const result = await signup(data);
+        const result = await signup({
+          email: data.email as string,
+          password: data.password as string,
+          firstName: data.firstName as string,
+          lastName: data.lastName as string,
+        });
 
         if (result.success) {
           // Navigate to the dashboard after successful signup

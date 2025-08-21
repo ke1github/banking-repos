@@ -7,8 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/route";
-import BankCard from "./cards/BankCard";
-import AccountCard from "./AccountCard";
 import {
   CreditCard,
   Banknote,

@@ -4,7 +4,6 @@ import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/route";
 import AuthForm from "@/components/forms/AuthForm";
-import { SignInFormValues } from "@/lib/validations";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/hooks/useAuth";
 
@@ -13,15 +12,14 @@ export default function SignIn() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
   const { login } = useAuth();
-  const [mounted, setMounted] = useState(true); // Initialize as true to prevent loading spinner
 
   // Fix for hydration issues
   useEffect(() => {
-    setMounted(true);
+    // Component is mounted, no additional state needed
   }, []);
 
   // Handle sign-in form submission
-  const handleSignIn = async (data: any) => {
+  const handleSignIn = async (data: { email: string; password: string }) => {
     if (isPending) return;
 
     setError("");

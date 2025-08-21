@@ -1,11 +1,10 @@
-import React from "react";
-import { notFound } from "next/navigation";
+import { HeaderBox } from "@/components/HeaderBox";
 import {
   getUserBankAccounts,
   getAccountTransactions,
 } from "@/lib/actions/banking.actions";
 import { getServerAccount } from "@/lib/appwrite/server-config";
-import { HeaderBox } from "@/components/HeaderBox";
+import { notFound } from "next/navigation";
 
 // Define types for accounts and transactions
 interface AccountType {
@@ -35,9 +34,12 @@ interface TransactionType {
 export default async function AccountDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   try {
+    // Await params in Next.js 15
+    const { id } = await params;
+
     // Get the current user ID
     const account = await getServerAccount().get();
     const userId = account.$id;
@@ -52,7 +54,7 @@ export default async function AccountDetailPage({
     // Find the specific account
     const accounts = accountsResult.accounts || [];
     const accountDetail = accounts.find(
-      (acc: any) => acc.$id === params.id || acc.id === params.id
+      (acc: any) => acc.$id === id || acc.id === id
     ) as AccountType | undefined;
 
     if (!accountDetail) {
@@ -71,7 +73,7 @@ export default async function AccountDetailPage({
     }
 
     // Fetch transactions for this account
-    const transactionsResult = await getAccountTransactions(userId, params.id);
+    const transactionsResult = await getAccountTransactions(userId, id);
     const transactions = transactionsResult.error
       ? []
       : ((transactionsResult.transactions || []) as TransactionType[]);

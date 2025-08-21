@@ -1,6 +1,4 @@
-import "server-only";
 import { ID, Query } from "appwrite";
-import { appwriteConfig } from "./config";
 
 // Mock permissions and roles
 export const Permission = {

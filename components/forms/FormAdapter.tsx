@@ -26,7 +26,7 @@ export function withFormAdapter<P extends { form: UseFormReturn<any, any> }>(
       // Ensure register returns an object with name, onChange, etc.
       register: (name: string) => ({
         name,
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange: () => {
           // This is just a placeholder - our simple form implementation
           // handles form values directly in the handleSubmit function
         },

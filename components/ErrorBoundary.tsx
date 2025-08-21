@@ -39,9 +39,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log the error to our error reporting service
-    logError(error, "React Component Error", {
-      componentStack: errorInfo.componentStack,
-    });
+    logError(error, "React Component Error");
+    // Log additional context separately
+    console.error("Component Stack:", errorInfo.componentStack);
   }
 
   reset = (): void => {
