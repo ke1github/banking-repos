@@ -223,6 +223,32 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                           ))}
                         </div>
                       </div>
+
+                      {/* Banking Tools */}
+                      <div className="px-2 pt-3">
+                        <h3 className="px-3 mb-1 text-xs font-semibold uppercase text-gray-500">
+                          Tools
+                        </h3>
+                        <div className="flex flex-col">
+                          <SheetClose asChild>
+                            <Link
+                              href={ROUTES.BANKING_CALCULATORS}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
+                            >
+                              <Image
+                                src="/icons/calculator.svg"
+                                alt="Banking Calculators"
+                                width={20}
+                                height={20}
+                                className="opacity-75"
+                              />
+                              <span className="text-sm font-medium text-gray-700">
+                                Banking Calculators
+                              </span>
+                            </Link>
+                          </SheetClose>
+                        </div>
+                      </div>
                     </>
                   ) : (
                     <>

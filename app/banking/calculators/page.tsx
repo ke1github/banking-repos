@@ -3,36 +3,33 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calculator, Target } from "lucide-react";
-import {
-  INVESTMENT_CALCULATOR_TABS,
-  INVESTMENT_CALCULATOR_COLORS,
-} from "@/constants/investment-calculators";
+import { CALCULATOR_TABS, CALCULATOR_COLORS } from "@/constants/calculators";
 
-// Import Investment Calculator Components
+// Import Calculator Components
 import {
-  CompoundInterestCalculator,
-  RetirementCalculator,
-  ROICalculator,
-  AssetAllocationCalculator,
-  MonteCarloCalculator,
-  RebalancingCalculator,
-  DividendCalculator,
-  RealEstateCalculator,
-} from "@/components/investment-calculators";
+  LoanCalculator,
+  SIPCalculator,
+  SavingsCalculator,
+  FDCalculator,
+  CreditCardCalculator,
+  PPFCalculator,
+  EligibilityCalculator,
+  CompareCalculator,
+} from "@/components/calculators";
 
-const InvestmentCalculators = () => {
-  const [activeTab, setActiveTab] = useState("compound");
+const BankingCalculators = () => {
+  const [activeTab, setActiveTab] = useState("loan");
 
   // Component mapping for dynamic rendering
   const componentMap = {
-    compound: CompoundInterestCalculator,
-    retirement: RetirementCalculator,
-    roi: ROICalculator,
-    allocation: AssetAllocationCalculator,
-    "monte-carlo": MonteCarloCalculator,
-    rebalancing: RebalancingCalculator,
-    dividend: DividendCalculator,
-    "real-estate": RealEstateCalculator,
+    loan: LoanCalculator,
+    savings: SavingsCalculator,
+    fd: FDCalculator,
+    creditcard: CreditCardCalculator,
+    sip: SIPCalculator,
+    ppf: PPFCalculator,
+    eligibility: EligibilityCalculator,
+    compare: CompareCalculator,
   };
 
   const ActiveComponent = componentMap[activeTab as keyof typeof componentMap];
@@ -42,35 +39,35 @@ const InvestmentCalculators = () => {
       {/* Modern Header */}
       <div className="relative overflow-hidden">
         {/* Background Elements */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full opacity-20 -translate-y-16 translate-x-16"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full opacity-20 translate-y-12 -translate-x-12"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full opacity-20 -translate-y-16 translate-x-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full opacity-20 translate-y-12 -translate-x-12"></div>
 
         <div className="relative flex items-center gap-6">
-          <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-lg">
+          <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
             <Calculator className="h-10 w-10 text-white" />
           </div>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-pink-800 bg-clip-text text-transparent">
-              Investment Calculators
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
+              Banking Calculators
             </h1>
             <p className="text-gray-600 mt-2 text-lg">
-              Advanced financial tools to optimize your investment strategy and
-              build wealth
+              Comprehensive financial tools to help you plan loans, savings, and
+              investments
             </p>
 
             {/* Stats Pills */}
             <div className="flex gap-3 mt-4">
-              <div className="flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>8
+              <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>8
                 Calculators
               </div>
               <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                Portfolio Analysis
+                Real-time Results
               </div>
-              <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                Risk Assessment
+              <div className="flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                Tax Calculations
               </div>
             </div>
           </div>
@@ -83,7 +80,7 @@ const InvestmentCalculators = () => {
           <div className="w-full border-t border-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
         </div>
         <div className="relative flex justify-center">
-          <div className="bg-gradient-to-r from-purple-100 to-pink-100 px-4 py-2 rounded-full">
+          <div className="bg-gradient-to-r from-blue-100 to-indigo-100 px-4 py-2 rounded-full">
             <span className="text-sm font-medium text-gray-600">
               Choose Your Calculator
             </span>
@@ -96,12 +93,10 @@ const InvestmentCalculators = () => {
         {/* Modern Tab Navigation */}
         <div className="mb-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {INVESTMENT_CALCULATOR_TABS.map((tab) => {
+            {CALCULATOR_TABS.map((tab) => {
               const IconComponent = tab.icon;
               const colorClass =
-                INVESTMENT_CALCULATOR_COLORS[
-                  tab.color as keyof typeof INVESTMENT_CALCULATOR_COLORS
-                ];
+                CALCULATOR_COLORS[tab.color as keyof typeof CALCULATOR_COLORS];
               const isActive = activeTab === tab.id;
 
               return (
@@ -114,10 +109,10 @@ const InvestmentCalculators = () => {
                     className={`
                     relative overflow-hidden rounded-xl border-2 bg-white p-3 md:p-4 
                     transition-all duration-200
-                    hover:border-purple-300 hover:shadow-lg hover:scale-105
+                    hover:border-blue-300 hover:shadow-lg hover:scale-105
                     ${
                       isActive
-                        ? "border-purple-500 shadow-xl bg-gradient-to-br from-purple-50 to-pink-50"
+                        ? "border-blue-500 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-50"
                         : "border-gray-200"
                     }
                   `}
@@ -143,14 +138,14 @@ const InvestmentCalculators = () => {
                       <div>
                         <h3
                           className={`font-semibold text-xs md:text-sm ${
-                            isActive ? "text-purple-700" : "text-gray-900"
+                            isActive ? "text-blue-700" : "text-gray-900"
                           }`}
                         >
                           {tab.label}
                         </h3>
                         <p
                           className={`text-[10px] md:text-xs mt-1 line-clamp-2 hidden sm:block ${
-                            isActive ? "text-purple-600" : "text-gray-500"
+                            isActive ? "text-blue-600" : "text-gray-500"
                           }`}
                         >
                           {tab.description.split(" ").slice(0, 4).join(" ")}...
@@ -161,7 +156,7 @@ const InvestmentCalculators = () => {
                     {/* Active Indicator */}
                     <div
                       className={`
-                      absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500
+                      absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500
                       transition-transform duration-200
                       ${isActive ? "scale-x-100" : "scale-x-0"}
                     `}
@@ -177,7 +172,7 @@ const InvestmentCalculators = () => {
         <div className="space-y-6">
           <div className="relative">
             {/* Subtle Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/30 via-transparent to-pink-50/30 rounded-2xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-indigo-50/30 rounded-2xl"></div>
 
             {/* Content */}
             <div className="relative z-10">
@@ -191,28 +186,25 @@ const InvestmentCalculators = () => {
       <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
               <Target className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Investment Calculator Features
+              <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Banking Calculator Features
               </h2>
               <p className="text-sm text-gray-600 font-normal mt-1">
-                Sophisticated tools for investment planning and portfolio
-                optimization
+                Professional financial tools at your fingertips
               </p>
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {INVESTMENT_CALCULATOR_TABS.slice(0, 4).map((tab, index) => {
+            {CALCULATOR_TABS.slice(0, 4).map((tab, index) => {
               const IconComponent = tab.icon;
               const colorClass =
-                INVESTMENT_CALCULATOR_COLORS[
-                  tab.color as keyof typeof INVESTMENT_CALCULATOR_COLORS
-                ];
+                CALCULATOR_COLORS[tab.color as keyof typeof CALCULATOR_COLORS];
 
               return (
                 <div
@@ -248,7 +240,7 @@ const InvestmentCalculators = () => {
                   </div>
 
                   {/* Hover Effect Border */}
-                  <div className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-purple-200 transition-colors duration-300"></div>
+                  <div className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-blue-200 transition-colors duration-300"></div>
                 </div>
               );
             })}
@@ -256,11 +248,11 @@ const InvestmentCalculators = () => {
 
           {/* Additional Features Badge */}
           <div className="mt-8 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <span className="text-sm font-medium text-gray-700">
-                All calculators include portfolio optimization, risk analysis,
-                and professional investment insights
+                All calculators include advanced features, tax calculations, and
+                professional insights
               </span>
             </div>
           </div>
@@ -270,4 +262,4 @@ const InvestmentCalculators = () => {
   );
 };
 
-export default InvestmentCalculators;
+export default BankingCalculators;

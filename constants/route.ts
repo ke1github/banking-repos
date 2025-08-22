@@ -23,6 +23,7 @@ export const ROUTES = {
   ACCOUNTS: "/banking/accounts",
   ADD_CARD: "/banking/add-card",
   CARDS: "/banking/cards",
+  BANKING_CALCULATORS: "/banking/calculators",
 
   // Investment routes
   INVESTMENTS: "/investment",

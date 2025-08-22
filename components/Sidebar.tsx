@@ -152,6 +152,21 @@ const Sidebar = ({ user }: SidebarProps) => {
                   ))}
                 </div>
               </div>
+
+              {/* Tools section */}
+              <div className="mb-6">
+                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
+                  Tools
+                </h3>
+                <div className="flex flex-col gap-1">
+                  <NavLink
+                    key="banking-calculators"
+                    href={ROUTES.BANKING_CALCULATORS}
+                    label="Banking Calculators"
+                    iconSrc="/icons/calculator.svg"
+                  />
+                </div>
+              </div>
             </>
           ) : (
             // Investment links
