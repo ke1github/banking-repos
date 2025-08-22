@@ -1,32 +1,17 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import {
-  Search,
-  TrendingUp,
-  TrendingDown,
-  ArrowUpRight,
-  ArrowDownRight,
-  Star,
-  BookmarkPlus,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
   Activity,
   BarChart3,
   PieChart,
-  Filter,
-  RefreshCw,
   Target,
-  Shield,
-  Zap,
+  Star,
+  RefreshCw,
+  Filter,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import StockSearchBar from "@/components/stocks/StockSearchBar";
 import StockAnalysis from "@/components/stocks/StockAnalysis";
 import SectorPerformance from "@/components/stocks/SectorPerformance";
@@ -39,23 +24,23 @@ export default function StocksPage() {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
       {/* Header Section */}
-      <div className="flex flex-col space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Stock Market Hub
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Stock Market Analysis
             </h1>
-            <p className="text-muted-foreground mt-1">
-              Real-time analysis, insights, and decision-making tools for smart
-              investing
+            <p className="text-gray-600 mt-2">
+              Real-time stock analysis, sector performance, and investment
+              decisions
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex gap-3">
             <Button variant="outline" size="sm">
               <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh Data
+              Refresh
             </Button>
             <Button variant="outline" size="sm">
               <Filter className="h-4 w-4 mr-2" />

@@ -13,124 +13,34 @@ import {
   Clock,
   X,
   Zap,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface Stock {
-  symbol: string;
-  name: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  volume: number;
-  marketCap: number;
-  sector: string;
-  exchange: string;
-}
+import { useStockSearch, useStockQuote } from "@/lib/hooks/useStockData";
+import type { StockQuote, StockSearchResult } from "@/lib/api/types";
 
 interface StockSearchBarProps {
   onStockSelect: (stock: string) => void;
 }
 
-const mockStocks: Stock[] = [
-  {
-    symbol: "RELIANCE",
-    name: "Reliance Industries Ltd",
-    price: 2750.45,
-    change: 45.2,
-    changePercent: 1.67,
-    volume: 8542000,
-    marketCap: 18564000000000,
-    sector: "Energy",
-    exchange: "NSE",
-  },
-  {
-    symbol: "TCS",
-    name: "Tata Consultancy Services",
-    price: 4125.3,
-    change: -25.75,
-    changePercent: -0.62,
-    volume: 2845000,
-    marketCap: 15024000000000,
-    sector: "IT",
-    exchange: "NSE",
-  },
-  {
-    symbol: "HDFCBANK",
-    name: "HDFC Bank Limited",
-    price: 1625.75,
-    change: 8.45,
-    changePercent: 0.52,
-    volume: 12450000,
-    marketCap: 12456000000000,
-    sector: "Banking",
-    exchange: "NSE",
-  },
-  {
-    symbol: "INFY",
-    name: "Infosys Limited",
-    price: 1845.6,
-    change: 12.85,
-    changePercent: 0.7,
-    volume: 5684000,
-    marketCap: 7659000000000,
-    sector: "IT",
-    exchange: "NSE",
-  },
-  {
-    symbol: "ICICIBANK",
-    name: "ICICI Bank Limited",
-    price: 1180.9,
-    change: -5.3,
-    changePercent: -0.45,
-    volume: 8965000,
-    marketCap: 8234000000000,
-    sector: "Banking",
-    exchange: "NSE",
-  },
-  {
-    symbol: "HINDUNILVR",
-    name: "Hindustan Unilever Ltd",
-    price: 2675.85,
-    change: 18.9,
-    changePercent: 0.71,
-    volume: 1254000,
-    marketCap: 6254000000000,
-    sector: "FMCG",
-    exchange: "NSE",
-  },
-  {
-    symbol: "ITC",
-    name: "ITC Limited",
-    price: 485.3,
-    change: 2.15,
-    changePercent: 0.44,
-    volume: 15684000,
-    marketCap: 6025000000000,
-    sector: "FMCG",
-    exchange: "NSE",
-  },
-  {
-    symbol: "BHARTIARTL",
-    name: "Bharti Airtel Limited",
-    price: 1625.4,
-    change: -12.85,
-    changePercent: -0.78,
-    volume: 4568000,
-    marketCap: 9456000000000,
-    sector: "Telecom",
-    exchange: "NSE",
-  },
-];
-
-const trendingStocks = ["RELIANCE", "TCS", "HDFCBANK", "INFY", "ICICIBANK"];
-const recentSearches = ["RELIANCE", "TCS", "HINDUNILVR"];
+const trendingStocks = ["AAPL", "GOOGL", "MSFT", "TSLA", "AMZN"];
+const recentSearches = ["AAPL", "GOOGL", "MSFT"];
 
 export default function StockSearchBar({ onStockSelect }: StockSearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [filteredStocks, setFilteredStocks] = useState<Stock[]>([]);
+  const [selectedStock, setSelectedStock] = useState<StockSearchResult | null>(
+    null
+  );
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Use the real-time search hook
+  const {
+    results: searchResults,
+    loading,
+    error,
+    searchStocks,
+  } = useStockSearch();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -147,22 +57,16 @@ export default function StockSearchBar({ onStockSelect }: StockSearchBarProps) {
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim()) {
-      const filtered = mockStocks.filter(
-        (stock) =>
-          stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          stock.sector.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredStocks(filtered);
+    if (searchQuery.trim().length > 1) {
       setIsOpen(true);
+      searchStocks(searchQuery);
     } else {
-      setFilteredStocks([]);
       setIsOpen(false);
     }
-  }, [searchQuery]);
+  }, [searchQuery, searchStocks]);
 
-  const handleStockSelect = (stock: Stock) => {
+  const handleStockSelect = (stock: StockSearchResult) => {
+    setSelectedStock(stock);
     setSearchQuery(`${stock.symbol} - ${stock.name}`);
     setIsOpen(false);
     onStockSelect(stock.symbol);
@@ -170,210 +74,205 @@ export default function StockSearchBar({ onStockSelect }: StockSearchBarProps) {
 
   const clearSearch = () => {
     setSearchQuery("");
+    setSelectedStock(null);
     setIsOpen(false);
+    onStockSelect("");
   };
 
-  const formatPrice = (price: number) => `₹${price.toFixed(2)}`;
+  const formatPrice = (price: number) => `$${price.toFixed(2)}`;
   const formatChange = (change: number, changePercent: number) => {
     const isPositive = change >= 0;
     return (
       <span
         className={cn(
-          "flex items-center gap-1",
+          "flex items-center gap-1 text-sm font-medium",
           isPositive ? "text-green-600" : "text-red-600"
         )}
       >
         {isPositive ? (
-          <TrendingUp className="h-3 w-3" />
+          <TrendingUp className="h-4 w-4" />
         ) : (
-          <TrendingDown className="h-3 w-3" />
+          <TrendingDown className="h-4 w-4" />
         )}
-        {isPositive ? "+" : ""}
-        {change.toFixed(2)} ({isPositive ? "+" : ""}
-        {changePercent.toFixed(2)}%)
+        {change >= 0 ? "+" : ""}
+        {change.toFixed(2)} ({changePercent.toFixed(2)}%)
       </span>
     );
   };
 
+  const formatVolume = (volume: number) => {
+    if (volume >= 1000000) {
+      return `${(volume / 1000000).toFixed(1)}M`;
+    } else if (volume >= 1000) {
+      return `${(volume / 1000).toFixed(1)}K`;
+    }
+    return volume.toString();
+  };
+
+  const formatMarketCap = (marketCap: number) => {
+    if (marketCap >= 1000000000000) {
+      return `$${(marketCap / 1000000000000).toFixed(1)}T`;
+    } else if (marketCap >= 1000000000) {
+      return `$${(marketCap / 1000000000).toFixed(1)}B`;
+    } else if (marketCap >= 1000000) {
+      return `$${(marketCap / 1000000).toFixed(1)}M`;
+    }
+    return `$${marketCap.toFixed(0)}`;
+  };
+
   return (
-    <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
-      <CardContent className="p-6">
-        <div className="space-y-4">
-          {/* Search Input */}
-          <div className="relative" ref={searchRef}>
+    <div className="relative" ref={searchRef}>
+      <Card className="border-2 border-blue-200 shadow-lg bg-white/80 backdrop-blur-sm">
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            {/* Search Input */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                type="text"
-                placeholder="Search stocks by symbol, name, or sector (e.g., RELIANCE, TCS, Banking)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsOpen(true)}
-                className="pl-10 pr-10 h-12 text-lg border-blue-300 focus:border-blue-500 focus:ring-blue-500"
-              />
-              {searchQuery && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearSearch}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search stocks by symbol, name, or sector..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 pr-12 h-12 text-lg border-2 border-gray-200 focus:border-blue-500 transition-colors"
+                />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
 
-            {/* Search Results Dropdown */}
-            {isOpen && (
-              <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1 max-h-96 overflow-y-auto">
-                {searchQuery.trim() ? (
-                  filteredStocks.length > 0 ? (
-                    <div className="p-2">
-                      <div className="text-sm font-medium text-gray-700 mb-2 px-2">
-                        Search Results ({filteredStocks.length})
-                      </div>
-                      {filteredStocks.map((stock) => (
-                        <div
-                          key={stock.symbol}
-                          onClick={() => handleStockSelect(stock)}
-                          className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-blue-600">
-                                {stock.symbol}
-                              </span>
-                              <Badge variant="outline" className="text-xs">
-                                {stock.exchange}
-                              </Badge>
-                              <Badge variant="secondary" className="text-xs">
-                                {stock.sector}
-                              </Badge>
-                            </div>
-                            <div className="text-sm text-gray-600 mt-1">
-                              {stock.name}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-medium">
-                              {formatPrice(stock.price)}
-                            </div>
-                            <div className="text-sm">
-                              {formatChange(stock.change, stock.changePercent)}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="p-6 text-center text-gray-500">
-                      <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                      <p>No stocks found for "{searchQuery}"</p>
-                      <p className="text-sm mt-1">
-                        Try searching by symbol, company name, or sector
-                      </p>
-                    </div>
-                  )
-                ) : (
-                  <div className="p-4 space-y-4">
-                    {/* Trending Stocks */}
-                    <div>
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
-                        <Zap className="h-4 w-4 text-orange-500" />
-                        Trending Stocks
-                      </div>
-                      <div className="grid grid-cols-1 gap-2">
-                        {trendingStocks.map((symbol) => {
-                          const stock = mockStocks.find(
-                            (s) => s.symbol === symbol
-                          );
-                          if (!stock) return null;
-                          return (
-                            <div
-                              key={symbol}
-                              onClick={() => handleStockSelect(stock)}
-                              className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-blue-600">
-                                  {stock.symbol}
-                                </span>
-                                <span className="text-sm text-gray-600 truncate">
-                                  {stock.name}
-                                </span>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-sm font-medium">
-                                  {formatPrice(stock.price)}
-                                </div>
-                                <div className="text-xs">
-                                  {formatChange(
-                                    stock.change,
-                                    stock.changePercent
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+            {/* Quick Actions */}
+            <div className="flex flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-orange-500" />
+                <span className="text-sm font-medium text-gray-600">
+                  Trending:
+                </span>
+              </div>
+              {trendingStocks.map((symbol) => (
+                <Badge
+                  key={symbol}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-blue-50 transition-colors"
+                  onClick={() => setSearchQuery(symbol)}
+                >
+                  {symbol}
+                </Badge>
+              ))}
+            </div>
 
-                    {/* Recent Searches */}
-                    {recentSearches.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
-                          <Clock className="h-4 w-4 text-gray-500" />
-                          Recent Searches
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {recentSearches.map((symbol) => {
-                            const stock = mockStocks.find(
-                              (s) => s.symbol === symbol
-                            );
-                            if (!stock) return null;
-                            return (
-                              <Button
-                                key={symbol}
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleStockSelect(stock)}
-                                className="text-xs"
-                              >
-                                {symbol}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+            {/* Recent Searches */}
+            {recentSearches.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm font-medium text-gray-600">
+                    Recent:
+                  </span>
+                </div>
+                {recentSearches.map((symbol) => (
+                  <Badge
+                    key={symbol}
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-gray-200 transition-colors"
+                    onClick={() => setSearchQuery(symbol)}
+                  >
+                    {symbol}
+                  </Badge>
+                ))}
               </div>
             )}
           </div>
+        </CardContent>
+      </Card>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">+12.4%</div>
-              <div className="text-sm text-gray-600">Nifty 50</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">+8.7%</div>
-              <div className="text-sm text-gray-600">Sensex</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">2,847</div>
-              <div className="text-sm text-gray-600">Stocks Tracked</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">₹45.2Cr</div>
-              <div className="text-sm text-gray-600">Avg Volume</div>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Search Results Dropdown */}
+      {isOpen && (
+        <Card className="absolute top-full left-0 right-0 mt-2 z-50 border-2 border-blue-200 shadow-xl bg-white max-h-96 overflow-y-auto">
+          <CardContent className="p-0">
+            {loading && (
+              <div className="flex items-center justify-center p-6">
+                <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                <span className="ml-2 text-gray-600">Searching stocks...</span>
+              </div>
+            )}
+
+            {error && (
+              <div className="p-6 text-center text-red-600">
+                <p>Error loading search results</p>
+                <p className="text-sm text-gray-500 mt-1">{error}</p>
+              </div>
+            )}
+
+            {searchResults && searchResults.length > 0 && (
+              <div className="divide-y divide-gray-200">
+                {searchResults.slice(0, 8).map((stock: StockSearchResult) => (
+                  <div
+                    key={stock.symbol}
+                    className="p-4 hover:bg-blue-50 cursor-pointer transition-colors"
+                    onClick={() => handleStockSelect(stock)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <h4 className="font-semibold text-gray-900">
+                              {stock.symbol}
+                            </h4>
+                            <p className="text-sm text-gray-600 truncate max-w-xs">
+                              {stock.name}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 mt-2">
+                          <Badge variant="outline" className="text-xs">
+                            {stock.exchange}
+                          </Badge>
+                          {stock.sector && (
+                            <Badge variant="secondary" className="text-xs">
+                              {stock.sector}
+                            </Badge>
+                          )}
+                          <Badge variant="outline" className="text-xs">
+                            {stock.type}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-gray-500">
+                          {stock.currency}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          Click to select
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {searchQuery.length > 1 &&
+              !loading &&
+              searchResults?.length === 0 && (
+                <div className="p-6 text-center text-gray-500">
+                  <p>No stocks found for "{searchQuery}"</p>
+                  <p className="text-sm mt-1">
+                    Try searching with different keywords
+                  </p>
+                </div>
+              )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
