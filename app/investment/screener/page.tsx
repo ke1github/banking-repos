@@ -125,7 +125,7 @@ function ScreenerContent() {
       </div>
 
       {/* Search Bar */}
-      <div className="mb-6">
+      <div className="mb-8">
         <InvestmentSearchBar
           onSearch={setSearchQuery}
           placeholder={`Search ${
@@ -138,8 +138,8 @@ function ScreenerContent() {
       </div>
 
       {/* Market Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -154,7 +154,7 @@ function ScreenerContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -169,7 +169,7 @@ function ScreenerContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -184,7 +184,7 @@ function ScreenerContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -202,52 +202,56 @@ function ScreenerContent() {
 
       {/* Screener Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 mb-6">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 mb-6 h-auto">
           {screenerTabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
-                className="flex flex-col items-center gap-1 p-3"
+                className="flex flex-col items-center gap-1 p-2 h-auto min-h-[60px]"
               >
                 <Icon className="h-4 w-4" />
-                <span className="text-xs">{tab.label}</span>
+                <span className="text-xs text-center leading-tight">
+                  {tab.label}
+                </span>
               </TabsTrigger>
             );
           })}
         </TabsList>
 
         {/* Tab Content */}
-        {screenerTabs.map((tab) => (
-          <TabsContent key={tab.id} value={tab.id} className="mt-0">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${tab.color}`}>
-                      <tab.icon className="h-5 w-5 text-white" />
+        <div className="mt-6">
+          {screenerTabs.map((tab) => (
+            <TabsContent key={tab.id} value={tab.id} className="mt-0">
+              <Card className="border-0 shadow-none">
+                <CardHeader className="px-0 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${tab.color}`}>
+                        <tab.icon className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle>{tab.label} Screener</CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {tab.description}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle>{tab.label} Screener</CardTitle>
-                      <p className="text-sm text-muted-foreground">
-                        {tab.description}
-                      </p>
-                    </div>
+                    <Badge variant="secondary">
+                      {searchQuery ? "Filtered" : "All"}
+                    </Badge>
                   </div>
-                  <Badge variant="secondary">
-                    {searchQuery ? "Filtered" : "All"}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Suspense fallback={<LoadingState className="h-96" />}>
-                  {renderScreener()}
-                </Suspense>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
+                </CardHeader>
+                <CardContent className="px-0">
+                  <Suspense fallback={<LoadingState className="h-96" />}>
+                    {renderScreener()}
+                  </Suspense>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          ))}
+        </div>
       </Tabs>
     </div>
   );

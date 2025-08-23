@@ -332,9 +332,9 @@ export default function IndianStockScreener({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -367,7 +367,7 @@ export default function IndianStockScreener({
       </Card>
 
       {/* Filters */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg flex items-center">
             <Filter className="h-5 w-5 mr-2" />
@@ -493,7 +493,7 @@ export default function IndianStockScreener({
       </Card>
 
       {/* Results */}
-      <Card>
+      <Card className="border border-gray-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>
@@ -514,7 +514,7 @@ export default function IndianStockScreener({
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {loading && (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
