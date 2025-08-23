@@ -19,7 +19,8 @@ const HeaderWithAvatar: React.FC = () => {
     lastName: "Doe",
     name: "John Doe",
     email: "john.doe@example.com",
-    avatarUrl: "https://i.pravatar.cc/300?img=8", // Example avatar URL
+    // Use a local avatar instead of an external URL to avoid configuration issues
+    avatarUrl: "/icons/avatar-placeholder.svg",
   };
 
   return (

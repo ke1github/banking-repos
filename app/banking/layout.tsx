@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
 import Sidebar from "@/components/Sidebar";
 import RightSidebar from "@/components/RightSidebar";
@@ -15,6 +16,10 @@ export default function BankingLayout({
 }>) {
   const { setMode } = useSidebarMode();
   const { user } = useAuthStore();
+  const pathname = usePathname();
+
+  // Check if current page is the dashboard/home page
+  const isDashboard = pathname === "/banking";
 
   // Set the sidebar mode to 'banking' when banking pages load
   React.useEffect(() => {
@@ -51,13 +56,13 @@ export default function BankingLayout({
       </div>
 
       {/* Main content area */}
-      <main className="flex-1 mt-16 lg:mt-0 lg:mr-80">
+      <main className={`flex-1 mt-16 lg:mt-0 ${isDashboard ? "lg:mr-80" : ""}`}>
         <div className="min-h-screen">{children}</div>
         <Footer />
       </main>
 
-      {/* Right sidebar */}
-      <RightSidebar user={userDisplayData} />
+      {/* Right sidebar - only shown on dashboard */}
+      {isDashboard && <RightSidebar user={userDisplayData} />}
     </div>
   );
 }

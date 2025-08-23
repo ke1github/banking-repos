@@ -76,6 +76,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
           sizes="(max-width: 768px) 100vw, 33vw"
           className="object-cover"
           onError={() => setShowFallback(true)}
+          unoptimized={src.startsWith("https://")} // Skip optimization for external URLs
         />
       ) : (
         <div

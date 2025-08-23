@@ -261,6 +261,12 @@ const Sidebar = ({ user }: SidebarProps) => {
                     label="AI Wealth Management"
                     iconSrc="/icons/brain.svg"
                   />
+                  <NavLink
+                    key="fundamental-analysis"
+                    href={ROUTES.FUNDAMENTAL_ANALYSIS}
+                    label="Fundamental Analysis"
+                    iconSrc="/icons/file-text.svg"
+                  />
                 </div>
               </div>
             </>

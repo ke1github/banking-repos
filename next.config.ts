@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
   },
   // Image optimization
   images: {
-    domains: ["cloud.appwrite.io"],
+    domains: ["cloud.appwrite.io", "i.pravatar.cc"],
   },
   // Security: Remove the X-Powered-By header
   poweredByHeader: false,

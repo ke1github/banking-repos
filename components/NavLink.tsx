@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -34,10 +35,21 @@ const NavLink = ({ href, label, iconSrc, isActive, onClick }: NavLinkProps) => {
       )}
       <div
         className={`flex-shrink-0 w-5 h-5 flex items-center justify-center ${
-          isCurrentPath ? "text-blue-600" : "text-gray-500"
+          isCurrentPath ? "text-blue-600" : "text-gray-600"
         }`}
       >
-        <Image src={iconSrc} alt={label} width={20} height={20} />
+        <Image
+          src={iconSrc}
+          alt={label}
+          width={20}
+          height={20}
+          className="min-w-[20px] min-h-[20px] object-contain opacity-100"
+          style={{
+            filter: isCurrentPath
+              ? "brightness(0) saturate(100%) invert(29%) sepia(98%) saturate(1654%) hue-rotate(205deg) brightness(96%) contrast(106%)"
+              : "brightness(0) saturate(100%) invert(35%) sepia(11%) saturate(519%) hue-rotate(179deg) brightness(96%) contrast(87%)",
+          }}
+        />
       </div>
       <span className="text-sm truncate">{label}</span>
 

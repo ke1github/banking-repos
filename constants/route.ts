@@ -37,6 +37,16 @@ export const ROUTES = {
   INVESTMENT_PLANNER: "/investment/planner",
   INVESTMENT_CALCULATORS: "/investment/calculators",
 
+  // Advanced Analysis routes
+  FUNDAMENTAL_ANALYSIS: "/investment/fundamental-analysis",
+  TECHNICAL_ANALYSIS: "/investment/technical-analysis",
+  COMPANY_RESEARCH: "/investment/company-research",
+  FINANCIAL_STATEMENTS: "/investment/financial-statements",
+  RATIO_ANALYSIS: "/investment/ratio-analysis",
+  PEER_COMPARISON: "/investment/peer-comparison",
+  VALUATION_MODELS: "/investment/valuation-models",
+  INDUSTRY_ANALYSIS: "/investment/industry-analysis",
+
   // AI Wealth Management routes (within investment section)
   WEALTH_MANAGEMENT: "/investment/ai-wealth",
 } as const;

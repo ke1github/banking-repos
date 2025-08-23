@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
 import Sidebar from "@/components/Sidebar";
 import InvestmentRightSidebar from "@/components/InvestmentRightSidebar";
@@ -15,6 +16,10 @@ export default function InvestmentLayout({
 }>) {
   const { setMode } = useSidebarMode();
   const { user } = useAuthStore();
+  const pathname = usePathname();
+
+  // Check if current page is the investment dashboard/home page
+  const isDashboard = pathname === "/investment";
 
   // Set the sidebar mode to 'investment' when investment pages load
   React.useEffect(() => {
@@ -51,13 +56,13 @@ export default function InvestmentLayout({
       </div>
 
       {/* Main content area */}
-      <main className="flex-1 mt-16 lg:mt-0 lg:mr-80">
+      <main className={`flex-1 mt-16 lg:mt-0 ${isDashboard ? "lg:mr-80" : ""}`}>
         <div className="min-h-screen">{children}</div>
         <Footer />
       </main>
 
-      {/* Right sidebar */}
-      <InvestmentRightSidebar user={userDisplayData} />
+      {/* Right sidebar - only shown on dashboard */}
+      {isDashboard && <InvestmentRightSidebar user={userDisplayData} />}
     </div>
   );
 }
