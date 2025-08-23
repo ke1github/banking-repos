@@ -332,17 +332,17 @@ export default function IndianStockScreener({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <Card>
-        <CardHeader className="pb-4">
+        <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold flex items-center">
-                <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
+              <CardTitle className="text-2xl font-bold flex items-center">
+                <BarChart3 className="h-6 w-6 mr-2 text-blue-600" />
                 Indian Stock Screener
               </CardTitle>
-              <p className="text-gray-600 mt-1 text-sm">
+              <p className="text-gray-600 mt-1">
                 Screen and filter BSE/NSE stocks with real-time data
               </p>
             </div>
@@ -351,14 +351,13 @@ export default function IndianStockScreener({
                 onClick={loadStockData}
                 disabled={loading}
                 variant="outline"
-                size="sm"
               >
                 <RefreshCw
                   className={cn("h-4 w-4 mr-2", loading && "animate-spin")}
                 />
                 Refresh
               </Button>
-              <Button onClick={exportToCSV} variant="outline" size="sm">
+              <Button onClick={exportToCSV} variant="outline">
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV
               </Button>
@@ -369,24 +368,24 @@ export default function IndianStockScreener({
 
       {/* Filters */}
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader>
           <CardTitle className="text-lg flex items-center">
-            <Filter className="h-4 w-4 mr-2" />
+            <Filter className="h-5 w-5 mr-2" />
             Filters
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {/* Exchange and Sector Filters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-sm">Exchange</Label>
+              <Label>Exchange</Label>
               <Select
                 value={filters.exchange}
                 onValueChange={(value: "ALL" | "NSE" | "BSE") =>
                   setFilters((prev) => ({ ...prev, exchange: value }))
                 }
               >
-                <SelectTrigger className="mt-1">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -398,14 +397,14 @@ export default function IndianStockScreener({
             </div>
 
             <div>
-              <Label className="text-sm">Sector</Label>
+              <Label>Sector</Label>
               <Select
                 value={filters.sector}
                 onValueChange={(value) =>
                   setFilters((prev) => ({ ...prev, sector: value }))
                 }
               >
-                <SelectTrigger className="mt-1">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -420,14 +419,14 @@ export default function IndianStockScreener({
             </div>
 
             <div>
-              <Label className="text-sm">Sort By</Label>
+              <Label>Sort By</Label>
               <Select
                 value={filters.sortBy}
                 onValueChange={(value) =>
                   setFilters((prev) => ({ ...prev, sortBy: value }))
                 }
               >
-                <SelectTrigger className="mt-1">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -441,10 +440,10 @@ export default function IndianStockScreener({
           </div>
 
           {/* Range Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label className="text-sm">Price Range (₹)</Label>
-              <div className="px-3 py-3">
+              <Label>Price Range (₹)</Label>
+              <div className="px-3 py-4">
                 <Slider
                   value={[filters.priceMin, filters.priceMax]}
                   onValueChange={([min, max]) =>
@@ -459,7 +458,7 @@ export default function IndianStockScreener({
                   step={100}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                <div className="flex justify-between text-sm text-gray-500 mt-2">
                   <span>₹{filters.priceMin}</span>
                   <span>₹{filters.priceMax}</span>
                 </div>
@@ -467,8 +466,8 @@ export default function IndianStockScreener({
             </div>
 
             <div>
-              <Label className="text-sm">Change Range (%)</Label>
-              <div className="px-3 py-3">
+              <Label>Change Range (%)</Label>
+              <div className="px-3 py-4">
                 <Slider
                   value={[filters.changeMin, filters.changeMax]}
                   onValueChange={([min, max]) =>
@@ -483,7 +482,7 @@ export default function IndianStockScreener({
                   step={1}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                <div className="flex justify-between text-sm text-gray-500 mt-2">
                   <span>{filters.changeMin}%</span>
                   <span>{filters.changeMax}%</span>
                 </div>
@@ -495,9 +494,9 @@ export default function IndianStockScreener({
 
       {/* Results */}
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">
+            <CardTitle>
               Screening Results ({filteredAndSortedStocks.length} stocks)
             </CardTitle>
             <Button
