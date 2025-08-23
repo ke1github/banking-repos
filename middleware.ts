@@ -45,6 +45,14 @@ export async function middleware(request: NextRequest) {
 
   // For all other cases, proceed with the request but still apply security headers
   const response = NextResponse.next();
+
+  // Handle redirect from old wealth-management route to new AI wealth route
+  if (currentPath === "/wealth-management") {
+    return NextResponse.redirect(
+      new URL(ROUTES.WEALTH_MANAGEMENT, request.url)
+    );
+  }
+
   return applySecurityHeaders(response);
 }
 

@@ -36,6 +36,9 @@ export const ROUTES = {
   INVESTMENT_PERFORMANCE: "/investment/performance",
   INVESTMENT_PLANNER: "/investment/planner",
   INVESTMENT_CALCULATORS: "/investment/calculators",
+
+  // AI Wealth Management routes (within investment section)
+  WEALTH_MANAGEMENT: "/investment/ai-wealth",
 } as const;
 
 // Public (unauthenticated) routes

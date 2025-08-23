@@ -6,6 +6,7 @@ export const sidebarLinks: {
   paymentLinks: SidebarLink[];
   expenseLinks: SidebarLink[];
   cashLinks: SidebarLink[];
+  aiLinks: SidebarLink[];
   investmentLinks: SidebarLink[];
 } = {
   expenseLinks: [
@@ -22,6 +23,7 @@ export const sidebarLinks: {
       label: "Cash Management",
     },
   ],
+  aiLinks: [],
   mainLinks: [
     {
       imgURL: "/icons/home.svg",
@@ -108,6 +110,11 @@ export const sidebarLinks: {
       imgURL: "/icons/calculator.svg",
       route: ROUTES.INVESTMENT_PLANNER,
       label: "Investment Planner",
+    },
+    {
+      imgURL: "/icons/brain.svg",
+      route: ROUTES.WEALTH_MANAGEMENT,
+      label: "AI Wealth Management",
     },
   ],
 };

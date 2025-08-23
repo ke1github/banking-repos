@@ -429,6 +429,23 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               </span>
                             </Link>
                           </SheetClose>
+                          <SheetClose asChild>
+                            <Link
+                              href={ROUTES.WEALTH_MANAGEMENT}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
+                            >
+                              <Image
+                                src="/icons/brain.svg"
+                                alt="AI Wealth Management"
+                                width={20}
+                                height={20}
+                                className="opacity-75"
+                              />
+                              <span className="text-sm font-medium text-gray-700">
+                                AI Wealth Management
+                              </span>
+                            </Link>
+                          </SheetClose>
                         </div>
                       </div>
                     </>

@@ -255,6 +255,12 @@ const Sidebar = ({ user }: SidebarProps) => {
                     label="Calculators"
                     iconSrc="/icons/calculator.svg"
                   />
+                  <NavLink
+                    key="ai-wealth"
+                    href={ROUTES.WEALTH_MANAGEMENT}
+                    label="AI Wealth Management"
+                    iconSrc="/icons/brain.svg"
+                  />
                 </div>
               </div>
             </>
