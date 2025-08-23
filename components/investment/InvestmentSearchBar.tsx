@@ -10,11 +10,11 @@ import {
   X,
   TrendingUp,
   TrendingDown,
-  Star,
   Clock,
   Filter,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIndianStockSearch } from "@/lib/hooks/useIndianStocks";
 
 export interface SearchSuggestion {
   id: string;
@@ -40,14 +40,15 @@ interface InvestmentSearchBarProps {
 
 // Mock data for different categories - In real implementation, this would come from APIs
 const mockSuggestions: Record<string, SearchSuggestion[]> = {
+  "indian-stocks": [], // Will be populated by API
   stocks: [
     {
-      id: "RELIANCE",
-      symbol: "RELIANCE",
-      name: "Reliance Industries Ltd",
+      id: "AAPL",
+      symbol: "AAPL",
+      name: "Apple Inc",
       category: "stocks",
-      price: 2750.45,
-      change: 45.2,
+      price: 175.43,
+      change: 2.1,
       changePercent: 1.67,
       exchange: "NSE",
       sector: "Energy",
@@ -257,22 +258,48 @@ export default function InvestmentSearchBar({
   const [recentSearches, setRecentSearches] = useState<SearchSuggestion[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // Use Indian stock search for indian-stocks category
+  const { results: indianStockResults, loading: indianStockLoading } =
+    useIndianStockSearch(category === "indian-stocks" ? query : "");
+
   // Handle search input
   useEffect(() => {
     if (query.length > 0) {
-      const filtered =
-        mockSuggestions[category]?.filter(
-          (item) =>
-            item.name.toLowerCase().includes(query.toLowerCase()) ||
-            item.symbol.toLowerCase().includes(query.toLowerCase())
-        ) || [];
-      setSuggestions(filtered);
-      setShowSuggestions(true);
+      if (category === "indian-stocks") {
+        // Show loading state for Indian stocks
+        if (indianStockLoading) {
+          setSuggestions([]);
+          return;
+        }
+
+        // Convert Indian stock results to SearchSuggestion format
+        const indianSuggestions: SearchSuggestion[] = indianStockResults.map(
+          (stock) => ({
+            id: `${stock.symbol}_${stock.exchange}`,
+            symbol: stock.symbol,
+            name: stock.name,
+            category: "indian-stocks",
+            exchange: stock.exchange,
+            sector: stock.industry,
+          })
+        );
+        setSuggestions(indianSuggestions);
+        setShowSuggestions(true);
+      } else {
+        const filtered =
+          mockSuggestions[category]?.filter(
+            (item) =>
+              item.name.toLowerCase().includes(query.toLowerCase()) ||
+              item.symbol.toLowerCase().includes(query.toLowerCase())
+          ) || [];
+        setSuggestions(filtered);
+        setShowSuggestions(true);
+      }
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
     }
-  }, [query, category]);
+  }, [query, category, indianStockResults]);
 
   // Handle click outside
   useEffect(() => {
