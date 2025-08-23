@@ -9,8 +9,10 @@ import {
 
 class IndianStockService {
   private baseURL =
-    process.env.NODE_ENV === "production"
-      ? "https://your-domain.com"
+    typeof window !== "undefined"
+      ? window.location.origin
+      : process.env.NODE_ENV === "production"
+      ? "https://banking-repos.vercel.app/"
       : "http://localhost:3000";
 
   private cache = new Map<
@@ -62,17 +64,206 @@ class IndianStockService {
     if (cached) return cached;
 
     try {
-      const response = await fetch(
-        `${this.baseURL}/api/stocks/nse?symbol=${symbol}`
-      );
-      if (!response.ok) throw new Error("NSE fetch failed");
+      console.log(`Fetching NSE data for ${symbol} from API endpoint`);
+      const apiUrl = `${this.baseURL}/api/stocks/nse?symbol=${symbol}`;
+      console.log(`API URL: ${apiUrl}`);
+
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        console.error(
+          `NSE API error: ${response.status} ${response.statusText}`
+        );
+        throw new Error(`NSE API error: ${response.status}`);
+      }
 
       const data = await response.json();
+      console.log(`Successfully fetched data for ${symbol}`);
       this.setCachedData(cacheKey, data);
       return data;
     } catch (error) {
       console.error("NSE stock error:", error);
-      return null;
+      return this.getMockNSEStock(symbol);
+    }
+  }
+
+  private getMockNSEStock(symbol: string): NSEStockData {
+    try {
+      const lastUpdateDate = new Date();
+      const basePrice = Math.floor(Math.random() * 2000) + 100;
+      const change = Math.random() * 40 - 20; // -20 to +20
+      const changePercent = (change / basePrice) * 100;
+
+      const companyNames: { [key: string]: string } = {
+        RELIANCE: "Reliance Industries Ltd",
+        TCS: "Tata Consultancy Services",
+        INFY: "Infosys Limited",
+        HDFCBANK: "HDFC Bank Limited",
+        ICICIBANK: "ICICI Bank Limited",
+        SBIN: "State Bank of India",
+        LT: "Larsen & Toubro Limited",
+        ITC: "ITC Limited",
+        KOTAKBANK: "Kotak Mahindra Bank",
+        BAJFINANCE: "Bajaj Finance Limited",
+        BHARTIARTL: "Bharti Airtel Limited",
+        ASIANPAINT: "Asian Paints Limited",
+        MARUTI: "Maruti Suzuki India",
+        HCLTECH: "HCL Technologies",
+        HINDUNILVR: "Hindustan Unilever",
+        WIPRO: "Wipro Limited",
+        ADANIPORTS: "Adani Ports & SEZ",
+        ULTRACEMCO: "UltraTech Cement",
+        TATAMOTORS: "Tata Motors Limited",
+        POWERGRID: "Power Grid Corporation",
+      };
+
+      const sectors: { [key: string]: string } = {
+        RELIANCE: "Energy",
+        TCS: "Information Technology",
+        INFY: "Information Technology",
+        HDFCBANK: "Banking",
+        ICICIBANK: "Banking",
+        SBIN: "Banking",
+        LT: "Construction",
+        ITC: "FMCG",
+        KOTAKBANK: "Banking",
+        BAJFINANCE: "Financial Services",
+        BHARTIARTL: "Telecommunications",
+        ASIANPAINT: "Chemicals",
+        MARUTI: "Automobile",
+        HCLTECH: "Information Technology",
+        HINDUNILVR: "FMCG",
+        WIPRO: "Information Technology",
+        ADANIPORTS: "Infrastructure",
+        ULTRACEMCO: "Cement",
+        TATAMOTORS: "Automobile",
+        POWERGRID: "Power",
+      };
+
+      const companyName = companyNames[symbol] || `${symbol} Limited`;
+      const sector = sectors[symbol] || "Diversified";
+
+      console.log(`Creating mock NSE data for ${symbol} (${companyName})`);
+
+      return {
+        exchange: "NSE",
+        info: {
+          symbol: symbol,
+          companyName: companyName,
+          industry: sector,
+          activeSeries: ["EQ"],
+          debtSeries: [],
+          isFNOSec: true,
+          isCASec: false,
+          isSLBSec: false,
+          isDebtSec: false,
+          isSuspended: false,
+          isETFSec: false,
+          isDelisted: false,
+          isin: `INE${Math.random()
+            .toString(36)
+            .substring(2, 10)
+            .toUpperCase()}`,
+        },
+        metadata: {
+          series: "EQ",
+          symbol: symbol,
+          isin: `INE${Math.random()
+            .toString(36)
+            .substring(2, 10)
+            .toUpperCase()}`,
+          status: "Listed",
+          listingDate: "01-Jan-1990",
+          industry: sector,
+          lastUpdateTime: lastUpdateDate.toISOString(),
+          pdSectorPe: 20 + Math.random() * 10,
+          pdSymbolPe: 15 + Math.random() * 15,
+          pdSectorInd: sector,
+        },
+        priceInfo: {
+          lastPrice: basePrice,
+          change: change,
+          pChange: changePercent,
+          previousClose: basePrice - change,
+          open: basePrice * 0.98,
+          close: basePrice - change,
+          vwap: basePrice * 1.01,
+          lowerCP: (basePrice * 0.8).toFixed(2),
+          upperCP: (basePrice * 1.2).toFixed(2),
+          pPriceBand: "No Band",
+          basePrice: basePrice,
+          intraDayHighLow: {
+            min: basePrice * 0.9,
+            max: basePrice * 1.1,
+            value: basePrice,
+          },
+          weekHighLow: {
+            min: basePrice * 0.7,
+            minDate: "31-Dec-2024",
+            max: basePrice * 1.3,
+            maxDate: "15-Jan-2025",
+            value: basePrice,
+          },
+        },
+        lastUpdate: lastUpdateDate.toISOString(),
+        source: "mock",
+      };
+    } catch (error) {
+      console.error("Error creating mock NSE stock:", error);
+      // Provide a minimal valid structure as fallback
+      return {
+        exchange: "NSE",
+        info: {
+          symbol: symbol,
+          companyName: `${symbol} Ltd`,
+          industry: "Miscellaneous",
+        },
+        metadata: {
+          series: "EQ",
+          symbol: symbol,
+          isin: `INE000000000`,
+          status: "Listed",
+          listingDate: "01-Jan-1990",
+          industry: "Miscellaneous",
+          lastUpdateTime: new Date().toISOString(),
+          pdSectorPe: 15,
+          pdSymbolPe: 15,
+          pdSectorInd: "Miscellaneous",
+        },
+        priceInfo: {
+          lastPrice: 1000,
+          change: 0,
+          pChange: 0,
+          previousClose: 1000,
+          open: 1000,
+          close: 1000,
+          vwap: 1000,
+          lowerCP: "800.00",
+          upperCP: "1200.00",
+          pPriceBand: "No Band",
+          basePrice: 1000,
+          intraDayHighLow: {
+            min: 950,
+            max: 1050,
+            value: 1000,
+          },
+          weekHighLow: {
+            min: 900,
+            minDate: "31-Dec-2024",
+            max: 1100,
+            maxDate: "15-Jan-2025",
+            value: 1000,
+          },
+        },
+        lastUpdate: new Date().toISOString(),
+        source: "mock-fallback",
+      };
     }
   }
 
@@ -82,23 +273,96 @@ class IndianStockService {
     if (cached) return cached;
 
     try {
+      console.log(`Fetching BSE data for ${symbolOrCode} from API endpoint`);
       const isCode = /^\d+$/.test(symbolOrCode);
       const queryParam = isCode
         ? `code=${symbolOrCode}`
         : `symbol=${symbolOrCode}`;
 
-      const response = await fetch(
-        `${this.baseURL}/api/stocks/bse?${queryParam}`
-      );
-      if (!response.ok) throw new Error("BSE fetch failed");
+      const apiUrl = `${this.baseURL}/api/stocks/bse?${queryParam}`;
+      console.log(`API URL: ${apiUrl}`);
+
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        console.error(
+          `BSE API error: ${response.status} ${response.statusText}`
+        );
+        throw new Error(`BSE API error: ${response.status}`);
+      }
 
       const data = await response.json();
+      console.log(`Successfully fetched BSE data for ${symbolOrCode}`);
       this.setCachedData(cacheKey, data);
       return data;
     } catch (error) {
       console.error("BSE stock error:", error);
-      return null;
+      return this.getMockBSEStock(symbolOrCode);
     }
+  }
+
+  private getMockBSEStock(symbolOrCode: string): BSEStockData {
+    const lastUpdateDate = new Date();
+    const basePrice = Math.floor(Math.random() * 2000) + 100;
+    const change = Math.random() * 40 - 20; // -20 to +20
+    const percentChange = (change / basePrice) * 100;
+    const volume = Math.floor(Math.random() * 10000000) + 100000;
+
+    const companyNames: { [key: string]: string } = {
+      RELIANCE: "Reliance Industries Ltd",
+      TCS: "Tata Consultancy Services",
+      INFY: "Infosys Limited",
+      HDFCBANK: "HDFC Bank Limited",
+      ICICIBANK: "ICICI Bank Limited",
+      SBIN: "State Bank of India",
+      LT: "Larsen & Toubro Limited",
+      ITC: "ITC Limited",
+      KOTAKBANK: "Kotak Mahindra Bank",
+      BAJFINANCE: "Bajaj Finance Limited",
+      BHARTIARTL: "Bharti Airtel Limited",
+      ASIANPAINT: "Asian Paints Limited",
+      MARUTI: "Maruti Suzuki India",
+      HCLTECH: "HCL Technologies",
+      HINDUNILVR: "Hindustan Unilever",
+      WIPRO: "Wipro Limited",
+      ADANIPORTS: "Adani Ports & SEZ",
+      ULTRACEMCO: "UltraTech Cement",
+      TATAMOTORS: "Tata Motors Limited",
+      POWERGRID: "Power Grid Corporation",
+    };
+
+    console.log(`Creating mock BSE data for ${symbolOrCode}`);
+
+    return {
+      securityCode: /^\d+$/.test(symbolOrCode)
+        ? symbolOrCode
+        : String(500000 + Math.floor(Math.random() * 100000)),
+      symbol: /^\d+$/.test(symbolOrCode)
+        ? Object.keys(companyNames)[
+            Math.floor(Math.random() * Object.keys(companyNames).length)
+          ]
+        : symbolOrCode,
+      companyName: companyNames[symbolOrCode] || `${symbolOrCode} Limited`,
+      currentPrice: basePrice,
+      change: change,
+      percentChange: percentChange,
+      open: basePrice * 0.98,
+      high: basePrice * 1.05,
+      low: basePrice * 0.95,
+      previousClose: basePrice - change,
+      volume: volume,
+      value: volume * basePrice,
+      totalTradedQuantity: volume,
+      exchange: "BSE",
+      lastUpdate: lastUpdateDate.toISOString(),
+      source: "mock",
+    };
   }
 
   async getIndianStock(

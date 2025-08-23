@@ -58,150 +58,151 @@ interface StockScreenerProps {
   searchQuery: string;
 }
 
-// Mock Indian stock data - In production, replace with real API calls
+// Mock Global stock data - In production, replace with real API calls
 const mockStocks: Stock[] = [
   {
-    symbol: "RELIANCE",
-    name: "Reliance Industries Ltd",
-    price: 2750.45,
-    change: 45.2,
-    changePercent: 1.67,
-    volume: 8542000,
-    marketCap: 18564000000000,
-    pe: 24.5,
-    pb: 2.1,
-    dividendYield: 0.85,
-    high52w: 2968.0,
-    low52w: 2220.3,
-    sector: "Energy",
-    exchange: "NSE",
+    symbol: "AAPL",
+    name: "Apple Inc.",
+    price: 192.53,
+    change: 2.45,
+    changePercent: 1.29,
+    volume: 45620000,
+    marketCap: 3000000000000,
+    pe: 29.2,
+    pb: 39.4,
+    dividendYield: 0.43,
+    high52w: 199.62,
+    low52w: 164.08,
+    sector: "Technology",
+    exchange: "NASDAQ",
   },
   {
-    symbol: "TCS",
-    name: "Tata Consultancy Services",
-    price: 4125.3,
-    change: -25.75,
-    changePercent: -0.62,
-    volume: 2845000,
-    marketCap: 15024000000000,
-    pe: 28.7,
-    pb: 12.4,
-    dividendYield: 3.2,
-    high52w: 4592.25,
-    low52w: 3311.0,
-    sector: "IT",
-    exchange: "NSE",
-  },
-  {
-    symbol: "INFY",
-    name: "Infosys Limited",
-    price: 1845.6,
-    change: 12.85,
-    changePercent: 0.7,
-    volume: 5684000,
-    marketCap: 7659000000000,
-    pe: 25.8,
-    pb: 8.9,
-    dividendYield: 2.8,
-    high52w: 1953.9,
-    low52w: 1351.65,
-    sector: "IT",
-    exchange: "NSE",
-  },
-  {
-    symbol: "HDFCBANK",
-    name: "HDFC Bank Limited",
-    price: 1625.75,
-    change: 8.45,
-    changePercent: 0.52,
-    volume: 12450000,
-    marketCap: 12456000000000,
-    pe: 18.9,
-    pb: 2.8,
-    dividendYield: 1.2,
-    high52w: 1791.8,
-    low52w: 1363.55,
-    sector: "Banking",
-    exchange: "NSE",
-  },
-  {
-    symbol: "ICICIBANK",
-    name: "ICICI Bank Limited",
-    price: 1180.9,
-    change: -5.3,
-    changePercent: -0.45,
-    volume: 8965000,
-    marketCap: 8234000000000,
-    pe: 16.2,
-    pb: 2.4,
-    dividendYield: 0.9,
-    high52w: 1257.65,
-    low52w: 895.4,
-    sector: "Banking",
-    exchange: "NSE",
-  },
-  {
-    symbol: "HINDUNILVR",
-    name: "Hindustan Unilever Ltd",
-    price: 2675.85,
-    change: 18.9,
-    changePercent: 0.71,
-    volume: 1254000,
-    marketCap: 6254000000000,
-    pe: 55.7,
+    symbol: "MSFT",
+    name: "Microsoft Corporation",
+    price: 420.55,
+    change: -1.25,
+    changePercent: -0.3,
+    volume: 18540000,
+    marketCap: 3100000000000,
+    pe: 35.1,
     pb: 12.8,
-    dividendYield: 1.8,
-    high52w: 2844.45,
-    low52w: 2172.0,
-    sector: "FMCG",
-    exchange: "NSE",
+    dividendYield: 0.68,
+    high52w: 468.35,
+    low52w: 309.45,
+    sector: "Technology",
+    exchange: "NASDAQ",
   },
   {
-    symbol: "ITC",
-    name: "ITC Limited",
-    price: 485.3,
-    change: 2.15,
-    changePercent: 0.44,
-    volume: 15684000,
-    marketCap: 6025000000000,
+    symbol: "GOOGL",
+    name: "Alphabet Inc.",
+    price: 175.64,
+    change: 3.82,
+    changePercent: 2.22,
+    volume: 25680000,
+    marketCap: 2200000000000,
     pe: 26.4,
-    pb: 4.2,
-    dividendYield: 4.8,
-    high52w: 497.95,
-    low52w: 387.45,
-    sector: "FMCG",
-    exchange: "NSE",
+    pb: 5.8,
+    dividendYield: 0.0,
+    high52w: 191.18,
+    low52w: 129.4,
+    sector: "Technology",
+    exchange: "NASDAQ",
   },
   {
-    symbol: "BHARTIARTL",
-    name: "Bharti Airtel Limited",
-    price: 1625.4,
-    change: -12.85,
-    changePercent: -0.78,
-    volume: 4568000,
-    marketCap: 9456000000000,
-    pe: 22.8,
-    pb: 3.6,
-    dividendYield: 0.6,
-    high52w: 1765.9,
-    low52w: 900.05,
-    sector: "Telecom",
-    exchange: "NSE",
+    symbol: "AMZN",
+    name: "Amazon.com Inc.",
+    price: 186.43,
+    change: 4.67,
+    changePercent: 2.57,
+    volume: 32150000,
+    marketCap: 1950000000000,
+    pe: 50.8,
+    pb: 8.2,
+    dividendYield: 0.0,
+    high52w: 201.2,
+    low52w: 118.35,
+    sector: "Consumer Discretionary",
+    exchange: "NASDAQ",
+  },
+  {
+    symbol: "TSLA",
+    name: "Tesla Inc.",
+    price: 248.5,
+    change: -8.3,
+    changePercent: -3.23,
+    volume: 89650000,
+    marketCap: 790000000000,
+    pe: 66.2,
+    pb: 9.8,
+    dividendYield: 0.0,
+    high52w: 299.29,
+    low52w: 152.37,
+    sector: "Consumer Discretionary",
+    exchange: "NASDAQ",
+  },
+  {
+    symbol: "NVDA",
+    name: "NVIDIA Corporation",
+    price: 135.58,
+    change: 6.25,
+    changePercent: 4.83,
+    volume: 156200000,
+    marketCap: 3350000000000,
+    pe: 78.4,
+    pb: 28.6,
+    dividendYield: 0.0,
+    high52w: 152.89,
+    low52w: 39.23,
+    sector: "Technology",
+    exchange: "NASDAQ",
+  },
+  {
+    symbol: "JPM",
+    name: "JPMorgan Chase & Co.",
+    price: 235.67,
+    change: 1.45,
+    changePercent: 0.62,
+    volume: 12680000,
+    marketCap: 690000000000,
+    pe: 14.2,
+    pb: 1.8,
+    dividendYield: 2.1,
+    high52w: 248.5,
+    low52w: 135.19,
+    sector: "Financial Services",
+    exchange: "NYSE",
+  },
+  {
+    symbol: "JNJ",
+    name: "Johnson & Johnson",
+    price: 168.45,
+    change: -0.85,
+    changePercent: -0.5,
+    volume: 8950000,
+    marketCap: 440000000000,
+    pe: 15.8,
+    pb: 5.2,
+    dividendYield: 2.9,
+    high52w: 179.92,
+    low52w: 143.13,
+    sector: "Healthcare",
+    exchange: "NYSE",
   },
 ];
 
 const sectors = [
   "All",
-  "Banking",
-  "IT",
+  "Technology",
+  "Financial Services",
+  "Healthcare",
+  "Consumer Discretionary",
   "Energy",
-  "FMCG",
-  "Telecom",
-  "Auto",
+  "Industrials",
+  "Utilities",
   "Pharma",
   "Metals",
 ];
-const exchanges = ["All", "NSE", "BSE"];
+const exchanges = ["All", "NYSE", "NASDAQ", "LSE", "TSE"];
 
 export default function StockScreener({ searchQuery }: StockScreenerProps) {
   const [stocks, setStocks] = useState<Stock[]>(mockStocks);
@@ -217,7 +218,7 @@ export default function StockScreener({ searchQuery }: StockScreenerProps) {
     sector: "All",
     exchange: "All",
     priceRange: [0, 5000] as [number, number],
-    marketCapRange: [0, 20000000] as [number, number], // in crores
+    marketCapRange: [0, 5000] as [number, number], // in billions USD
     peRange: [0, 100] as [number, number],
     pbRange: [0, 20] as [number, number],
     dividendYieldRange: [0, 10] as [number, number],
@@ -254,11 +255,11 @@ export default function StockScreener({ searchQuery }: StockScreenerProps) {
         return false;
       }
 
-      // Market cap range (convert to crores)
-      const marketCapCrores = stock.marketCap / 10000000;
+      // Market cap range (convert to billions)
+      const marketCapBillions = stock.marketCap / 1000000000;
       if (
-        marketCapCrores < filters.marketCapRange[0] ||
-        marketCapCrores > filters.marketCapRange[1]
+        marketCapBillions < filters.marketCapRange[0] ||
+        marketCapBillions > filters.marketCapRange[1]
       ) {
         return false;
       }
@@ -337,8 +338,8 @@ export default function StockScreener({ searchQuery }: StockScreenerProps) {
     setLoading(false);
   };
 
-  const formatPrice = (price: number) => `₹${price.toFixed(2)}`;
-  const formatMarketCap = (cap: number) => `₹${(cap / 10000000).toFixed(0)} Cr`;
+  const formatPrice = (price: number) => `$${price.toFixed(2)}`;
+  const formatMarketCap = (cap: number) => `$${(cap / 1000000000).toFixed(1)}B`;
   const formatVolume = (volume: number) => {
     if (volume >= 10000000) return `${(volume / 10000000).toFixed(1)}Cr`;
     if (volume >= 100000) return `${(volume / 100000).toFixed(1)}L`;
@@ -460,8 +461,8 @@ export default function StockScreener({ searchQuery }: StockScreenerProps) {
             {/* Price Range */}
             <div className="space-y-3">
               <Label>
-                Price Range (₹{filters.priceRange[0]} - ₹{filters.priceRange[1]}
-                )
+                Price Range ($${filters.priceRange[0]} - $$
+                {filters.priceRange[1]})
               </Label>
               <Slider
                 value={filters.priceRange}
@@ -480,8 +481,8 @@ export default function StockScreener({ searchQuery }: StockScreenerProps) {
             {/* Market Cap Range */}
             <div className="space-y-3">
               <Label>
-                Market Cap (₹{(filters.marketCapRange[0] / 10000).toFixed(0)}K
-                Cr - ₹{(filters.marketCapRange[1] / 10000).toFixed(0)}K Cr)
+                Market Cap ($${filters.marketCapRange[0]}B - $$
+                {filters.marketCapRange[1]}B)
               </Label>
               <Slider
                 value={filters.marketCapRange}

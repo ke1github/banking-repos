@@ -14,9 +14,13 @@ import {
   Building2,
   Zap,
   Target,
+  PieChart,
+  BarChart2,
+  LineChart,
 } from "lucide-react";
 import InvestmentSearchBar from "@/components/investment/InvestmentSearchBar";
 import IndianStockScreener from "@/components/investment/screeners/IndianStockScreener";
+import EnhancedIndianStockScreener from "@/components/investment/screeners/EnhancedIndianStockScreener";
 import StockScreener from "@/components/investment/screeners/StockScreener";
 import MutualFundScreener from "@/components/investment/screeners/MutualFundScreener";
 import CryptoScreener from "@/components/investment/screeners/CryptoScreener";
@@ -26,6 +30,64 @@ import IPOScreener from "@/components/investment/screeners/IPOScreener";
 import CommodityScreener from "@/components/investment/screeners/CommodityScreener";
 import { LoadingState } from "@/components/ui/data-states";
 
+// Centralized market overview data
+const marketIndices = [
+  {
+    name: "NIFTY 50",
+    value: "24,485.50",
+    change: "+1.2%",
+    trend: "up" as const,
+  },
+  {
+    name: "SENSEX",
+    value: "80,845.75",
+    change: "+0.8%",
+    trend: "up" as const,
+  },
+  {
+    name: "BANK NIFTY",
+    value: "52,125.30",
+    change: "-0.5%",
+    trend: "down" as const,
+  },
+  {
+    name: "FII Flow",
+    value: "₹2,845 Cr",
+    change: "Inflow",
+    trend: "up" as const,
+    icon: DollarSign,
+  },
+];
+
+// Reusable MarketOverviewCard component
+const MarketOverviewCard = ({
+  name,
+  value,
+  change,
+  trend,
+  icon: CustomIcon,
+}: (typeof marketIndices)[0]) => {
+  const Icon = CustomIcon || (trend === "up" ? TrendingUp : TrendingDown);
+  const colorClass = trend === "up" ? "text-green-600" : "text-red-600";
+
+  return (
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">{name}</p>
+            <p className="text-lg font-semibold">{value}</p>
+          </div>
+          <div className={`flex items-center ${colorClass}`}>
+            <Icon className="h-4 w-4 mr-1" />
+            <span className="text-sm">{change}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 const screenerTabs = [
   {
     id: "indian-stocks",
@@ -33,13 +95,23 @@ const screenerTabs = [
     icon: TrendingUp,
     color: "bg-blue-500",
     description: "NSE & BSE real-time data",
+    component: IndianStockScreener,
   },
   {
-    id: "stocks",
+    id: "enhanced-indian-stocks",
+    label: "Advanced Indian Stocks",
+    icon: BarChart2,
+    color: "bg-blue-700",
+    description: "Comprehensive analysis with financial ratios",
+    component: EnhancedIndianStockScreener,
+  },
+  {
+    id: "global-stocks",
     label: "Global Stocks",
     icon: Globe,
     color: "bg-purple-500",
     description: "International markets",
+    component: StockScreener,
   },
   {
     id: "mutual-funds",
@@ -47,6 +119,7 @@ const screenerTabs = [
     icon: BarChart3,
     color: "bg-green-500",
     description: "AMFI registered schemes",
+    component: MutualFundScreener,
   },
   {
     id: "crypto",
@@ -54,20 +127,23 @@ const screenerTabs = [
     icon: Coins,
     color: "bg-orange-500",
     description: "Digital currencies",
+    component: CryptoScreener,
   },
   {
     id: "bonds",
     label: "Bonds",
     icon: Building2,
-    color: "bg-purple-500",
+    color: "bg-gray-500",
     description: "Government & Corporate bonds",
+    component: BondScreener,
   },
   {
     id: "etfs",
     label: "ETFs",
-    icon: Globe,
+    icon: PieChart,
     color: "bg-indigo-500",
     description: "Exchange Traded Funds",
+    component: ETFScreener,
   },
   {
     id: "ipos",
@@ -75,6 +151,7 @@ const screenerTabs = [
     icon: Zap,
     color: "bg-red-500",
     description: "Initial Public Offerings",
+    component: IPOScreener,
   },
   {
     id: "commodities",
@@ -82,6 +159,7 @@ const screenerTabs = [
     icon: Target,
     color: "bg-yellow-500",
     description: "Gold, Silver, Oil & more",
+    component: CommodityScreener,
   },
 ];
 
@@ -89,28 +167,8 @@ function ScreenerContent() {
   const [activeTab, setActiveTab] = useState("indian-stocks");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const renderScreener = () => {
-    switch (activeTab) {
-      case "indian-stocks":
-        return <IndianStockScreener searchQuery={searchQuery} />;
-      case "stocks":
-        return <StockScreener searchQuery={searchQuery} />;
-      case "mutual-funds":
-        return <MutualFundScreener searchQuery={searchQuery} />;
-      case "crypto":
-        return <CryptoScreener searchQuery={searchQuery} />;
-      case "bonds":
-        return <BondScreener searchQuery={searchQuery} />;
-      case "etfs":
-        return <ETFScreener searchQuery={searchQuery} />;
-      case "ipos":
-        return <IPOScreener searchQuery={searchQuery} />;
-      case "commodities":
-        return <CommodityScreener searchQuery={searchQuery} />;
-      default:
-        return <IndianStockScreener searchQuery={searchQuery} />;
-    }
-  };
+  // Get the current active tab configuration
+  const currentTab = screenerTabs.find((tab) => tab.id === activeTab);
 
   return (
     <div className="p-6 space-y-6">
@@ -129,9 +187,7 @@ function ScreenerContent() {
         <InvestmentSearchBar
           onSearch={setSearchQuery}
           placeholder={`Search ${
-            screenerTabs
-              .find((tab) => tab.id === activeTab)
-              ?.label.toLowerCase() || "investments"
+            currentTab?.label.toLowerCase() || "investments"
           }...`}
           category={activeTab}
         />
@@ -139,65 +195,9 @@ function ScreenerContent() {
 
       {/* Market Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Card className="hover:shadow-md transition-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">NIFTY 50</p>
-                <p className="text-lg font-semibold">24,485.50</p>
-              </div>
-              <div className="flex items-center text-green-600">
-                <TrendingUp className="h-4 w-4 mr-1" />
-                <span className="text-sm">+1.2%</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">SENSEX</p>
-                <p className="text-lg font-semibold">80,845.75</p>
-              </div>
-              <div className="flex items-center text-green-600">
-                <TrendingUp className="h-4 w-4 mr-1" />
-                <span className="text-sm">+0.8%</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">BANK NIFTY</p>
-                <p className="text-lg font-semibold">52,125.30</p>
-              </div>
-              <div className="flex items-center text-red-600">
-                <TrendingDown className="h-4 w-4 mr-1" />
-                <span className="text-sm">-0.5%</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">FII Flow</p>
-                <p className="text-lg font-semibold">₹2,845 Cr</p>
-              </div>
-              <div className="flex items-center text-green-600">
-                <DollarSign className="h-4 w-4 mr-1" />
-                <span className="text-sm">Inflow</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {marketIndices.map((index) => (
+          <MarketOverviewCard key={index.name} {...index} />
+        ))}
       </div>
 
       {/* Screener Tabs */}
@@ -245,7 +245,7 @@ function ScreenerContent() {
                 </CardHeader>
                 <CardContent className="px-0">
                   <Suspense fallback={<LoadingState className="h-96" />}>
-                    {renderScreener()}
+                    <tab.component searchQuery={searchQuery} />
                   </Suspense>
                 </CardContent>
               </Card>

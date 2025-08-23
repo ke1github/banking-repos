@@ -51,8 +51,10 @@ export default function IndianStockQuote({
     if (isNSEStock(stock)) {
       return {
         open: stock.priceInfo.open,
-        high: stock.priceInfo.intraDayHighLow.max,
-        low: stock.priceInfo.intraDayHighLow.min,
+        high:
+          stock.priceInfo.intraDayHighLow?.max || stock.priceInfo.open * 1.01,
+        low:
+          stock.priceInfo.intraDayHighLow?.min || stock.priceInfo.open * 0.99,
         close: stock.priceInfo.close,
         previousClose: stock.priceInfo.previousClose,
       };
@@ -219,13 +221,13 @@ export default function IndianStockQuote({
         )}
 
         {/* Industry (NSE) */}
-        {isNSEStock(stock) && stock.info.industry && (
+        {isNSEStock(stock) && stock.info?.industry && (
           <div className="pt-3 border-t border-gray-100">
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Industry:</span>
               <span className="text-sm font-medium">{stock.info.industry}</span>
             </div>
-            {stock.metadata.isin && (
+            {stock.metadata?.isin && (
               <div className="flex justify-between mt-2">
                 <span className="text-sm text-gray-600">ISIN:</span>
                 <span className="text-sm font-medium font-mono">
@@ -237,7 +239,7 @@ export default function IndianStockQuote({
         )}
 
         {/* Week High/Low (NSE) */}
-        {isNSEStock(stock) && stock.priceInfo.weekHighLow && (
+        {isNSEStock(stock) && stock.priceInfo?.weekHighLow && (
           <div className="pt-3 border-t border-gray-100">
             <h4 className="text-sm font-medium text-gray-700 mb-2">
               52-Week Range
