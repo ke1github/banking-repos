@@ -436,12 +436,29 @@
     @apply 2xl:text-26 font-ibm-plex-serif text-[26px] font-bold text-black-1 max-xl:hidden;
   }
 
+  .sidebar-logo-container span {
+    @apply block lg:inline !important;
+  }
+
+  /* Override to fix sidebar user visibility */
+  .sidebar button span {
+    display: inline !important;
+  }
+
   .sidebar-link {
     @apply flex gap-3 items-center py-1 md:p-3 2xl:p-4 rounded-lg justify-center xl:justify-start;
   }
 
   .sidebar-label {
     @apply text-16 font-semibold text-black-2 max-xl:hidden;
+  }
+
+  .sidebar-user-info {
+    @apply block;
+  }
+
+  .sidebar-user-info div {
+    @apply inline-block !important;
   }
 
   /* Text Gradients */

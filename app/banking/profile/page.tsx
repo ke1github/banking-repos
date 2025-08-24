@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import { Account, Client, Models, Storage } from "appwrite";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { cn } from "@/lib/utils";
+import TabList from "@/components/ui/TabList";
+import { User, Settings, Shield, Bell, History } from "lucide-react";
 
 function UserProfileClient() {
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
@@ -14,7 +16,6 @@ function UserProfileClient() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
-  // Removed unused avatarFile state
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,7 +52,6 @@ function UserProfileClient() {
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    // setAvatarFile(file); // removed unused state
     setSaving(true);
     setSuccess("");
     setError("");
@@ -130,8 +130,8 @@ function UserProfileClient() {
   const [firstName, ...rest] = user.name.split(" ");
   const lastName = rest.length > 0 ? rest[rest.length - 1] : undefined;
 
-  return (
-    <div className="bg-white rounded-lg border border-gray-100 p-6 max-w-lg">
+  const profileContent = (
+    <div className="bg-white rounded-lg border border-gray-100 p-6">
       <div className="flex items-center gap-6 mb-6">
         <div className="relative">
           <UserAvatar
@@ -188,7 +188,6 @@ function UserProfileClient() {
           <span className="font-medium">Registered:</span>
           <span>{new Date(user.$createdAt).toLocaleString()}</span>
         </div>
-        {/* Add more fields as needed */}
       </div>
       {editMode ? (
         <div className="space-y-3">
@@ -254,6 +253,215 @@ function UserProfileClient() {
       )}
       {success && <div className="text-green-600 mt-3">{success}</div>}
       {error && <div className="text-red-600 mt-3">{error}</div>}
+    </div>
+  );
+
+  const securityContent = (
+    <div className="bg-white rounded-lg border border-gray-100 p-6">
+      <h3 className="text-lg font-semibold mb-4">Security Settings</h3>
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-medium mb-2">Change Password</h4>
+          <p className="text-sm text-gray-500 mb-3">
+            It's a good practice to change your password regularly
+          </p>
+          <button
+            className="bg-blue-600 text-white rounded-lg px-4 py-2 font-medium"
+            type="button"
+          >
+            Change Password
+          </button>
+        </div>
+
+        <div className="pt-4 border-t">
+          <h4 className="font-medium mb-2">Two-Factor Authentication</h4>
+          <p className="text-sm text-gray-500 mb-3">
+            Add an extra layer of security to your account
+          </p>
+          <button
+            className="bg-blue-600 text-white rounded-lg px-4 py-2 font-medium"
+            type="button"
+          >
+            Enable 2FA
+          </button>
+        </div>
+
+        <div className="pt-4 border-t">
+          <h4 className="font-medium mb-2">Login Sessions</h4>
+          <p className="text-sm text-gray-500 mb-3">
+            Manage your active sessions and sign out from other devices
+          </p>
+          <button
+            className="bg-blue-600 text-white rounded-lg px-4 py-2 font-medium"
+            type="button"
+          >
+            Manage Sessions
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const notificationsContent = (
+    <div className="bg-white rounded-lg border border-gray-100 p-6">
+      <h3 className="text-lg font-semibold mb-4">Notification Preferences</h3>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-medium">Transaction Alerts</h4>
+            <p className="text-sm text-gray-500">
+              Get notified about new transactions
+            </p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" className="sr-only peer" defaultChecked />
+            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div>
+            <h4 className="font-medium">Security Alerts</h4>
+            <p className="text-sm text-gray-500">
+              Get notified about security-related events
+            </p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" className="sr-only peer" defaultChecked />
+            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div>
+            <h4 className="font-medium">Marketing Communications</h4>
+            <p className="text-sm text-gray-500">
+              Receive updates about new features and promotions
+            </p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" className="sr-only peer" />
+            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div>
+            <h4 className="font-medium">Email Frequency</h4>
+            <p className="text-sm text-gray-500">
+              Choose how often you receive emails
+            </p>
+          </div>
+          <select className="rounded-md border border-gray-300 p-2">
+            <option>Daily</option>
+            <option>Weekly</option>
+            <option>Monthly</option>
+            <option>Only important</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+
+  const activityContent = (
+    <div className="bg-white rounded-lg border border-gray-100 p-6">
+      <h3 className="text-lg font-semibold mb-4">Account Activity</h3>
+      <div className="space-y-4">
+        <p className="text-sm text-gray-500">Your recent account activities</p>
+
+        <div className="space-y-4 mt-4">
+          <div className="border-b pb-3">
+            <div className="flex justify-between">
+              <div>
+                <div className="font-medium">Login</div>
+                <div className="text-sm text-gray-500">Chrome on Windows</div>
+              </div>
+              <div className="text-sm text-gray-500">Just now</div>
+            </div>
+          </div>
+
+          <div className="border-b pb-3">
+            <div className="flex justify-between">
+              <div>
+                <div className="font-medium">Password Changed</div>
+                <div className="text-sm text-gray-500">Security update</div>
+              </div>
+              <div className="text-sm text-gray-500">3 days ago</div>
+            </div>
+          </div>
+
+          <div className="border-b pb-3">
+            <div className="flex justify-between">
+              <div>
+                <div className="font-medium">Profile Updated</div>
+                <div className="text-sm text-gray-500">
+                  Changed profile picture
+                </div>
+              </div>
+              <div className="text-sm text-gray-500">1 week ago</div>
+            </div>
+          </div>
+
+          <div className="border-b pb-3">
+            <div className="flex justify-between">
+              <div>
+                <div className="font-medium">Account Created</div>
+                <div className="text-sm text-gray-500">
+                  Welcome to the platform
+                </div>
+              </div>
+              <div className="text-sm text-gray-500">1 month ago</div>
+            </div>
+          </div>
+        </div>
+
+        <button className="text-blue-600 text-sm mt-2">
+          View Full Activity Log
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="p-6 space-y-6">
+      <div className="flex flex-col">
+        <h1 className="text-2xl font-bold tracking-tight">My Profile</h1>
+        <p className="text-muted-foreground">
+          Manage your account settings and preferences
+        </p>
+      </div>
+
+      <TabList
+        items={[
+          {
+            value: "profile",
+            label: "Personal Info",
+            icon: <User className="h-4 w-4 mr-2" />,
+            content: profileContent,
+          },
+          {
+            value: "security",
+            label: "Security",
+            icon: <Shield className="h-4 w-4 mr-2" />,
+            content: securityContent,
+          },
+          {
+            value: "notifications",
+            label: "Notifications",
+            icon: <Bell className="h-4 w-4 mr-2" />,
+            content: notificationsContent,
+          },
+          {
+            value: "activity",
+            label: "Activity",
+            icon: <History className="h-4 w-4 mr-2" />,
+            content: activityContent,
+          },
+        ]}
+        defaultValue="profile"
+        variant="underline"
+        className="w-full"
+      />
     </div>
   );
 }

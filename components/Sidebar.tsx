@@ -48,8 +48,16 @@ const Sidebar = ({ user }: SidebarProps) => {
       <div className="flex flex-col h-full">
         {/* Sticky header with logo */}
         <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 border-b">
-          <Link href={ROUTES.HOME} aria-label="Go to dashboard">
-            <Logo variant="default" />
+          <Link
+            href={ROUTES.HOME}
+            aria-label="Go to dashboard"
+            className="block"
+          >
+            <Logo
+              variant="default"
+              showText={true}
+              className="text-gray-900 sidebar-logo-container"
+            />
           </Link>
         </div>
 
@@ -290,14 +298,20 @@ const Sidebar = ({ user }: SidebarProps) => {
                       lastName={user.lastName}
                       size="sm"
                     />
-                    <div className="min-w-0 text-left">
-                      <div className="text-sm font-medium truncate">
+                    <div className="flex flex-col justify-center w-full">
+                      <span
+                        className="text-sm font-medium text-gray-900"
+                        style={{ display: "inline" }}
+                      >
                         {user.firstName} {user.lastName}
-                      </div>
+                      </span>
                       {user.email && (
-                        <div className="text-xs text-gray-500 truncate">
+                        <span
+                          className="text-xs text-gray-500"
+                          style={{ display: "inline" }}
+                        >
                           {user.email}
-                        </div>
+                        </span>
                       )}
                     </div>
                     <svg
@@ -330,14 +344,20 @@ const Sidebar = ({ user }: SidebarProps) => {
                       lastName={user.lastName}
                       size="sm"
                     />
-                    <div className="min-w-0">
-                      <div className="text-sm font-medium truncate">
+                    <div className="flex flex-col justify-center w-full">
+                      <span
+                        className="text-sm font-medium text-gray-900"
+                        style={{ display: "inline" }}
+                      >
                         {user.firstName} {user.lastName}
-                      </div>
+                      </span>
                       {user.email && (
-                        <div className="text-xs text-gray-500 truncate">
+                        <span
+                          className="text-xs text-gray-500"
+                          style={{ display: "inline" }}
+                        >
                           {user.email}
-                        </div>
+                        </span>
                       )}
                     </div>
                   </div>

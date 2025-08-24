@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import TabList, { TabItem } from "@/components/ui/TabList";
 
 export default function PerformancePage() {
   return (
@@ -15,60 +15,79 @@ export default function PerformancePage() {
         </p>
       </div>
 
-      <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-8">
-          <TabsTrigger value="summary">Summary</TabsTrigger>
-          <TabsTrigger value="returns">Returns</TabsTrigger>
-          <TabsTrigger value="allocation">Allocation</TabsTrigger>
-          <TabsTrigger value="comparison">Comparison</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="summary" className="mt-0">
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-            <h3 className="text-lg font-semibold mb-4">Performance Summary</h3>
-            <div className="h-80 flex items-center justify-center">
-              <p className="text-muted-foreground">
-                Performance summary chart would appear here
-              </p>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="returns" className="mt-0">
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-            <h3 className="text-lg font-semibold mb-4">Historical Returns</h3>
-            <div className="h-80 flex items-center justify-center">
-              <p className="text-muted-foreground">
-                Returns visualization would appear here
-              </p>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="allocation" className="mt-0">
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-            <h3 className="text-lg font-semibold mb-4">
-              Asset Allocation Performance
-            </h3>
-            <div className="h-80 flex items-center justify-center">
-              <p className="text-muted-foreground">
-                Asset allocation performance would appear here
-              </p>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="comparison" className="mt-0">
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-            <h3 className="text-lg font-semibold mb-4">Benchmark Comparison</h3>
-            <div className="h-80 flex items-center justify-center">
-              <p className="text-muted-foreground">
-                Benchmark comparison would appear here
-              </p>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+      <TabList
+        defaultValue="summary"
+        className="w-full"
+        variant="underline"
+        pageStyle="default"
+        tabsListClassName="grid w-full grid-cols-4 mb-8"
+        items={[
+          {
+            value: "summary",
+            label: "Summary",
+            content: (
+              <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  Performance Summary
+                </h3>
+                <div className="h-80 flex items-center justify-center">
+                  <p className="text-muted-foreground">
+                    Performance summary chart would appear here
+                  </p>
+                </div>
+              </div>
+            ),
+          },
+          {
+            value: "returns",
+            label: "Returns",
+            content: (
+              <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  Historical Returns
+                </h3>
+                <div className="h-80 flex items-center justify-center">
+                  <p className="text-muted-foreground">
+                    Returns visualization would appear here
+                  </p>
+                </div>
+              </div>
+            ),
+          },
+          {
+            value: "allocation",
+            label: "Allocation",
+            content: (
+              <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  Asset Allocation Performance
+                </h3>
+                <div className="h-80 flex items-center justify-center">
+                  <p className="text-muted-foreground">
+                    Asset allocation performance would appear here
+                  </p>
+                </div>
+              </div>
+            ),
+          },
+          {
+            value: "comparison",
+            label: "Comparison",
+            content: (
+              <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                <h3 className="text-lg font-semibold mb-4">
+                  Benchmark Comparison
+                </h3>
+                <div className="h-80 flex items-center justify-center">
+                  <p className="text-muted-foreground">
+                    Benchmark comparison would appear here
+                  </p>
+                </div>
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

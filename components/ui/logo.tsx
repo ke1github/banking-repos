@@ -27,13 +27,14 @@ const Logo: React.FC<LogoProps> = ({
       />
       {showText && (
         <span
-          className={`ml-2 font-semibold ${
+          className={`ml-2 font-semibold lg:inline-block ${
             variant === "large"
               ? "text-xl"
               : variant === "small"
               ? "text-sm"
               : "text-base"
           }`}
+          style={{ display: "inline-block" }}
         >
           SP Banking
         </span>

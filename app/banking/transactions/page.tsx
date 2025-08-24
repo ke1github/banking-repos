@@ -13,6 +13,14 @@ import {
   ErrorState,
   NoPermissionState,
 } from "@/components/ui/data-states";
+import TabList from "@/components/ui/TabList";
+import {
+  ListFilter,
+  BarChart2,
+  Calendar,
+  CreditCard,
+  DollarSign,
+} from "lucide-react";
 
 function TransactionsPageContent() {
   type Filters = {
@@ -129,10 +137,9 @@ function TransactionsPageContent() {
   const page = Math.min(Math.max(filters.page, 1), totalPages);
   const start = (page - 1) * pageSize;
 
-  return (
-    <section className="p-6 space-y-4">
-      <h1 className="text-2xl font-semibold">Transactions</h1>
-      <p className="text-gray-600">View and filter your recent transactions.</p>
+  // Sample data for visualizations (normally would come from an API)
+  const recentTransactionsContent = (
+    <div className="space-y-4">
       <Filters />
       <div className="flex items-center justify-between text-sm text-gray-600">
         <span>
@@ -184,6 +191,187 @@ function TransactionsPageContent() {
       ) : (
         <TransactionsList items={items} />
       )}
+    </div>
+  );
+
+  const analyticsContent = (
+    <div className="bg-white rounded-lg border border-gray-100 p-6">
+      <h3 className="text-lg font-medium mb-4">Spending Analytics</h3>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium mb-2">Monthly Spending Trend</h4>
+          <div className="h-64 flex items-center justify-center bg-gray-50">
+            <p className="text-gray-500">
+              Monthly spending chart would appear here
+            </p>
+          </div>
+        </div>
+        <div className="border rounded-lg p-4">
+          <h4 className="font-medium mb-2">Spending by Category</h4>
+          <div className="h-64 flex items-center justify-center bg-gray-50">
+            <p className="text-gray-500">
+              Category distribution chart would appear here
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const scheduledContent = (
+    <div className="bg-white rounded-lg border border-gray-100 p-6">
+      <h3 className="text-lg font-medium mb-4">Scheduled Transactions</h3>
+      <div className="space-y-4">
+        <div className="border rounded-lg p-4">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="font-medium">Monthly Subscription</h4>
+            <span className="text-blue-600 font-medium">$9.99</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Next payment: Aug 28, 2025</span>
+            <span className="text-gray-500">Netflix</span>
+          </div>
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="font-medium">Rent Payment</h4>
+            <span className="text-blue-600 font-medium">$1,200.00</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Next payment: Sep 1, 2025</span>
+            <span className="text-gray-500">Recurring Transfer</span>
+          </div>
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="font-medium">Gym Membership</h4>
+            <span className="text-blue-600 font-medium">$49.99</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Next payment: Sep 5, 2025</span>
+            <span className="text-gray-500">Fitness World</span>
+          </div>
+        </div>
+
+        <button className="bg-blue-600 text-white rounded-lg px-4 py-2 font-medium mt-4">
+          Add Scheduled Transaction
+        </button>
+      </div>
+    </div>
+  );
+
+  const categoriesContent = (
+    <div className="bg-white rounded-lg border border-gray-100 p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium">Transaction Categories</h3>
+        <button className="text-blue-600 text-sm">Add Category</button>
+      </div>
+      <div className="space-y-4">
+        <div className="border rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <DollarSign className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <h4 className="font-medium">Shopping</h4>
+                <p className="text-sm text-gray-500">15 transactions</p>
+              </div>
+            </div>
+            <span className="text-blue-600 font-medium">$1,245.33</span>
+          </div>
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                <DollarSign className="h-4 w-4 text-green-600" />
+              </div>
+              <div>
+                <h4 className="font-medium">Dining</h4>
+                <p className="text-sm text-gray-500">28 transactions</p>
+              </div>
+            </div>
+            <span className="text-blue-600 font-medium">$875.25</span>
+          </div>
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                <DollarSign className="h-4 w-4 text-purple-600" />
+              </div>
+              <div>
+                <h4 className="font-medium">Entertainment</h4>
+                <p className="text-sm text-gray-500">9 transactions</p>
+              </div>
+            </div>
+            <span className="text-blue-600 font-medium">$354.99</span>
+          </div>
+        </div>
+
+        <div className="border rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                <DollarSign className="h-4 w-4 text-yellow-600" />
+              </div>
+              <div>
+                <h4 className="font-medium">Transportation</h4>
+                <p className="text-sm text-gray-500">12 transactions</p>
+              </div>
+            </div>
+            <span className="text-blue-600 font-medium">$223.50</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <section className="p-6 space-y-6">
+      <div className="flex flex-col">
+        <h1 className="text-2xl font-semibold">Transactions</h1>
+        <p className="text-gray-600">
+          View and manage your transaction history.
+        </p>
+      </div>
+
+      <TabList
+        items={[
+          {
+            value: "recent",
+            label: "Recent Transactions",
+            icon: <ListFilter className="h-4 w-4 mr-2" />,
+            content: recentTransactionsContent,
+          },
+          {
+            value: "analytics",
+            label: "Analytics",
+            icon: <BarChart2 className="h-4 w-4 mr-2" />,
+            content: analyticsContent,
+          },
+          {
+            value: "scheduled",
+            label: "Scheduled",
+            icon: <Calendar className="h-4 w-4 mr-2" />,
+            content: scheduledContent,
+          },
+          {
+            value: "categories",
+            label: "Categories",
+            icon: <CreditCard className="h-4 w-4 mr-2" />,
+            content: categoriesContent,
+          },
+        ]}
+        defaultValue="recent"
+        variant="underline"
+        className="w-full"
+      />
     </section>
   );
 }
