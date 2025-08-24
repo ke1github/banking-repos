@@ -18,7 +18,7 @@ export default function InvestmentLayout({
   const { setMode } = useSidebarMode();
   const { user } = useAuthStore();
   const pathname = usePathname();
-
+  
   // Initialize the sidebar store on the client side
   useInitializeSidebarStore();
 
@@ -27,12 +27,7 @@ export default function InvestmentLayout({
 
   // Set the sidebar mode to 'investment' when investment pages load
   React.useEffect(() => {
-    // Add a small delay to ensure this happens after initial hydration
-    const timer = setTimeout(() => {
-      setMode("investment");
-    }, 0);
-
-    return () => clearTimeout(timer);
+    setMode("investment");
   }, [setMode]);
 
   // Construct user object for sidebar/navbar
