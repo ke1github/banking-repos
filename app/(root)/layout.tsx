@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 
 import { ROUTES } from "@/constants/route";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/sidebar/Sidebar";
 import Footer from "@/components/Footer";
 import MobileNavbar from "@/components/MobileNavbar";
 import MobileSidebarToggle from "@/components/MobileSidebarToggle";

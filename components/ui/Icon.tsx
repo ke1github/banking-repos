@@ -64,8 +64,17 @@ const Icon: React.FC<IconProps> = ({
     .replace("/icons/", "")
     .replace(".svg", "");
 
+  // First try to render a Lucide icon (preferred method)
+  const lucideIcon = renderLucideIcon();
+  if (lucideIcon !== null) {
+    return <div className="flex items-center justify-center">{lucideIcon}</div>;
+  }
+
+  // Fall back to public directory icons if Lucide doesn't have it
+  return <div className="flex items-center justify-center">{tryIconSrc()}</div>;
+
   // Try to load the icon from the public directory
-  const tryIconSrc = () => {
+  function tryIconSrc() {
     const iconPath = name.includes(".svg")
       ? name
       : name.startsWith("/")
@@ -77,7 +86,7 @@ const Icon: React.FC<IconProps> = ({
     return (
       <div className="relative">
         <ErrorBoundary
-          fallback={renderFallbackIcon()}
+          fallback={<CircleDashed size={size} className={className} />}
           onError={(error) => {
             console.error(`Icon error: ${error.message}`, iconPath);
           }}
@@ -100,10 +109,10 @@ const Icon: React.FC<IconProps> = ({
         </ErrorBoundary>
       </div>
     );
-  };
+  }
 
-  // Render a fallback icon based on the name
-  const renderFallbackIcon = () => {
+  // Try to load the icon from Lucide first
+  function renderLucideIcon() {
     // Map specific icon names first (exact matches)
     const exactMatches: Record<string, React.ReactNode> = {
       home: <Home size={size} className={className} />,
@@ -205,9 +214,9 @@ const Icon: React.FC<IconProps> = ({
     if (cleanIconName.includes("calculat"))
       return <Calculator size={size} className={className} />;
 
-    // Default fallback icon
-    return <CircleDashed size={size} className={className} />;
-  };
+    // Return null if no match found, allowing fallback to file-based icon
+    return null;
+  }
 
   return <div className="flex items-center justify-center">{tryIconSrc()}</div>;
 };

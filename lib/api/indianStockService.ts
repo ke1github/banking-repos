@@ -65,28 +65,41 @@ class IndianStockService {
 
     try {
       console.log(`Fetching NSE data for ${symbol} from API endpoint`);
-      const apiUrl = `${this.baseURL}/api/stocks/nse?symbol=${symbol}`;
+
+      // Use relative URL path to avoid issues with different environments
+      const apiUrl = `/api/stocks/nse?symbol=${symbol}`;
       console.log(`API URL: ${apiUrl}`);
 
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-        cache: "no-store",
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
 
-      if (!response.ok) {
-        console.error(
-          `NSE API error: ${response.status} ${response.statusText}`
-        );
-        throw new Error(`NSE API error: ${response.status}`);
+      try {
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          cache: "no-store",
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          console.error(
+            `NSE API error: ${response.status} ${response.statusText}`
+          );
+          throw new Error(`NSE API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(`Successfully fetched data for ${symbol}`);
+        this.setCachedData(cacheKey, data);
+        return data;
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
-
-      const data = await response.json();
-      console.log(`Successfully fetched data for ${symbol}`);
-      this.setCachedData(cacheKey, data);
-      return data;
     } catch (error) {
       console.error("NSE stock error:", error);
       return this.getMockNSEStock(symbol);
@@ -279,28 +292,40 @@ class IndianStockService {
         ? `code=${symbolOrCode}`
         : `symbol=${symbolOrCode}`;
 
-      const apiUrl = `${this.baseURL}/api/stocks/bse?${queryParam}`;
+      // Use relative URL path to avoid issues with different environments
+      const apiUrl = `/api/stocks/bse?${queryParam}`;
       console.log(`API URL: ${apiUrl}`);
 
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-        cache: "no-store",
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
 
-      if (!response.ok) {
-        console.error(
-          `BSE API error: ${response.status} ${response.statusText}`
-        );
-        throw new Error(`BSE API error: ${response.status}`);
+      try {
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          cache: "no-store",
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          console.error(
+            `BSE API error: ${response.status} ${response.statusText}`
+          );
+          throw new Error(`BSE API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(`Successfully fetched BSE data for ${symbolOrCode}`);
+        this.setCachedData(cacheKey, data);
+        return data;
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
-
-      const data = await response.json();
-      console.log(`Successfully fetched BSE data for ${symbolOrCode}`);
-      this.setCachedData(cacheKey, data);
-      return data;
     } catch (error) {
       console.error("BSE stock error:", error);
       return this.getMockBSEStock(symbolOrCode);

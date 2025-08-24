@@ -22,38 +22,74 @@ export async function GET(request: NextRequest) {
 
     console.log(`Fetching BSE data from: ${url}`);
 
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "application/json, text/plain, */*",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: "https://www.bseindia.com/",
-        Origin: "https://www.bseindia.com",
-        Connection: "keep-alive",
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-      },
-    });
+    // Set up AbortController with 10 second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    let response;
+    try {
+      response = await fetch(url, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          Accept: "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.9",
+          Referer: "https://www.bseindia.com/",
+          Origin: "https://www.bseindia.com",
+          Connection: "keep-alive",
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+        },
+        signal: controller.signal,
+      });
+    } catch (fetchError) {
+      console.error(`BSE API fetch error: ${fetchError}`);
+      clearTimeout(timeoutId);
+
+      // Return mock data for fetch failures (timeout, network issues, etc)
+      const mockData = getMockBSEData(symbol, securityCode, type);
+      return NextResponse.json(mockData);
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       console.error(
         `BSE API error for ${symbol}: ${response.status} ${response.statusText}`
       );
-      throw new Error(`BSE API error: ${response.status}`);
+
+      // Return mock data instead of throwing an error
+      const mockData = getMockBSEData(symbol, securityCode, type);
+      return NextResponse.json({
+        ...mockData,
+        error: `BSE API error: ${response.status}`,
+        source: "Mock Data - BSE API Error",
+      });
     }
 
-    const data = await response.json();
-    console.log(`Successfully fetched BSE data for ${symbol}`);
+    try {
+      const data = await response.json();
+      console.log(`Successfully fetched BSE data for ${symbol}`);
 
-    const enhancedData = {
-      ...data,
-      exchange: "BSE",
-      lastUpdate: new Date().toISOString(),
-      source: "BSE Official",
-    };
+      const enhancedData = {
+        ...data,
+        exchange: "BSE",
+        lastUpdate: new Date().toISOString(),
+        source: "BSE Official",
+      };
 
-    return NextResponse.json(enhancedData);
+      return NextResponse.json(enhancedData);
+    } catch (jsonError) {
+      console.error(`Error parsing BSE JSON: ${jsonError}`);
+
+      // Return mock data for JSON parsing errors
+      const mockData = getMockBSEData(symbol, securityCode, type);
+      return NextResponse.json({
+        ...mockData,
+        error: "JSON parsing error",
+        source: "Mock Data - BSE Parse Error",
+      });
+    }
   } catch (error) {
     console.error("BSE API Error:", error);
 
@@ -140,13 +176,33 @@ function getMockBSEData(
     };
   }
 
-  const mockStocks: { [key: string]: any } = {
+  const mockStocks: {
+    [key: string]: {
+      securityCode: string;
+      symbol: string;
+      companyName: string;
+      currentPrice: number;
+      change: number;
+      pChange: number;
+      percentChange?: number;
+      prevClose?: number;
+      open?: number;
+      high?: number;
+      low?: number;
+      industry?: string;
+      previousClose?: number;
+      volume?: number;
+      value?: number;
+      totalTradedQuantity?: number;
+    };
+  } = {
     "500325": {
       securityCode: "500325",
       symbol: "RELIANCE",
       companyName: "Reliance Industries Limited",
       currentPrice: 2456.75,
       change: 23.45,
+      pChange: 0.96, // Added missing property
       percentChange: 0.96,
       open: 2433.3,
       high: 2467.85,
@@ -162,6 +218,7 @@ function getMockBSEData(
       companyName: "Tata Consultancy Services Limited",
       currentPrice: 3567.8,
       change: -12.35,
+      pChange: -0.34,
       percentChange: -0.34,
       open: 3580.15,
       high: 3589.25,
@@ -177,6 +234,7 @@ function getMockBSEData(
       companyName: "Infosys Limited",
       currentPrice: 1456.25,
       change: 18.9,
+      pChange: 1.32,
       percentChange: 1.32,
       open: 1437.35,
       high: 1462.75,
@@ -192,6 +250,7 @@ function getMockBSEData(
       companyName: "HDFC Bank Limited",
       currentPrice: 1598.45,
       change: 7.8,
+      pChange: 0.49,
       percentChange: 0.49,
       open: 1590.65,
       high: 1603.85,
@@ -207,6 +266,7 @@ function getMockBSEData(
       companyName: "ICICI Bank Limited",
       currentPrice: 956.3,
       change: -4.25,
+      pChange: -0.44,
       percentChange: -0.44,
       open: 960.55,
       high: 964.8,

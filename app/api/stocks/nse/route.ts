@@ -47,10 +47,32 @@ async function establishNSESession(): Promise<string> {
 // Function to get valid session cookies
 async function getValidSession(): Promise<string> {
   const now = Date.now();
+  let retryCount = 0;
+  const maxRetries = 3;
 
   // Check if session is expired or doesn't exist
   if (!sessionCookies || now - lastSessionTime > SESSION_TIMEOUT) {
-    sessionCookies = await establishNSESession();
+    while (retryCount < maxRetries) {
+      try {
+        sessionCookies = await establishNSESession();
+        if (sessionCookies) {
+          break;
+        }
+      } catch (error) {
+        console.error(
+          `Session establishment retry ${retryCount + 1} failed:`,
+          error
+        );
+      }
+      retryCount++;
+
+      // Wait before retrying (exponential backoff)
+      if (retryCount < maxRetries) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * Math.pow(2, retryCount))
+        );
+      }
+    }
   }
 
   return sessionCookies;
@@ -69,8 +91,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Get valid session cookies
+    // Get valid session cookies with retries
     const cookies = await getValidSession();
+    if (!cookies) {
+      console.error("Failed to establish NSE session after retries");
+      throw new Error("Failed to establish NSE session");
+    }
 
     let url: string;
 
@@ -91,24 +117,41 @@ export async function GET(request: NextRequest) {
 
     console.log(`Fetching NSE data for ${symbol} from ${url}`);
 
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "application/json, text/plain, */*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br",
-        Referer: "https://www.nseindia.com/",
-        Origin: "https://www.nseindia.com",
-        Connection: "keep-alive",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-origin",
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-        ...(cookies && { Cookie: cookies }),
-      },
-    });
+    // Set up AbortController with 10 second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    let response;
+    try {
+      response = await fetch(url, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          Accept: "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.9",
+          "Accept-Encoding": "gzip, deflate, br",
+          Referer: "https://www.nseindia.com/",
+          Origin: "https://www.nseindia.com",
+          Connection: "keep-alive",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "same-origin",
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+          ...(cookies && { Cookie: cookies }),
+        },
+        signal: controller.signal,
+      });
+    } catch (fetchError) {
+      console.error(`NSE API fetch error: ${fetchError}`);
+      clearTimeout(timeoutId);
+
+      // Return mock data for fetch failures (timeout, network issues, etc)
+      const mockData = getMockNSEData(symbol, type);
+      return NextResponse.json(mockData);
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       console.error(
@@ -121,24 +164,57 @@ export async function GET(request: NextRequest) {
         sessionCookies = ""; // Clear invalid session
         const newCookies = await getValidSession();
 
-        const retryResponse = await fetch(url, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            Accept: "application/json, text/plain, */*",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br",
-            Referer: "https://www.nseindia.com/",
-            Origin: "https://www.nseindia.com",
-            Connection: "keep-alive",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin",
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
-            ...(newCookies && { Cookie: newCookies }),
-          },
-        });
+        // Set up a new AbortController for the retry
+        const retryController = new AbortController();
+        const retryTimeoutId = setTimeout(() => retryController.abort(), 10000);
+
+        let retryResponse;
+        try {
+          retryResponse = await fetch(url, {
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              Accept: "application/json, text/plain, */*",
+              "Accept-Language": "en-US,en;q=0.9",
+              "Accept-Encoding": "gzip, deflate, br",
+              Referer: "https://www.nseindia.com/",
+              Origin: "https://www.nseindia.com",
+              Connection: "keep-alive",
+              "Sec-Fetch-Dest": "empty",
+              "Sec-Fetch-Mode": "cors",
+              "Sec-Fetch-Site": "same-origin",
+              "Cache-Control": "no-cache",
+              Pragma: "no-cache",
+              ...(newCookies && { Cookie: newCookies }),
+            },
+            signal: retryController.signal,
+          });
+        } catch (retryError) {
+          console.error(`NSE API retry fetch error: ${retryError}`);
+          clearTimeout(retryTimeoutId);
+          // Return mock data as fallback
+          return NextResponse.json({
+            info: {
+              symbol: symbol,
+              companyName: `${symbol} Limited`,
+              industry: "Financial Services",
+            },
+            priceInfo: {
+              lastPrice: Math.floor(Math.random() * 1000) + 100,
+              change: Math.floor(Math.random() * 20) - 10,
+              pChange: Math.random() * 4 - 2,
+              weekHighLow: {
+                max: Math.floor(Math.random() * 1200) + 900,
+                min: Math.floor(Math.random() * 200) + 50,
+              },
+            },
+            exchange: "NSE",
+            lastUpdate: new Date().toISOString(),
+            source: "Mock Data - NSE API Unavailable",
+          });
+        } finally {
+          clearTimeout(retryTimeoutId);
+        }
 
         if (!retryResponse.ok) {
           console.error(
@@ -167,13 +243,37 @@ export async function GET(request: NextRequest) {
           });
         }
 
-        const retryData = await retryResponse.json();
-        return NextResponse.json({
-          ...retryData,
-          exchange: "NSE",
-          lastUpdate: new Date().toISOString(),
-          source: "NSE Official",
-        });
+        try {
+          const retryData = await retryResponse.json();
+          return NextResponse.json({
+            ...retryData,
+            exchange: "NSE",
+            lastUpdate: new Date().toISOString(),
+            source: "NSE Official",
+          });
+        } catch (jsonError) {
+          console.error(`Error parsing retry JSON: ${jsonError}`);
+          // Return mock data as fallback
+          return NextResponse.json({
+            info: {
+              symbol: symbol,
+              companyName: `${symbol} Limited`,
+              industry: "Financial Services",
+            },
+            priceInfo: {
+              lastPrice: Math.floor(Math.random() * 1000) + 100,
+              change: Math.floor(Math.random() * 20) - 10,
+              pChange: Math.random() * 4 - 2,
+              weekHighLow: {
+                max: Math.floor(Math.random() * 1200) + 900,
+                min: Math.floor(Math.random() * 200) + 50,
+              },
+            },
+            exchange: "NSE",
+            lastUpdate: new Date().toISOString(),
+            source: "Mock Data - NSE API Unavailable (JSON parse error)",
+          });
+        }
       }
 
       // For other errors, return mock data
@@ -198,18 +298,25 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const data = await response.json();
-    console.log(`Successfully fetched NSE data for ${symbol}`);
+    try {
+      const data = await response.json();
+      console.log(`Successfully fetched NSE data for ${symbol}`);
 
-    // Add exchange info
-    const enhancedData = {
-      ...data,
-      exchange: "NSE",
-      lastUpdate: new Date().toISOString(),
-      source: "NSE Official",
-    };
+      // Add exchange info
+      const enhancedData = {
+        ...data,
+        exchange: "NSE",
+        lastUpdate: new Date().toISOString(),
+        source: "NSE Official",
+      };
 
-    return NextResponse.json(enhancedData);
+      return NextResponse.json(enhancedData);
+    } catch (jsonError) {
+      console.error(`Error parsing NSE JSON: ${jsonError}`);
+      // Return mock data for JSON parsing errors
+      const mockData = getMockNSEData(symbol, type);
+      return NextResponse.json(mockData);
+    }
   } catch (error) {
     console.error("NSE API Error:", error);
 
@@ -260,7 +367,41 @@ function getMockNSEData(symbol: string | null, type: string) {
     };
   }
 
-  const mockStocks: { [key: string]: any } = {
+  const mockStocks: {
+    [key: string]: {
+      info: {
+        symbol: string;
+        companyName: string;
+        industry: string;
+      };
+      priceInfo: {
+        lastPrice: number;
+        change: number;
+        pChange: number;
+        previousClose?: number;
+        open?: number;
+        close?: number;
+        vwap?: number;
+        intraDayHighLow?: {
+          min: number;
+          max: number;
+          value: number;
+        };
+        weekHighLow?: {
+          min: number;
+          max: number;
+          value: number;
+          minDate?: string;
+          maxDate?: string;
+        };
+      };
+      metadata?: {
+        series: string;
+        isin: string;
+        industry: string;
+      };
+    };
+  } = {
     RELIANCE: {
       info: {
         symbol: "RELIANCE",

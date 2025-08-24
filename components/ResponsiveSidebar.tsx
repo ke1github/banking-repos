@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import Sidebar from "@/components/Sidebar";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import Sidebar from "@/components/sidebar/Sidebar";
 
 interface ResponsiveSidebarProps {
   user: {
@@ -18,7 +18,7 @@ interface ResponsiveSidebarProps {
 const ResponsiveSidebar = ({ user }: ResponsiveSidebarProps) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Check if we're on mobile on component mount and window resize
   useEffect(() => {
@@ -36,10 +36,15 @@ const ResponsiveSidebar = ({ user }: ResponsiveSidebarProps) => {
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
+  // Handle sidebar collapse change
+  const handleCollapseChange = (collapsed: boolean) => {
+    setSidebarCollapsed(collapsed);
+  };
+
   return (
     <>
       {/* Mobile view uses a slide-out sheet */}
-      {isMobile ? (
+      {isMobile && (
         <>
           <Button
             variant="outline"
@@ -56,37 +61,25 @@ const ResponsiveSidebar = ({ user }: ResponsiveSidebarProps) => {
             </SheetContent>
           </Sheet>
         </>
-      ) : (
-        // Desktop view uses the regular sidebar with collapse functionality
-        <>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="fixed left-4 bottom-4 z-50 rounded-full h-10 w-10 shadow-md"
-            onClick={() => setCollapsed(!collapsed)}
-          >
-            {collapsed ? (
-              <Menu className="h-5 w-5" />
-            ) : (
-              <X className="h-5 w-5" />
-            )}
-          </Button>
-          <Sidebar user={user} initialCollapsed={collapsed} />
-
-          {/* Adjust main content margin based on sidebar state */}
-          <style jsx global>{`
-            main {
-              margin-left: ${collapsed ? "80px" : "256px"};
-              transition: margin-left 0.3s;
-            }
-            @media (max-width: 768px) {
-              main {
-                margin-left: 0;
-              }
-            }
-          `}</style>
-        </>
       )}
+
+      {/* Desktop view with regular sidebar */}
+      {!isMobile && (
+        <Sidebar user={user} onCollapseChange={handleCollapseChange} />
+      )}
+
+      {/* Adjust main content margin based on sidebar state */}
+      <style jsx global>{`
+        main {
+          margin-left: ${isMobile ? "0" : sidebarCollapsed ? "80px" : "300px"};
+          transition: margin-left 0.3s;
+        }
+        @media (max-width: 768px) {
+          main {
+            margin-left: 0;
+          }
+        }
+      `}</style>
     </>
   );
 };

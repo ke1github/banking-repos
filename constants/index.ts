@@ -8,6 +8,10 @@ export const sidebarLinks: {
   cashLinks: SidebarLink[];
   aiLinks: SidebarLink[];
   investmentLinks: SidebarLink[];
+  dashboardLinks: SidebarLink[];
+  analyticsLinks: SidebarLink[];
+  fundamentalLinks: SidebarLink[];
+  investmentToolsLinks: SidebarLink[];
 } = {
   expenseLinks: [
     {
@@ -106,10 +110,48 @@ export const sidebarLinks: {
       route: ROUTES.INVESTMENT_PERFORMANCE,
       label: "Performance",
     },
+  ],
+  dashboardLinks: [
+    {
+      imgURL: "/icons/home.svg",
+      route: ROUTES.INVESTMENTS,
+      label: "Dashboard",
+    },
+  ],
+  analyticsLinks: [
+    {
+      imgURL: "/icons/bar-chart-2.svg",
+      route: ROUTES.ANALYTICS,
+      label: "Analytics",
+    },
+  ],
+  fundamentalLinks: [
+    {
+      imgURL: "/icons/file-text.svg",
+      route: ROUTES.FUNDAMENTAL_ANALYSIS,
+      label: "Fundamental Analysis",
+    },
+    {
+      imgURL: "/icons/chart.svg",
+      route: ROUTES.TECHNICAL_ANALYSIS,
+      label: "Technical Analysis",
+    },
+    {
+      imgURL: "/icons/briefcase.svg",
+      route: ROUTES.COMPANY_RESEARCH,
+      label: "Company Research",
+    },
+  ],
+  investmentToolsLinks: [
     {
       imgURL: "/icons/calculator.svg",
       route: ROUTES.INVESTMENT_PLANNER,
       label: "Investment Planner",
+    },
+    {
+      imgURL: "/icons/calculator.svg",
+      route: ROUTES.INVESTMENT_CALCULATORS,
+      label: "Calculators",
     },
     {
       imgURL: "/icons/brain.svg",

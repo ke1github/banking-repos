@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -31,6 +32,7 @@ import {
   ArrowUpDown,
   Download,
   RefreshCw,
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { indianStockService } from "@/lib/api/indianStockService";
@@ -81,11 +83,12 @@ interface IndianStockScreenerProps {
 }
 
 export default function IndianStockScreener({
-  searchQuery = "",
+  searchQuery: initialSearchQuery = "",
 }: IndianStockScreenerProps) {
   const [stocks, setStocks] = useState<EnhancedStock[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [filters, setFilters] = useState<ScreenerFilters>({
     priceMin: 0,
     priceMax: 10000,
@@ -446,6 +449,20 @@ export default function IndianStockScreener({
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV
               </Button>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="mt-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search by company name or symbol..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
         </CardHeader>

@@ -38,6 +38,7 @@ import {
   Info,
   Plus,
   Minus,
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { indianStockService } from "@/lib/api/indianStockService";
@@ -94,7 +95,7 @@ interface EnhancedIndianStockScreenerProps {
 }
 
 export default function EnhancedIndianStockScreener({
-  searchQuery = "",
+  searchQuery: initialSearchQuery = "",
 }: EnhancedIndianStockScreenerProps) {
   const [stocks, setStocks] = useState<DetailedStock[]>([]);
   const [loading, setLoading] = useState(false);
@@ -106,6 +107,7 @@ export default function EnhancedIndianStockScreener({
   const [showBasicRatios, setShowBasicRatios] = useState(true);
   const [showAdvancedRatios, setShowAdvancedRatios] = useState(false);
   const [showAllFilters, setShowAllFilters] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
 
   const [filters, setFilters] = useState<ScreenerFilters>({
     priceMin: 0,
@@ -594,6 +596,20 @@ export default function EnhancedIndianStockScreener({
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV
               </Button>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="mt-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search by company name or symbol..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
         </CardHeader>

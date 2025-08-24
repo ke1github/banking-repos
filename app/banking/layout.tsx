@@ -3,7 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/sidebar/Sidebar";
 import RightSidebar from "@/components/RightSidebar";
 import MobileNavbar from "@/components/MobileNavbar";
 import Footer from "@/components/Footer";

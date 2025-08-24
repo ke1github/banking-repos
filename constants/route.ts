@@ -36,6 +36,7 @@ export const ROUTES = {
   INVESTMENT_PERFORMANCE: "/investment/performance",
   INVESTMENT_PLANNER: "/investment/planner",
   INVESTMENT_CALCULATORS: "/investment/calculators",
+  ANALYTICS: "/investment/analytics",
 
   // Advanced Analysis routes
   FUNDAMENTAL_ANALYSIS: "/investment/fundamental-analysis",
