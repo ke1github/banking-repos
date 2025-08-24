@@ -118,11 +118,11 @@ export default function RootLayout({
 
         {/* Main content area */}
         <main
-          className={`flex-1 transition-all duration-300 ${
+          className={`flex-1 transition-all duration-300 overflow-hidden ${
             isMobile ? "mt-16" : sidebarCollapsed ? "ml-[80px]" : "ml-[256px]"
           }`}
         >
-          {children}
+          <div className="overflow-auto">{children}</div>
           <Footer />
         </main>
       </div>

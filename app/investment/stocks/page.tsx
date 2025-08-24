@@ -13,9 +13,22 @@ import {
   DollarSign,
   BarChart,
   PieChart,
+  Sparkles,
+  LineChart,
+  Newspaper,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import IndianMarketDashboard from "@/components/stocks/IndianMarketDashboard";
+import MyStocksPortfolio from "@/components/stocks/MyStocksPortfolio";
+import StockWatchlist from "@/components/stocks/StockWatchlist";
+import StockExplorer from "@/components/stocks/StockExplorer";
+import USStocksMarket from "@/components/stocks/USStocksMarket";
+import MarketOverview from "@/components/stocks/MarketOverview";
+import StockTrading from "@/components/stocks/StockTrading";
+import AutomatedInvesting from "@/components/stocks/AutomatedInvesting";
+import IPOCalendar from "@/components/stocks/IPOCalendar";
+import StockAnalytics from "@/components/stocks/StockAnalytics";
+import StockNews from "@/components/stocks/StockNews";
 
 // This is a placeholder component - in a real implementation, you'd have proper components
 const PlaceholderContent = ({
@@ -44,85 +57,68 @@ export default function StocksPage() {
     {
       value: "indian-market",
       label: "Indian Market",
-      icon: <Landmark className="h-4 w-4 mr-2" />,
+      icon: <Landmark className="h-4 w-4" />,
       content: <IndianMarketDashboard />,
     },
     {
       value: "my-stocks",
       label: "My Stocks",
-      icon: <PieChart className="h-4 w-4 mr-2" />,
-      content: (
-        <PlaceholderContent
-          title="My Stock Portfolio"
-          description="View and manage your stock holdings, including performance, allocation, and dividend information."
-        />
-      ),
+      icon: <PieChart className="h-4 w-4" />,
+      content: <MyStocksPortfolio />,
     },
     {
       value: "watchlist",
       label: "Watchlist",
-      icon: <BarChart className="h-4 w-4 mr-2" />,
-      content: (
-        <PlaceholderContent
-          title="Stock Watchlist"
-          description="Monitor potential stock investments with customizable alerts and notifications."
-        />
-      ),
+      icon: <BarChart className="h-4 w-4" />,
+      content: <StockWatchlist />,
     },
     {
       value: "explore",
       label: "Explore Stocks",
-      icon: <Globe className="h-4 w-4 mr-2" />,
-      content: (
-        <PlaceholderContent
-          title="Stock Explorer"
-          description="Discover and research new stock investment opportunities across global markets."
-        />
-      ),
+      icon: <Globe className="h-4 w-4" />,
+      content: <StockExplorer />,
     },
     {
       value: "market-overview",
       label: "Market Overview",
-      icon: <TrendingUp className="h-4 w-4 mr-2" />,
-      content: (
-        <PlaceholderContent
-          title="Market Overview"
-          description="Get a comprehensive view of stock market performance, sector trends, and economic indicators."
-        />
-      ),
+      icon: <TrendingUp className="h-4 w-4" />,
+      content: <MarketOverview />,
     },
     {
       value: "us-stocks",
       label: "US Stocks",
-      icon: <DollarSign className="h-4 w-4 mr-2" />,
-      content: (
-        <PlaceholderContent
-          title="US Stock Market"
-          description="Explore US stock market opportunities, including NYSE and NASDAQ listings."
-        />
-      ),
+      icon: <DollarSign className="h-4 w-4" />,
+      content: <USStocksMarket />,
     },
     {
       value: "trade",
       label: "Trade Stocks",
-      icon: <ArrowLeftRight className="h-4 w-4 mr-2" />,
-      content: (
-        <PlaceholderContent
-          title="Stock Trading"
-          description="Execute stock trades with integrated brokerage accounts and real-time market data."
-        />
-      ),
+      icon: <ArrowLeftRight className="h-4 w-4" />,
+      content: <StockTrading />,
+    },
+    {
+      value: "automated",
+      label: "Automated Investing",
+      icon: <Sparkles className="h-4 w-4" />,
+      content: <AutomatedInvesting />,
     },
     {
       value: "ipo",
       label: "IPO Calendar",
-      icon: <Building className="h-4 w-4 mr-2" />,
-      content: (
-        <PlaceholderContent
-          title="IPO Calendar"
-          description="Stay informed about upcoming initial public offerings and new stock listings."
-        />
-      ),
+      icon: <Building className="h-4 w-4" />,
+      content: <IPOCalendar />,
+    },
+    {
+      value: "analytics",
+      label: "Stock Analytics",
+      icon: <LineChart className="h-4 w-4" />,
+      content: <StockAnalytics />,
+    },
+    {
+      value: "news",
+      label: "Market News",
+      icon: <Newspaper className="h-4 w-4" />,
+      content: <StockNews />,
     },
   ];
 
@@ -151,6 +147,7 @@ export default function StocksPage() {
             value={activeTab}
             onValueChange={setActiveTab}
             variant="boxed"
+            size="sm"
             className="w-full"
           />
         </CardContent>

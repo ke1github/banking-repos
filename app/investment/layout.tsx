@@ -60,8 +60,12 @@ export default function InvestmentLayout({
       </div>
 
       {/* Main content area */}
-      <main className={`flex-1 mt-16 lg:mt-0 ${isDashboard ? "lg:mr-80" : ""}`}>
-        <div className="min-h-screen">{children}</div>
+      <main
+        className={`flex-1 mt-16 lg:mt-0 ${
+          isDashboard ? "lg:mr-80" : ""
+        } overflow-hidden`}
+      >
+        <div className="min-h-screen overflow-auto">{children}</div>
         <Footer />
       </main>
 

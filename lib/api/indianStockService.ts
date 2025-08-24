@@ -71,7 +71,9 @@ class IndianStockService {
       console.log(`API URL: ${apiUrl}`);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
+      const timeoutId = setTimeout(() => {
+        controller.abort(new Error("Request timeout after 10 seconds"));
+      }, 10000); // 10-second timeout
 
       try {
         const response = await fetch(apiUrl, {
@@ -297,7 +299,9 @@ class IndianStockService {
       console.log(`API URL: ${apiUrl}`);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
+      const timeoutId = setTimeout(() => {
+        controller.abort(new Error("Request timeout after 10 seconds"));
+      }, 10000); // 10-second timeout
 
       try {
         const response = await fetch(apiUrl, {

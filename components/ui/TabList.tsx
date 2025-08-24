@@ -65,9 +65,9 @@ const TabList: React.FC<TabListProps> = ({
     switch (pageStyle) {
       case "calculators":
         pageClasses = {
-          container: "w-full overflow-hidden",
-          tabsList: "flex-wrap gap-1 pb-2",
-          tabsTrigger: "whitespace-nowrap mb-2 px-3 text-sm",
+          container: "w-full",
+          tabsList: "flex-wrap gap-2 pb-2",
+          tabsTrigger: "px-3 py-2 text-sm",
           content: "mt-6 w-full",
         };
         size = "sm"; // Override size for calculators
@@ -77,7 +77,7 @@ const TabList: React.FC<TabListProps> = ({
       case "screener":
         pageClasses = {
           container: "w-full",
-          tabsList: "border-b border-gray-200",
+          tabsList: "border-b border-gray-200 flex-wrap gap-1",
           tabsTrigger: "font-medium",
           content: "mt-4 w-full",
         };
@@ -87,7 +87,7 @@ const TabList: React.FC<TabListProps> = ({
       case "compact":
         pageClasses = {
           container: "w-full",
-          tabsList: "gap-1",
+          tabsList: "gap-1 flex-wrap",
           tabsTrigger: "text-xs px-2 py-1",
           content: "mt-3 w-full",
         };
@@ -95,7 +95,13 @@ const TabList: React.FC<TabListProps> = ({
         break;
 
       default:
-        // Keep the default values
+        // Add default gap for wrapping
+        pageClasses = {
+          container: "w-full",
+          tabsList: "gap-1 py-1",
+          tabsTrigger: "",
+          content: "mt-4 w-full",
+        };
         break;
     }
 
@@ -106,7 +112,7 @@ const TabList: React.FC<TabListProps> = ({
 
   // Determine classes based on variants
   const getTabsListClasses = () => {
-    const baseClasses = "flex";
+    const baseClasses = "flex flex-wrap";
 
     const orientationClasses =
       orientation === "vertical" ? "flex-col" : "flex-row";
@@ -130,7 +136,7 @@ const TabList: React.FC<TabListProps> = ({
   };
 
   const getTabsTriggerClasses = (disabled?: boolean) => {
-    const baseClasses = "transition-all";
+    const baseClasses = "transition-all flex flex-col md:flex-row items-center";
 
     const variantClasses = {
       default:
@@ -144,9 +150,9 @@ const TabList: React.FC<TabListProps> = ({
     };
 
     const sizeClasses = {
-      sm: "text-sm",
-      md: "text-base",
-      lg: "text-lg px-5 py-2",
+      sm: "text-sm py-1.5 px-2",
+      md: "text-base py-2 px-3",
+      lg: "text-lg py-2.5 px-4",
     };
 
     const disabledClasses = disabled
@@ -174,8 +180,10 @@ const TabList: React.FC<TabListProps> = ({
             disabled={item.disabled}
             className={getTabsTriggerClasses(item.disabled)}
           >
-            {item.icon && <span className="mr-1">{item.icon}</span>}
-            {item.label}
+            {item.icon && (
+              <span className="mb-1 md:mb-0 md:mr-1">{item.icon}</span>
+            )}
+            <span className="text-center">{item.label}</span>
           </TabsTrigger>
         ))}
       </TabsList>
