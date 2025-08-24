@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,14 +15,12 @@ import {
   DollarSign,
   Clock,
 } from "lucide-react";
+import BaseSidebar, {
+  BaseUserProps,
+} from "@/components/ui/sidebar/BaseSidebar";
 
 interface InvestmentRightSidebarProps {
-  user?: {
-    firstName: string;
-    lastName?: string;
-    email?: string;
-    avatar?: string;
-  };
+  user?: BaseUserProps;
 }
 
 const InvestmentRightSidebar = ({
@@ -88,266 +85,238 @@ const InvestmentRightSidebar = ({
     },
   ];
 
-  return (
-    <aside className="w-80 bg-white border-l border-gray-200 h-screen fixed right-0 top-0 overflow-y-auto hidden lg:block">
-      {/* Profile Section */}
-      <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-b">
-        <div className="flex items-center gap-3">
-          {user.avatar ? (
-            <Image
-              src={user.avatar}
-              alt="Profile"
-              width={48}
-              height={48}
-              className="rounded-full border-2 border-white"
-            />
-          ) : (
-            <div className="w-12 h-12 rounded-full border-2 border-white bg-blue-600 flex items-center justify-center text-white text-18 font-semibold">
-              {user.firstName.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <div>
-            <h3 className="text-16 font-semibold text-gray-900">
-              {user.firstName} {user.lastName}
-            </h3>
-            <p className="text-12 text-blue-600">Investment Portfolio</p>
-          </div>
-        </div>
-      </div>
+  // Tab configuration for BaseSidebar
+  const tabs = [
+    {
+      id: "performance",
+      label: "Performance",
+      icon: BarChart3,
+    },
+    {
+      id: "news",
+      label: "News",
+      icon: Newspaper,
+    },
+  ];
 
-      {/* Tab Navigation */}
-      <div className="p-4 border-b">
-        <div className="flex gap-2">
-          <Button
-            variant={activeTab === "performance" ? "default" : "outline"}
-            size="sm"
-            className="flex-1"
-            onClick={() => setActiveTab("performance")}
-          >
-            <BarChart3 className="w-4 h-4 mr-1" />
-            Performance
-          </Button>
-          <Button
-            variant={activeTab === "news" ? "default" : "outline"}
-            size="sm"
-            className="flex-1"
-            onClick={() => setActiveTab("news")}
-          >
-            <Newspaper className="w-4 h-4 mr-1" />
-            News
-          </Button>
-        </div>
-      </div>
+  // Bottom actions for BaseSidebar
+  const bottomActions = (
+    <div className="space-y-2">
+      <Button className="w-full" size="sm">
+        <DollarSign className="w-4 h-4 mr-2" />
+        Invest Now
+      </Button>
+      <Button variant="outline" className="w-full" size="sm">
+        <BarChart3 className="w-4 h-4 mr-2" />
+        View Detailed Analysis
+      </Button>
+    </div>
+  );
 
-      <div className="p-4 space-y-4">
-        {activeTab === "performance" ? (
-          <>
-            {/* Market Overview */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-14 flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  Market Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {marketData.map((market, index) => (
+  // Content for the active tab
+  const renderTabContent = () => {
+    if (activeTab === "performance") {
+      return (
+        <>
+          {/* Market Overview */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-14 flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                Market Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {marketData.map((market, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <div>
+                    <p className="text-12 font-medium text-gray-900">
+                      {market.symbol}
+                    </p>
+                    <p className="text-10 text-gray-500">{market.value}</p>
+                  </div>
                   <div
-                    key={index}
-                    className="flex justify-between items-center"
+                    className={`flex items-center gap-1 ${
+                      market.trend === "up" ? "text-green-600" : "text-red-600"
+                    }`}
                   >
+                    {market.trend === "up" ? (
+                      <TrendingUp className="w-3 h-3" />
+                    ) : (
+                      <TrendingDown className="w-3 h-3" />
+                    )}
+                    <span className="text-11 font-medium">{market.change}</span>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Top Performers */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-14 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-green-600" />
+                Top Performers
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {topPerformers.map((stock, index) => (
+                <div key={index} className="space-y-1">
+                  <div className="flex justify-between items-center">
                     <div>
                       <p className="text-12 font-medium text-gray-900">
-                        {market.symbol}
+                        {stock.symbol}
                       </p>
-                      <p className="text-10 text-gray-500">{market.value}</p>
+                      <p className="text-10 text-gray-500">{stock.name}</p>
                     </div>
-                    <div
-                      className={`flex items-center gap-1 ${
-                        market.trend === "up"
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {market.trend === "up" ? (
-                        <TrendingUp className="w-3 h-3" />
-                      ) : (
-                        <TrendingDown className="w-3 h-3" />
-                      )}
-                      <span className="text-11 font-medium">
-                        {market.change}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Top Performers */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-14 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
-                  Top Performers
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {topPerformers.map((stock, index) => (
-                  <div key={index} className="space-y-1">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-12 font-medium text-gray-900">
-                          {stock.symbol}
-                        </p>
-                        <p className="text-10 text-gray-500">{stock.name}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-11 font-medium text-gray-900">
-                          {stock.price}
-                        </p>
-                        <p className="text-10 text-green-600 font-medium">
-                          {stock.change}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Upcoming Events */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-14 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Upcoming Events
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {upcomingEvents.map((event, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        event.type === "action"
-                          ? "bg-orange-100"
-                          : event.type === "earnings"
-                          ? "bg-blue-100"
-                          : "bg-green-100"
-                      }`}
-                    >
-                      {event.type === "action" && (
-                        <Target className="w-4 h-4 text-orange-600" />
-                      )}
-                      {event.type === "earnings" && (
-                        <DollarSign className="w-4 h-4 text-blue-600" />
-                      )}
-                      {event.type === "review" && (
-                        <BarChart3 className="w-4 h-4 text-green-600" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-12 font-medium text-gray-900">
-                        {event.title}
+                    <div className="text-right">
+                      <p className="text-11 font-medium text-gray-900">
+                        {stock.price}
                       </p>
-                      <p className="text-10 text-gray-500">{event.date}</p>
+                      <p className="text-10 text-green-600 font-medium">
+                        {stock.change}
+                      </p>
                     </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          </>
-        ) : (
-          <>
-            {/* Investment News */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-14 flex items-center gap-2">
-                  <Newspaper className="w-4 h-4" />
-                  Latest News
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {investmentNews.map((news, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start gap-2">
-                      <Clock className="w-3 h-3 text-gray-400 mt-1 flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="text-12 font-medium text-gray-900 leading-relaxed">
-                          {news.title}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge
-                            variant="outline"
-                            className="text-10 px-2 py-0.5"
-                          >
-                            {news.category}
-                          </Badge>
-                          <span className="text-10 text-gray-500">
-                            {news.time}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    {index < investmentNews.length - 1 && (
-                      <hr className="border-gray-100" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Upcoming Events */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-14 flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Upcoming Events
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {upcomingEvents.map((event, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      event.type === "action"
+                        ? "bg-orange-100"
+                        : event.type === "earnings"
+                        ? "bg-blue-100"
+                        : "bg-green-100"
+                    }`}
+                  >
+                    {event.type === "action" && (
+                      <Target className="w-4 h-4 text-orange-600" />
+                    )}
+                    {event.type === "earnings" && (
+                      <DollarSign className="w-4 h-4 text-blue-600" />
+                    )}
+                    {event.type === "review" && (
+                      <BarChart3 className="w-4 h-4 text-green-600" />
                     )}
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Market Alerts */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-14 flex items-center gap-2">
-                  <Bell className="w-4 h-4" />
-                  Market Alerts
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-green-600" />
-                    <span className="text-12 font-medium text-green-800">
-                      Portfolio up 2.3% today
-                    </span>
+                  <div className="flex-1">
+                    <p className="text-12 font-medium text-gray-900">
+                      {event.title}
+                    </p>
+                    <p className="text-10 text-gray-500">{event.date}</p>
                   </div>
-                  <p className="text-10 text-green-600 mt-1">
-                    Strong performance across tech holdings
-                  </p>
                 </div>
-
-                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-blue-600" />
-                    <span className="text-12 font-medium text-blue-800">
-                      Rebalancing recommended
-                    </span>
+              ))}
+            </CardContent>
+          </Card>
+        </>
+      );
+    } else {
+      return (
+        <>
+          {/* Investment News */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-14 flex items-center gap-2">
+                <Newspaper className="w-4 h-4" />
+                Latest News
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {investmentNews.map((news, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <Clock className="w-3 h-3 text-gray-400 mt-1 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-12 font-medium text-gray-900 leading-relaxed">
+                        {news.title}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge
+                          variant="outline"
+                          className="text-10 px-2 py-0.5"
+                        >
+                          {news.category}
+                        </Badge>
+                        <span className="text-10 text-gray-500">
+                          {news.time}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-10 text-blue-600 mt-1">
-                    Asset allocation has drifted from target
-                  </p>
+                  {index < investmentNews.length - 1 && (
+                    <hr className="border-gray-100" />
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </>
-        )}
-      </div>
+              ))}
+            </CardContent>
+          </Card>
 
-      {/* Quick Actions Footer */}
-      <div className="p-4 border-t bg-gray-50 mt-auto">
-        <div className="space-y-2">
-          <Button className="w-full" size="sm">
-            <DollarSign className="w-4 h-4 mr-2" />
-            Invest Now
-          </Button>
-          <Button variant="outline" className="w-full" size="sm">
-            <BarChart3 className="w-4 h-4 mr-2" />
-            View Detailed Analysis
-          </Button>
-        </div>
-      </div>
-    </aside>
+          {/* Market Alerts */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-14 flex items-center gap-2">
+                <Bell className="w-4 h-4" />
+                Market Alerts
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-green-600" />
+                  <span className="text-12 font-medium text-green-800">
+                    Portfolio up 2.3% today
+                  </span>
+                </div>
+                <p className="text-10 text-green-600 mt-1">
+                  Strong performance across tech holdings
+                </p>
+              </div>
+
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2">
+                  <Target className="w-4 h-4 text-blue-600" />
+                  <span className="text-12 font-medium text-blue-800">
+                    Rebalancing recommended
+                  </span>
+                </div>
+                <p className="text-10 text-blue-600 mt-1">
+                  Asset allocation has drifted from target
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      );
+    }
+  };
+
+  return (
+    <BaseSidebar
+      user={user}
+      title="Investment Portfolio"
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={(tabId) => setActiveTab(tabId as "performance" | "news")}
+      bottomActions={bottomActions}
+    >
+      {renderTabContent()}
+    </BaseSidebar>
   );
 };
 

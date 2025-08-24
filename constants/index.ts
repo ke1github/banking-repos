@@ -44,6 +44,11 @@ export const sidebarLinks: {
       route: ROUTES.TRANSFERS,
       label: "Transfers",
     },
+    {
+      imgURL: "/icons/calculator.svg",
+      route: ROUTES.BANKING_CALCULATORS,
+      label: "Calculators",
+    },
   ],
   accountsLinks: [
     {

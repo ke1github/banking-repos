@@ -34,7 +34,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, collapsed }) => {
           <Button
             variant="ghost"
             className={cn(
-              "w-full flex items-center gap-3 justify-start hover:bg-gray-100 rounded-lg py-2",
+              "w-full flex items-center gap-3 justify-start hover:bg-gray-100 rounded-lg py-2 relative group",
               collapsed && "justify-center"
             )}
           >
@@ -52,6 +52,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, collapsed }) => {
                 </span>
                 {user.email && (
                   <span className="text-xs text-muted-foreground truncate">
+                    {user.email}
+                  </span>
+                )}
+              </div>
+            )}
+            {collapsed && (
+              <div className="absolute left-full ml-2 bg-white border border-gray-200 rounded-md px-3 py-2 shadow-md hidden group-hover:block z-10 whitespace-nowrap">
+                <span className="font-medium">
+                  {user.firstName} {user.lastName}
+                </span>
+                {user.email && (
+                  <span className="text-xs text-muted-foreground block">
                     {user.email}
                   </span>
                 )}

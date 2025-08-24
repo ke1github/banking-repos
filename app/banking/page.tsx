@@ -83,25 +83,29 @@ export default function BankingHome() {
     {
       icon: ArrowUpRight,
       label: "Send Money",
-      color: "text-blue-700",
+      color: "text-gray-700",
+      bgColor: "bg-gray-50",
       href: "/send-money",
     },
     {
       icon: ArrowDownLeft,
       label: "Request Money",
-      color: "text-blue-700",
+      color: "text-gray-700",
+      bgColor: "bg-gray-50",
       href: "/request-money",
     },
     {
       icon: Smartphone,
       label: "Mobile Deposit",
-      color: "text-blue-700",
+      color: "text-gray-700",
+      bgColor: "bg-gray-50",
       href: "/mobile-deposit",
     },
     {
       icon: CreditCard,
       label: "Pay Bills",
-      color: "text-blue-700",
+      color: "text-gray-700",
+      bgColor: "bg-gray-50",
       href: "/pay-bills",
     },
   ];
@@ -125,10 +129,9 @@ export default function BankingHome() {
           <ButtonLink
             key={i}
             href={action.href}
-            section="banking"
             variant="outline"
             fullWidth
-            className="flex-col h-24 py-4"
+            className={`flex-col h-24 py-4 border border-gray-200 hover:bg-gray-100 hover:border-gray-300 ${action.bgColor}`}
             icon={<action.icon className={`h-5 w-5 ${action.color}`} />}
             iconPosition="top"
           >
@@ -224,15 +227,13 @@ export default function BankingHome() {
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          transaction.amount > 0
-                            ? "bg-slate-100"
-                            : "bg-slate-100"
+                          transaction.amount > 0 ? "bg-green-50" : "bg-gray-50"
                         }`}
                       >
                         {transaction.amount > 0 ? (
-                          <ArrowDownLeft className="h-4 w-4 text-blue-700" />
+                          <ArrowDownLeft className="h-4 w-4 text-green-600" />
                         ) : (
-                          <ArrowUpRight className="h-4 w-4 text-blue-700" />
+                          <ArrowUpRight className="h-4 w-4 text-gray-600" />
                         )}
                       </div>
                       <div>
@@ -252,8 +253,8 @@ export default function BankingHome() {
                     <p
                       className={`font-semibold ${
                         transaction.amount > 0
-                          ? "text-blue-700"
-                          : "text-blue-700"
+                          ? "text-green-600"
+                          : "text-gray-700"
                       }`}
                     >
                       {transaction.amount > 0 ? "+" : ""}$
@@ -265,8 +266,7 @@ export default function BankingHome() {
               <ButtonLink
                 href="/transactions"
                 variant="outline"
-                section="banking"
-                className="w-full mt-4"
+                className="w-full mt-4 text-gray-700 hover:bg-gray-50 border-gray-200"
                 icon={<ArrowRightLeft className="h-4 w-4" />}
               >
                 View All Transactions
@@ -278,51 +278,71 @@ export default function BankingHome() {
         {/* Quick Actions & Transfer */}
         <div className="space-y-6">
           {/* Features */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Banking Features</CardTitle>
+          <Card className="bg-gradient-to-br from-gray-50 to-white">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-gray-800">Banking Features</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
                 <ButtonLink
                   href="/accounts"
-                  section="banking"
                   variant="outline"
-                  className="h-20 flex flex-col gap-2"
-                  icon={<Wallet className="h-5 w-5 text-blue-700" />}
+                  className="h-20 flex flex-col gap-2 bg-white shadow-sm hover:shadow border border-gray-100 hover:border-blue-200"
+                  icon={
+                    <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
+                      <Wallet className="h-4 w-4 text-blue-600" />
+                    </div>
+                  }
                   iconPosition="top"
                 >
-                  <span className="text-xs">Accounts</span>
+                  <span className="text-xs font-medium text-gray-800">
+                    Accounts
+                  </span>
                 </ButtonLink>
                 <ButtonLink
                   href="/cards"
-                  section="banking"
                   variant="outline"
-                  className="h-20 flex flex-col gap-2"
-                  icon={<CreditCardIcon className="h-5 w-5 text-blue-700" />}
+                  className="h-20 flex flex-col gap-2 bg-white shadow-sm hover:shadow border border-gray-100 hover:border-blue-200"
+                  icon={
+                    <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
+                      <CreditCardIcon className="h-4 w-4 text-blue-600" />
+                    </div>
+                  }
                   iconPosition="top"
                 >
-                  <span className="text-xs">Cards</span>
+                  <span className="text-xs font-medium text-gray-800">
+                    Cards
+                  </span>
                 </ButtonLink>
                 <ButtonLink
                   href="/savings"
-                  section="banking"
                   variant="outline"
-                  className="h-20 flex flex-col gap-2"
-                  icon={<PiggyBank className="h-5 w-5 text-blue-700" />}
+                  className="h-20 flex flex-col gap-2 bg-white shadow-sm hover:shadow border border-gray-100 hover:border-blue-200"
+                  icon={
+                    <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
+                      <PiggyBank className="h-4 w-4 text-blue-600" />
+                    </div>
+                  }
                   iconPosition="top"
                 >
-                  <span className="text-xs">Savings</span>
+                  <span className="text-xs font-medium text-gray-800">
+                    Savings
+                  </span>
                 </ButtonLink>
                 <ButtonLink
                   href="/transfers"
-                  section="banking"
                   variant="outline"
-                  className="h-20 flex flex-col gap-2"
-                  icon={<ArrowRightLeft className="h-5 w-5 text-blue-700" />}
+                  className="h-20 flex flex-col gap-2 bg-white shadow-sm hover:shadow border border-gray-100 hover:border-blue-200"
+                  icon={
+                    <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
+                      <ArrowRightLeft className="h-4 w-4 text-blue-600" />
+                    </div>
+                  }
                   iconPosition="top"
                 >
-                  <span className="text-xs">Transfers</span>
+                  <span className="text-xs font-medium text-gray-800">
+                    Transfers
+                  </span>
                 </ButtonLink>
               </div>
             </CardContent>
@@ -332,33 +352,33 @@ export default function BankingHome() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+                <Shield className="h-5 w-5 text-gray-700" />
                 Security Status
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Two-Factor Auth</span>
-                <Badge variant="outline" className="text-xs text-blue-700">
+                <Badge className="text-xs bg-green-100 text-green-700 border-0">
                   Enabled
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Account Alerts</span>
-                <Badge variant="outline" className="text-xs text-blue-700">
+                <Badge className="text-xs bg-green-100 text-green-700 border-0">
                   Active
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Fraud Protection</span>
-                <Badge variant="outline" className="text-xs text-blue-700">
+                <Badge className="text-xs bg-green-100 text-green-700 border-0">
                   Protected
                 </Badge>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full mt-3 text-blue-700 hover:bg-blue-50"
+                className="w-full mt-3 text-gray-700 hover:bg-gray-50 border-gray-200"
               >
                 Security Settings
               </Button>
