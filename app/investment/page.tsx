@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { HeaderBox } from "@/components/HeaderBox";
 import PortfolioCard from "@/components/cards/PortfolioCard";
 import {
@@ -11,6 +12,9 @@ import {
   DollarSign,
   PieChart,
   Target,
+  Search,
+  BarChart4,
+  Calculator,
 } from "lucide-react";
 
 export default function InvestmentHome() {
@@ -214,6 +218,34 @@ export default function InvestmentHome() {
               <TrendingUp className="h-5 w-5" />
               <span className="text-sm">Performance</span>
             </Button>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-4">
+            <ButtonLink
+              href="/investment/screener"
+              section="investment"
+              icon={<Search className="h-4 w-4" />}
+              size="wide"
+            >
+              Stock Screener
+            </ButtonLink>
+            <ButtonLink
+              href="/investment/fundamental-analysis"
+              section="investment"
+              variant="outline"
+              icon={<BarChart4 className="h-4 w-4" />}
+            >
+              Fundamental Analysis
+            </ButtonLink>
+            <ButtonLink
+              href="/investment/calculators"
+              section="investment"
+              variant="secondary"
+              icon={<Calculator className="h-4 w-4" />}
+              shape="rounded"
+            >
+              Investment Calculators
+            </ButtonLink>
           </div>
         </CardContent>
       </Card>

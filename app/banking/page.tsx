@@ -5,6 +5,7 @@ import TransferForm from "@/components/TransferForm";
 import BalanceCard from "@/components/cards/BalanceCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Badge } from "@/components/ui/badge";
 import {
   CreditCard,
@@ -14,6 +15,10 @@ import {
   Clock,
   Smartphone,
   Shield,
+  PiggyBank,
+  CreditCard as CreditCardIcon,
+  Wallet,
+  ArrowRightLeft,
 } from "lucide-react";
 
 export default function BankingHome() {
@@ -75,10 +80,30 @@ export default function BankingHome() {
   ];
 
   const quickActions = [
-    { icon: ArrowUpRight, label: "Send Money", color: "text-blue-600" },
-    { icon: ArrowDownLeft, label: "Request Money", color: "text-green-600" },
-    { icon: Smartphone, label: "Mobile Deposit", color: "text-purple-600" },
-    { icon: CreditCard, label: "Pay Bills", color: "text-orange-600" },
+    {
+      icon: ArrowUpRight,
+      label: "Send Money",
+      color: "text-blue-700",
+      href: "/send-money",
+    },
+    {
+      icon: ArrowDownLeft,
+      label: "Request Money",
+      color: "text-blue-700",
+      href: "/request-money",
+    },
+    {
+      icon: Smartphone,
+      label: "Mobile Deposit",
+      color: "text-blue-700",
+      href: "/mobile-deposit",
+    },
+    {
+      icon: CreditCard,
+      label: "Pay Bills",
+      color: "text-blue-700",
+      href: "/pay-bills",
+    },
   ];
 
   const totalBalance = mockAccounts.reduce(
@@ -87,12 +112,30 @@ export default function BankingHome() {
   );
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="container mx-auto space-y-6 p-6">
       <HeaderBox
         type="default"
         title="Banking Dashboard"
         subtitle="Manage your accounts, cards and transactions"
       />
+
+      {/* Quick Action Links */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {quickActions.map((action, i) => (
+          <ButtonLink
+            key={i}
+            href={action.href}
+            section="banking"
+            variant="outline"
+            fullWidth
+            className="flex-col h-24 py-4"
+            icon={<action.icon className={`h-5 w-5 ${action.color}`} />}
+            iconPosition="top"
+          >
+            {action.label}
+          </ButtonLink>
+        ))}
+      </div>
 
       {/* Balance Overview */}
       <BalanceCard
@@ -125,7 +168,7 @@ export default function BankingHome() {
                         account.type === "checking"
                           ? "bg-blue-100"
                           : account.type === "savings"
-                          ? "bg-green-100"
+                          ? "bg-blue-100"
                           : "bg-red-100"
                       }`}
                     >
@@ -134,7 +177,7 @@ export default function BankingHome() {
                           account.type === "checking"
                             ? "text-blue-600"
                             : account.type === "savings"
-                            ? "text-green-600"
+                            ? "text-blue-700"
                             : "text-red-600"
                         }`}
                       />
@@ -181,13 +224,15 @@ export default function BankingHome() {
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          transaction.amount > 0 ? "bg-green-100" : "bg-red-100"
+                          transaction.amount > 0
+                            ? "bg-slate-100"
+                            : "bg-slate-100"
                         }`}
                       >
                         {transaction.amount > 0 ? (
-                          <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                          <ArrowDownLeft className="h-4 w-4 text-blue-700" />
                         ) : (
-                          <ArrowUpRight className="h-4 w-4 text-red-600" />
+                          <ArrowUpRight className="h-4 w-4 text-blue-700" />
                         )}
                       </div>
                       <div>
@@ -207,8 +252,8 @@ export default function BankingHome() {
                     <p
                       className={`font-semibold ${
                         transaction.amount > 0
-                          ? "text-green-600"
-                          : "text-red-600"
+                          ? "text-blue-700"
+                          : "text-blue-700"
                       }`}
                     >
                       {transaction.amount > 0 ? "+" : ""}$
@@ -217,32 +262,68 @@ export default function BankingHome() {
                   </div>
                 ))}
               </div>
-              <Button variant="outline" className="w-full mt-4">
+              <ButtonLink
+                href="/transactions"
+                variant="outline"
+                section="banking"
+                className="w-full mt-4"
+                icon={<ArrowRightLeft className="h-4 w-4" />}
+              >
                 View All Transactions
-              </Button>
+              </ButtonLink>
             </CardContent>
           </Card>
         </div>
 
         {/* Quick Actions & Transfer */}
         <div className="space-y-6">
-          {/* Quick Actions */}
+          {/* Features */}
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>Banking Features</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
-                {quickActions.map((action, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="h-20 flex flex-col gap-2"
-                  >
-                    <action.icon className={`h-5 w-5 ${action.color}`} />
-                    <span className="text-xs">{action.label}</span>
-                  </Button>
-                ))}
+                <ButtonLink
+                  href="/accounts"
+                  section="banking"
+                  variant="outline"
+                  className="h-20 flex flex-col gap-2"
+                  icon={<Wallet className="h-5 w-5 text-blue-700" />}
+                  iconPosition="top"
+                >
+                  <span className="text-xs">Accounts</span>
+                </ButtonLink>
+                <ButtonLink
+                  href="/cards"
+                  section="banking"
+                  variant="outline"
+                  className="h-20 flex flex-col gap-2"
+                  icon={<CreditCardIcon className="h-5 w-5 text-blue-700" />}
+                  iconPosition="top"
+                >
+                  <span className="text-xs">Cards</span>
+                </ButtonLink>
+                <ButtonLink
+                  href="/savings"
+                  section="banking"
+                  variant="outline"
+                  className="h-20 flex flex-col gap-2"
+                  icon={<PiggyBank className="h-5 w-5 text-blue-700" />}
+                  iconPosition="top"
+                >
+                  <span className="text-xs">Savings</span>
+                </ButtonLink>
+                <ButtonLink
+                  href="/transfers"
+                  section="banking"
+                  variant="outline"
+                  className="h-20 flex flex-col gap-2"
+                  icon={<ArrowRightLeft className="h-5 w-5 text-blue-700" />}
+                  iconPosition="top"
+                >
+                  <span className="text-xs">Transfers</span>
+                </ButtonLink>
               </div>
             </CardContent>
           </Card>
@@ -258,17 +339,27 @@ export default function BankingHome() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Two-Factor Auth</span>
-                <Badge className="bg-green-100 text-green-800">Enabled</Badge>
+                <Badge variant="outline" className="text-xs text-blue-700">
+                  Enabled
+                </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Account Alerts</span>
-                <Badge className="bg-green-100 text-green-800">Active</Badge>
+                <Badge variant="outline" className="text-xs text-blue-700">
+                  Active
+                </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Fraud Protection</span>
-                <Badge className="bg-green-100 text-green-800">Protected</Badge>
+                <Badge variant="outline" className="text-xs text-blue-700">
+                  Protected
+                </Badge>
               </div>
-              <Button variant="outline" size="sm" className="w-full mt-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-3 text-blue-700 hover:bg-blue-50"
+              >
                 Security Settings
               </Button>
             </CardContent>

@@ -12,6 +12,7 @@ import { sidebarLinks } from "@/constants";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { ROUTES } from "@/constants/route";
 import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
+import { useHydration } from "@/lib/hooks/useHydration";
 import {
   Sheet,
   SheetContent,
@@ -35,6 +36,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { mode, setMode } = useSidebarMode();
   const router = useRouter();
+  const isHydrated = useHydration();
 
   const handleTabChange = (value: string) => {
     const newMode = value as "banking" | "investment";
@@ -115,26 +117,40 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                   </div>
 
                   {/* Banking/Investment Tabs */}
-                  <Tabs
-                    value={mode}
-                    className="w-full"
-                    onValueChange={handleTabChange}
-                  >
-                    <TabsList className="grid w-full grid-cols-2 bg-white/20">
-                      <TabsTrigger
-                        value="banking"
-                        className="text-white data-[state=active]:bg-white data-[state=active]:text-blue-600"
-                      >
+                  {isHydrated ? (
+                    <Tabs
+                      value={mode}
+                      className="w-full"
+                      onValueChange={handleTabChange}
+                      id="mobile-sidebar-tabs"
+                    >
+                      <TabsList className="grid w-full grid-cols-2 bg-white/20">
+                        <TabsTrigger
+                          value="banking"
+                          className="text-white data-[state=active]:bg-white data-[state=active]:text-blue-600"
+                          id="mobile-banking-tab"
+                        >
+                          Banking
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="investment"
+                          className="text-white data-[state=active]:bg-white data-[state=active]:text-blue-600"
+                          id="mobile-investment-tab"
+                        >
+                          Investment
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  ) : (
+                    <div className="h-9 bg-white/20 rounded-lg p-1 grid grid-cols-2 gap-1">
+                      <div className="flex items-center justify-center h-7 rounded-md bg-white text-blue-600 px-3 py-1 text-sm font-medium">
                         Banking
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="investment"
-                        className="text-white data-[state=active]:bg-white data-[state=active]:text-blue-600"
-                      >
+                      </div>
+                      <div className="flex items-center justify-center h-7 rounded-md px-3 py-1 text-sm font-medium text-white">
                         Investment
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col">

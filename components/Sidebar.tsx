@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
+import { useHydration } from "@/lib/hooks/useHydration";
 
 interface SidebarProps {
   user?: {
@@ -30,6 +31,7 @@ interface SidebarProps {
 const Sidebar = ({ user }: SidebarProps) => {
   const { mode, setMode } = useSidebarMode();
   const router = useRouter();
+  const isHydrated = useHydration();
 
   const handleTabChange = (value: string) => {
     const newMode = value as "banking" | "investment";
@@ -63,12 +65,32 @@ const Sidebar = ({ user }: SidebarProps) => {
 
         {/* Tabs for Banking and Investment */}
         <div className="px-4 pt-4">
-          <Tabs value={mode} className="w-full" onValueChange={handleTabChange}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="banking">Banking</TabsTrigger>
-              <TabsTrigger value="investment">Investment</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {isHydrated ? (
+            <Tabs
+              value={mode}
+              className="w-full"
+              onValueChange={handleTabChange}
+              id="sidebar-tabs"
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="banking" id="banking-tab">
+                  Banking
+                </TabsTrigger>
+                <TabsTrigger value="investment" id="investment-tab">
+                  Investment
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          ) : (
+            <div className="h-9 bg-muted rounded-lg p-1 grid grid-cols-2 gap-1">
+              <div className="flex items-center justify-center h-7 rounded-md bg-background shadow px-3 py-1 text-sm font-medium">
+                Banking
+              </div>
+              <div className="flex items-center justify-center h-7 rounded-md px-3 py-1 text-sm font-medium text-muted-foreground">
+                Investment
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Scrollable nav content */}
@@ -283,109 +305,123 @@ const Sidebar = ({ user }: SidebarProps) => {
 
         {/* User and profile section */}
         <div className="mt-auto border-t border-gray-100 py-3 px-4">
-          {user && (
-            <div className="px-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="w-full flex items-center gap-3 rounded-md px-2 py-2 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
-                    aria-haspopup="menu"
-                  >
-                    <UserAvatar
-                      src={user.image}
-                      firstName={user.firstName}
-                      lastName={user.lastName}
-                      size="sm"
-                    />
-                    <div className="flex flex-col justify-center w-full">
-                      <span
-                        className="text-sm font-medium text-gray-900"
-                        style={{ display: "inline" }}
-                      >
-                        {user.firstName} {user.lastName}
-                      </span>
-                      {user.email && (
-                        <span
-                          className="text-xs text-gray-500"
-                          style={{ display: "inline" }}
-                        >
-                          {user.email}
-                        </span>
-                      )}
-                    </div>
-                    <svg
-                      className="ml-auto h-4 w-4 text-gray-500"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
+          {user ? (
+            isHydrated ? (
+              <div className="px-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 rounded-md px-2 py-2 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                      aria-haspopup="menu"
+                      id="user-profile-menu"
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                        clipRule="evenodd"
+                      <UserAvatar
+                        src={user.image}
+                        firstName={user.firstName}
+                        lastName={user.lastName}
+                        size="sm"
                       />
-                    </svg>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="center"
-                  side="top"
-                  sideOffset={8}
-                  className="p-2 w-[calc(100%-16px)]"
-                  role="menu"
-                  aria-label="User menu"
-                >
-                  {/* User header inside popover */}
-                  <div className="px-3 py-2.5 flex items-center gap-3">
-                    <UserAvatar
-                      src={user.image}
-                      firstName={user.firstName}
-                      lastName={user.lastName}
-                      size="sm"
-                    />
-                    <div className="flex flex-col justify-center w-full">
-                      <span
-                        className="text-sm font-medium text-gray-900"
-                        style={{ display: "inline" }}
-                      >
-                        {user.firstName} {user.lastName}
-                      </span>
-                      {user.email && (
+                      <div className="flex flex-col justify-center w-full">
                         <span
-                          className="text-xs text-gray-500"
+                          className="text-sm font-medium text-gray-900"
                           style={{ display: "inline" }}
                         >
-                          {user.email}
+                          {user.firstName} {user.lastName}
                         </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="my-1 h-px bg-gray-100" />
-
-                  {/* Actions */}
-                  <Link
-                    href={ROUTES.PROFILE}
-                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
-                    role="menuitem"
+                        {user.email && (
+                          <span
+                            className="text-xs text-gray-500"
+                            style={{ display: "inline" }}
+                          >
+                            {user.email}
+                          </span>
+                        )}
+                      </div>
+                      <svg
+                        className="ml-auto h-4 w-4 text-gray-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="center"
+                    side="top"
+                    sideOffset={8}
+                    className="p-2 w-[calc(100%-16px)]"
+                    role="menu"
+                    id="user-menu-content"
+                    aria-label="User menu"
                   >
-                    <Image
-                      src="/icons/edit.svg"
-                      alt="Profile"
-                      width={16}
-                      height={16}
+                    {/* User header inside popover */}
+                    <div className="px-3 py-2.5 flex items-center gap-3">
+                      <UserAvatar
+                        src={user.image}
+                        firstName={user.firstName}
+                        lastName={user.lastName}
+                        size="sm"
+                      />
+                      <div className="flex flex-col justify-center w-full">
+                        <span
+                          className="text-sm font-medium text-gray-900"
+                          style={{ display: "inline" }}
+                        >
+                          {user.firstName} {user.lastName}
+                        </span>
+                        {user.email && (
+                          <span
+                            className="text-xs text-gray-500"
+                            style={{ display: "inline" }}
+                          >
+                            {user.email}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="my-1 h-px bg-gray-100" />
+
+                    {/* Actions */}
+                    <Link
+                      href={ROUTES.PROFILE}
+                      className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
+                      role="menuitem"
+                    >
+                      <Image
+                        src="/icons/edit.svg"
+                        alt="Profile"
+                        width={16}
+                        height={16}
+                      />
+                      Profile
+                    </Link>
+                    <div className="my-1 h-px bg-gray-100" />
+                    <LogoutButton
+                      className="w-full justify-start text-red-600 hover:text-red-700 px-3 py-2 rounded-md hover:bg-gray-50"
+                      buttonVariant="ghost"
                     />
-                    Profile
-                  </Link>
-                  <div className="my-1 h-px bg-gray-100" />
-                  <LogoutButton
-                    className="w-full justify-start text-red-600 hover:text-red-700 px-3 py-2 rounded-md hover:bg-gray-50"
-                    buttonVariant="ghost"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
+                  </PopoverContent>
+                </Popover>
+              </div>
+            ) : (
+              <div className="px-2">
+                <div className="w-full flex items-center gap-3 rounded-md px-4 py-3 hover:bg-gray-50">
+                  <div className="h-8 w-8 rounded-full bg-gray-200"></div>
+                  <div className="flex-1">
+                    <div className="h-4 w-24 bg-gray-200 rounded mb-1"></div>
+                    <div className="h-3 w-32 bg-gray-100 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            )
+          ) : null}
         </div>
       </div>
     </aside>

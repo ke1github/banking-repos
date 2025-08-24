@@ -3,15 +3,40 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { ArrowLeft, LineChart, Briefcase, Search } from "lucide-react";
 
 export default function BondsPage() {
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex flex-col">
-        <h1 className="text-3xl font-bold tracking-tight">Bonds</h1>
-        <p className="text-muted-foreground">
-          Explore and manage your bond investments
-        </p>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Bonds</h1>
+          <p className="text-muted-foreground">
+            Explore and manage your bond investments
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <ButtonLink
+            href="/investment"
+            variant="ghost"
+            icon={<ArrowLeft className="h-4 w-4" />}
+            shape="rounded"
+            size="sm"
+          >
+            Back
+          </ButtonLink>
+          <ButtonLink
+            href="/investment/calculators"
+            section="investment"
+            variant="outline"
+            icon={<LineChart className="h-4 w-4" />}
+            shape="rounded"
+            size="sm"
+          >
+            Yield Calculator
+          </ButtonLink>
+        </div>
       </div>
 
       <Tabs defaultValue="my-bonds" className="w-full">
@@ -28,7 +53,13 @@ export default function BondsPage() {
               <p className="text-muted-foreground mb-4">
                 You don&apos;t have any bonds yet
               </p>
-              <Button>Start Investing</Button>
+              <ButtonLink
+                href="/investment/screener"
+                section="investment"
+                shape="rounded"
+              >
+                Start Investing
+              </ButtonLink>
             </div>
           </div>
         </TabsContent>
@@ -40,6 +71,17 @@ export default function BondsPage() {
               <p className="text-muted-foreground">
                 Bond explorer would appear here
               </p>
+            </div>
+            <div className="flex justify-end mt-4">
+              <ButtonLink
+                href="/investment/screener"
+                section="investment"
+                variant="outline"
+                size="sm"
+                icon={<Search className="h-4 w-4" />}
+              >
+                Go to Advanced Screener
+              </ButtonLink>
             </div>
           </div>
         </TabsContent>

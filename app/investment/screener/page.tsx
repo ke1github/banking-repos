@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TabList, { TabItem } from "@/components/ui/TabList";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import {
   BarChart4,
   TrendingUp,
@@ -10,6 +11,8 @@ import {
   Briefcase,
   CreditCard,
   Bitcoin,
+  Calculator,
+  ArrowLeft,
 } from "lucide-react";
 import StockScreener from "@/components/investment/screeners/StockScreener";
 import ETFScreener from "@/components/investment/screeners/ETFScreener";
@@ -62,12 +65,35 @@ export default function ScreenerPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Investment Screener</h1>
-        <p className="text-muted-foreground">
-          Find and filter investment opportunities across different asset
-          classes
-        </p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">Investment Screener</h1>
+          <p className="text-muted-foreground">
+            Find and filter investment opportunities across different asset
+            classes
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <ButtonLink
+            href="/investment"
+            variant="ghost"
+            icon={<ArrowLeft className="h-4 w-4" />}
+            shape="rounded"
+            size="sm"
+          >
+            Back
+          </ButtonLink>
+          <ButtonLink
+            href="/investment/calculators"
+            section="investment"
+            variant="outline"
+            icon={<Calculator className="h-4 w-4" />}
+            shape="rounded"
+            size="sm"
+          >
+            Calculators
+          </ButtonLink>
+        </div>
       </div>
 
       <Card>

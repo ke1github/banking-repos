@@ -8,6 +8,7 @@ import InvestmentRightSidebar from "@/components/InvestmentRightSidebar";
 import MobileNavbar from "@/components/MobileNavbar";
 import Footer from "@/components/Footer";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { useInitializeSidebarStore } from "@/lib/hooks/useInitializeSidebarStore";
 
 export default function InvestmentLayout({
   children,
@@ -18,12 +19,20 @@ export default function InvestmentLayout({
   const { user } = useAuthStore();
   const pathname = usePathname();
 
+  // Initialize the sidebar store on the client side
+  useInitializeSidebarStore();
+
   // Check if current page is the investment dashboard/home page
   const isDashboard = pathname === "/investment";
 
   // Set the sidebar mode to 'investment' when investment pages load
   React.useEffect(() => {
-    setMode("investment");
+    // Add a small delay to ensure this happens after initial hydration
+    const timer = setTimeout(() => {
+      setMode("investment");
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [setMode]);
 
   // Construct user object for sidebar/navbar

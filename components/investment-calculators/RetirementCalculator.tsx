@@ -31,14 +31,14 @@ export const RetirementCalculator = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-50">
+      <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-blue-100">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+            <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg">
               <Target className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                 Retirement Planning Calculator
               </h2>
               <p className="text-sm text-gray-600 font-normal mt-1">
@@ -167,7 +167,7 @@ export const RetirementCalculator = () => {
               <div className="flex gap-3 pt-4">
                 <Button
                   onClick={calculateRetirement}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900"
                 >
                   Calculate Retirement
                 </Button>

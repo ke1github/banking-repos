@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TabList from "@/components/ui/TabList";
 import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import {
   Briefcase,
   ChartBar,
@@ -13,6 +14,8 @@ import {
   BarChart2,
   DollarSign,
   Home,
+  ArrowLeft,
+  Search,
 } from "lucide-react";
 import {
   CompoundInterestCalculator,
@@ -81,13 +84,36 @@ export default function CalculatorsPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex flex-col">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Investment Calculators
-        </h1>
-        <p className="text-muted-foreground">
-          Tools to help you plan and grow your investments
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Investment Calculators
+          </h1>
+          <p className="text-muted-foreground">
+            Tools to help you plan and grow your investments
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <ButtonLink
+            href="/investment"
+            variant="ghost"
+            icon={<ArrowLeft className="h-4 w-4" />}
+            shape="rounded"
+            size="sm"
+          >
+            Back
+          </ButtonLink>
+          <ButtonLink
+            href="/investment/screener"
+            section="investment"
+            variant="outline"
+            icon={<Search className="h-4 w-4" />}
+            shape="rounded"
+            size="sm"
+          >
+            Screener
+          </ButtonLink>
+        </div>
       </div>
 
       <Card>

@@ -8,6 +8,7 @@ import RightSidebar from "@/components/RightSidebar";
 import MobileNavbar from "@/components/MobileNavbar";
 import Footer from "@/components/Footer";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { useInitializeSidebarStore } from "@/lib/hooks/useInitializeSidebarStore";
 
 export default function BankingLayout({
   children,
@@ -18,12 +19,20 @@ export default function BankingLayout({
   const { user } = useAuthStore();
   const pathname = usePathname();
 
+  // Initialize the sidebar store on the client side
+  useInitializeSidebarStore();
+
   // Check if current page is the dashboard/home page
   const isDashboard = pathname === "/banking";
 
   // Set the sidebar mode to 'banking' when banking pages load
   React.useEffect(() => {
-    setMode("banking");
+    // Add a small delay to ensure this happens after initial hydration
+    const timer = setTimeout(() => {
+      setMode("banking");
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [setMode]);
 
   // Construct user object for sidebar/navbar
