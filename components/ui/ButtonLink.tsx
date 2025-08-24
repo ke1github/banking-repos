@@ -74,7 +74,7 @@ export interface ButtonLinkProps
     VariantProps<typeof buttonLinkVariants> {
   href: string;
   icon?: React.ReactNode;
-  iconPosition?: "left" | "right";
+  iconPosition?: "left" | "right" | "top";
   showArrow?: boolean;
   external?: boolean;
 }
@@ -126,7 +126,13 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
         {...props}
       >
         {icon && iconPosition === "left" && icon}
-        {children}
+        {icon && iconPosition === "top" && (
+          <div className="flex flex-col items-center">
+            {icon}
+            <div className="mt-2">{children}</div>
+          </div>
+        )}
+        {iconPosition !== "top" && children}
         {icon && iconPosition === "right" && icon}
         {showArrow && <ChevronRight className="h-4 w-4" />}
       </Link>
