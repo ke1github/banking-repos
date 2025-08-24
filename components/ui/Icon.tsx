@@ -72,9 +72,16 @@ const Icon: React.FC<IconProps> = ({
       ? `${name}.svg`
       : `/icons/${name}.svg`;
 
+    console.log(`Trying to load icon: ${iconPath}`);
+
     return (
       <div className="relative">
-        <ErrorBoundary fallback={renderFallbackIcon()}>
+        <ErrorBoundary
+          fallback={renderFallbackIcon()}
+          onError={(error) => {
+            console.error(`Icon error: ${error.message}`, iconPath);
+          }}
+        >
           <Image
             src={iconPath}
             alt=""

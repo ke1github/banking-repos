@@ -62,6 +62,7 @@ const NavLink = ({
         <Icon
           name={iconSrc.replace("/icons/", "").replace(".svg", "")}
           className="h-5 w-5"
+          isActive={isCurrentPath}
         />
       </div>
 
