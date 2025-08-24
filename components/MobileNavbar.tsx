@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import Logo from "@/components/ui/logo";
+import Icon from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { sidebarLinks } from "@/constants";
@@ -75,12 +76,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="p-1">
-              <Image
-                src="/icons/hamburger.svg"
-                alt="Menu"
-                width={24}
-                height={24}
-              />
+              <Icon name="menu" className="h-6 w-6" />
             </Button>
           </SheetTrigger>
 
@@ -168,12 +164,11 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                                 href={link.route}
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                               >
-                                <Image
-                                  src={link.imgURL}
-                                  alt={link.label}
-                                  width={20}
-                                  height={20}
-                                  className="opacity-75"
+                                <Icon
+                                  name={link.imgURL
+                                    .replace("/icons/", "")
+                                    .replace(".svg", "")}
+                                  className="h-5 w-5 opacity-75"
                                 />
                                 <span className="text-sm font-medium text-gray-700">
                                   {link.label}
@@ -196,12 +191,11 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                                 href={link.route}
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                               >
-                                <Image
-                                  src={link.imgURL}
-                                  alt={link.label}
-                                  width={20}
-                                  height={20}
-                                  className="opacity-75"
+                                <Icon
+                                  name={link.imgURL
+                                    .replace("/icons/", "")
+                                    .replace(".svg", "")}
+                                  className="h-5 w-5 opacity-75"
                                 />
                                 <span className="text-sm font-medium text-gray-700">
                                   {link.label}
@@ -224,12 +218,11 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                                 href={link.route}
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                               >
-                                <Image
-                                  src={link.imgURL}
-                                  alt={link.label}
-                                  width={20}
-                                  height={20}
-                                  className="opacity-75"
+                                <Icon
+                                  name={link.imgURL
+                                    .replace("/icons/", "")
+                                    .replace(".svg", "")}
+                                  className="h-5 w-5 opacity-75"
                                 />
                                 <span className="text-sm font-medium text-gray-700">
                                   {link.label}
@@ -251,12 +244,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.BANKING_CALCULATORS}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/calculator.svg"
-                                alt="Banking Calculators"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="calculator"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Banking Calculators
@@ -279,12 +269,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.INVESTMENTS}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/home.svg"
-                                alt="Dashboard"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="home"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Dashboard
@@ -296,12 +283,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.PORTFOLIO}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/chart-line.svg"
-                                alt="My Portfolio"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="chart-line"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 My Portfolio
@@ -313,12 +297,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.INVESTMENT_PERFORMANCE}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/activity.svg"
-                                alt="Performance"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="activity"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Performance
@@ -339,12 +320,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.STOCKS}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/trending-up.svg"
-                                alt="Stocks"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="trending-up"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Stocks
@@ -356,12 +334,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.MUTUAL_FUNDS}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/pie-chart.svg"
-                                alt="Mutual Funds"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="pie-chart"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Mutual Funds
@@ -373,12 +348,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.BONDS}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/shield.svg"
-                                alt="Bonds"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="shield"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Bonds
@@ -399,12 +371,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.INVESTMENT_SCREENER}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/search.svg"
-                                alt="Investment Screener"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="search"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Investment Screener
@@ -416,12 +385,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.INVESTMENT_PLANNER}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/trending-up.svg"
-                                alt="Investment Planner"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="trending-up"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Investment Planner
@@ -433,12 +399,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.INVESTMENT_CALCULATORS}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/calculator.svg"
-                                alt="Calculators"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="calculator"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 Calculators
@@ -450,12 +413,9 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                               href={ROUTES.WEALTH_MANAGEMENT}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50"
                             >
-                              <Image
-                                src="/icons/brain.svg"
-                                alt="AI Wealth Management"
-                                width={20}
-                                height={20}
-                                className="opacity-75"
+                              <Icon
+                                name="brain"
+                                className="h-5 w-5 opacity-75"
                               />
                               <span className="text-sm font-medium text-gray-700">
                                 AI Wealth Management
@@ -479,13 +439,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                         href={ROUTES.PROFILE}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50 text-gray-700"
                       >
-                        <Image
-                          src="/icons/edit.svg"
-                          alt="Profile"
-                          width={20}
-                          height={20}
-                          className="opacity-75"
-                        />
+                        <Icon name="edit" className="h-5 w-5 opacity-75" />
                         <span className="text-sm font-medium">Profile</span>
                       </Link>
                     </SheetClose>
@@ -495,13 +449,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ user, onLogout }) => {
                         onClick={onLogout}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-50/70 active:bg-blue-50 text-gray-700 w-full text-left"
                       >
-                        <Image
-                          src="/icons/logout.svg"
-                          alt="Logout"
-                          width={20}
-                          height={20}
-                          className="opacity-75"
-                        />
+                        <Icon name="logout" className="h-5 w-5 opacity-75" />
                         <span className="text-sm font-medium">Logout</span>
                       </button>
                     </SheetClose>

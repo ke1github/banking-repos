@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import { ROUTES } from "@/constants/route";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import MobileNavbar from "@/components/MobileNavbar";
+import MobileSidebarToggle from "@/components/MobileSidebarToggle";
 import { useRouter } from "next/navigation";
 import { GlobalErrorBoundary } from "@/components/GlobalErrorBoundary";
 import { useAuthStore } from "@/lib/stores/auth-store";
@@ -20,11 +21,36 @@ export default function RootLayout({
   const { user, isLoading, isAuthenticated, logout } = useAuthStore();
   const { initialize } = useInitializeStores();
   const redirectingRef = React.useRef(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Initialize stores on component mount
   React.useEffect(() => {
     initialize();
   }, [initialize]);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+
+      // Auto-collapse sidebar on smaller desktop screens
+      if (window.innerWidth >= 768 && window.innerWidth < 1024) {
+        setSidebarCollapsed(true);
+      } else if (window.innerWidth >= 1024) {
+        setSidebarCollapsed(false);
+      }
+    };
+
+    // Initial check
+    checkIfMobile();
+
+    // Add event listener
+    window.addEventListener("resize", checkIfMobile);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkIfMobile);
+  }, []);
 
   // Redirect if unauthenticated
   React.useEffect(() => {
@@ -70,17 +96,32 @@ export default function RootLayout({
 
   return (
     <GlobalErrorBoundary>
-      <div className="flex min-h-screen bg-gray-50">
-        {/* Sidebar - hidden on mobile */}
-        <Sidebar user={userDisplayData} />
+      <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Desktop Sidebar - hidden on mobile */}
+        <Sidebar
+          user={userDisplayData}
+          initialCollapsed={sidebarCollapsed}
+          onCollapseChange={setSidebarCollapsed}
+        />
 
         {/* Mobile navigation - visible only on mobile */}
-        <div className="lg:hidden">
+        {isMobile && (
           <MobileNavbar user={userDisplayData} onLogout={handleLogout} />
-        </div>
+        )}
+
+        {/* Mobile sidebar toggle button */}
+        {isMobile && (
+          <MobileSidebarToggle
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
+        )}
 
         {/* Main content area */}
-        <main className="flex-1 mt-16 lg:mt-0">
+        <main
+          className={`flex-1 transition-all duration-300 ${
+            isMobile ? "mt-16" : sidebarCollapsed ? "ml-[80px]" : "ml-[256px]"
+          }`}
+        >
           {children}
           <Footer />
         </main>

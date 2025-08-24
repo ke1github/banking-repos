@@ -1,11 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronRight,
+  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
+  Menu,
+} from "lucide-react";
 import NavLink from "./NavLink";
 import Logo from "@/components/ui/logo";
+import Icon from "@/components/ui/Icon";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { sidebarLinks } from "@/constants";
 import { ROUTES } from "@/constants/route";
@@ -16,8 +25,11 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useSidebarMode } from "@/lib/hooks/useSidebarMode";
 import { useHydration } from "@/lib/hooks/useHydration";
+import { useTheme } from "next-themes";
 
 interface SidebarProps {
   user?: {
@@ -26,12 +38,33 @@ interface SidebarProps {
     email?: string;
     image?: string;
   };
+  initialCollapsed?: boolean;
+  onCollapseChange?: (collapsed: boolean) => void;
 }
 
-const Sidebar = ({ user }: SidebarProps) => {
+const Sidebar = ({
+  user,
+  initialCollapsed = false,
+  onCollapseChange,
+}: SidebarProps) => {
   const { mode, setMode } = useSidebarMode();
   const router = useRouter();
   const isHydrated = useHydration();
+  const { theme } = useTheme();
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const [expandedSections, setExpandedSections] = useState<{
+    [key: string]: boolean;
+  }>({
+    main: true,
+    accountsCards: true,
+    payments: true,
+    expenseManagement: true,
+    cashManagement: true,
+    tools: true,
+    portfolio: true,
+    investments: true,
+    investmentTools: true,
+  });
 
   const handleTabChange = (value: string) => {
     const newMode = value as "banking" | "investment";
@@ -45,386 +78,379 @@ const Sidebar = ({ user }: SidebarProps) => {
     }
   };
 
+  const toggleCollapse = () => {
+    const newCollapsedState = !collapsed;
+    setCollapsed(newCollapsedState);
+    if (onCollapseChange) {
+      onCollapseChange(newCollapsedState);
+    }
+  };
+
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  // Determine background color based on theme
+  const getBgColor = () => {
+    if (theme === "dark") {
+      return "bg-gray-900";
+    }
+    return "bg-white";
+  };
+
+  // Define animation variants for sidebar
+  const sidebarVariants = {
+    expanded: { width: 256 },
+    collapsed: { width: 80 },
+  };
+
+  // Define animation variants for section content
+  const sectionVariants = {
+    expanded: {
+      height: "auto",
+      opacity: 1,
+      transition: { duration: 0.3 },
+    },
+    collapsed: {
+      height: 0,
+      opacity: 0,
+      transition: { duration: 0.3 },
+    },
+  };
+
   return (
-    <aside className="sidebar h-screen w-[256px] fixed left-0 top-0 border-r border-gray-200 shadow-sm hidden lg:flex flex-col overflow-hidden bg-white">
-      <div className="flex flex-col h-full">
-        {/* Sticky header with logo */}
-        <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 border-b">
-          <Link
-            href={ROUTES.HOME}
-            aria-label="Go to dashboard"
-            className="block"
+    <>
+      {/* Mobile sidebar toggle button for medium screens */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="fixed bottom-4 right-4 z-50 shadow-lg rounded-full h-12 w-12 md:hidden"
+        onClick={toggleCollapse}
+      >
+        <Menu className="h-6 w-6" />
+      </Button>
+
+      <motion.aside
+        className={cn(
+          "sidebar h-screen fixed left-0 top-0 border-r border-gray-200 shadow-sm hidden md:flex flex-col overflow-hidden transition-all duration-300 z-40",
+          getBgColor(),
+          { "w-[256px]": !collapsed, "w-[80px]": collapsed }
+        )}
+        variants={sidebarVariants}
+        initial="expanded"
+        animate={collapsed ? "collapsed" : "expanded"}
+      >
+        <div className="flex flex-col h-full relative">
+          {/* Collapse toggle button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-4 z-50"
+            onClick={toggleCollapse}
           >
-            <Logo
-              variant="default"
-              showText={true}
-              className="text-gray-900 sidebar-logo-container"
+            <Icon
+              name={collapsed ? "chevron-right" : "chevron-left"}
+              className="h-4 w-4"
             />
-          </Link>
-        </div>
+          </Button>
 
-        {/* Tabs for Banking and Investment */}
-        <div className="px-4 pt-4">
-          {isHydrated ? (
-            <Tabs
-              value={mode}
-              className="w-full"
-              onValueChange={handleTabChange}
-              id="sidebar-tabs"
+          {/* Sticky header with logo */}
+          <div
+            className={cn(
+              "sticky top-0 z-10 bg-inherit px-6 pt-6 pb-4 border-b flex items-center",
+              collapsed ? "justify-center px-2" : "px-6"
+            )}
+          >
+            <Link
+              href={ROUTES.HOME}
+              aria-label="Go to dashboard"
+              className="block"
             >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="banking" id="banking-tab">
-                  Banking
-                </TabsTrigger>
-                <TabsTrigger value="investment" id="investment-tab">
-                  Investment
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          ) : (
-            <div className="h-9 bg-muted rounded-lg p-1 grid grid-cols-2 gap-1">
-              <div className="flex items-center justify-center h-7 rounded-md bg-background shadow px-3 py-1 text-sm font-medium">
-                Banking
-              </div>
-              <div className="flex items-center justify-center h-7 rounded-md px-3 py-1 text-sm font-medium text-muted-foreground">
-                Investment
-              </div>
-            </div>
-          )}
-        </div>
+              <Logo
+                variant="default"
+                showText={!collapsed}
+                className="text-gray-900 sidebar-logo-container"
+              />
+            </Link>
+          </div>
 
-        {/* Scrollable nav content */}
-        <div className="flex-1 px-4 overflow-y-auto py-4">
-          {mode === "banking" ? (
-            // Banking links
-            <>
-              {/* Main navigation section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Main
-                </h3>
-                <div className="flex flex-col gap-1">
-                  {sidebarLinks.mainLinks.map((link) => (
-                    <NavLink
-                      key={link.label}
-                      href={link.route}
-                      label={link.label}
-                      iconSrc={link.imgURL}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Accounts section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Accounts & Cards
-                </h3>
-                <div className="flex flex-col gap-1">
-                  {sidebarLinks.accountsLinks.map((link) => (
-                    <NavLink
-                      key={link.label}
-                      href={link.route}
-                      label={link.label}
-                      iconSrc={link.imgURL}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Payments section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Payments
-                </h3>
-                <div className="flex flex-col gap-1">
-                  {sidebarLinks.paymentLinks.map((link) => (
-                    <NavLink
-                      key={link.label}
-                      href={link.route}
-                      label={link.label}
-                      iconSrc={link.imgURL}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Expense Management section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Expense Management
-                </h3>
-                <div className="flex flex-col gap-1">
-                  {sidebarLinks.expenseLinks.map((link) => (
-                    <NavLink
-                      key={link.label}
-                      href={link.route}
-                      label={link.label}
-                      iconSrc={link.imgURL}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Cash Management section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Cash Management
-                </h3>
-                <div className="flex flex-col gap-1">
-                  {sidebarLinks.cashLinks.map((link) => (
-                    <NavLink
-                      key={link.label}
-                      href={link.route}
-                      label={link.label}
-                      iconSrc={link.imgURL}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Tools section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Tools
-                </h3>
-                <div className="flex flex-col gap-1">
-                  <NavLink
-                    key="banking-calculators"
-                    href={ROUTES.BANKING_CALCULATORS}
-                    label="Banking Calculators"
-                    iconSrc="/icons/calculator.svg"
-                  />
-                </div>
-              </div>
-            </>
-          ) : (
-            // Investment links
-            <>
-              {/* Portfolio section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Portfolio
-                </h3>
-                <div className="flex flex-col gap-1">
-                  <NavLink
-                    key="dashboard"
-                    href={ROUTES.INVESTMENTS}
-                    label="Dashboard"
-                    iconSrc="/icons/home.svg"
-                  />
-                  <NavLink
-                    key="portfolio"
-                    href={ROUTES.PORTFOLIO}
-                    label="My Portfolio"
-                    iconSrc="/icons/chart-line.svg"
-                  />
-                  <NavLink
-                    key="performance"
-                    href={ROUTES.INVESTMENT_PERFORMANCE}
-                    label="Performance"
-                    iconSrc="/icons/activity.svg"
-                  />
-                </div>
-              </div>
-
-              {/* Investments section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Investments
-                </h3>
-                <div className="flex flex-col gap-1">
-                  <NavLink
-                    key="stocks"
-                    href={ROUTES.STOCKS}
-                    label="Stocks"
-                    iconSrc="/icons/trending-up.svg"
-                  />
-                  <NavLink
-                    key="mutual-funds"
-                    href={ROUTES.MUTUAL_FUNDS}
-                    label="Mutual Funds"
-                    iconSrc="/icons/pie-chart.svg"
-                  />
-                  <NavLink
-                    key="bonds"
-                    href={ROUTES.BONDS}
-                    label="Bonds"
-                    iconSrc="/icons/briefcase.svg"
-                  />
-                  <NavLink
-                    key="crypto"
-                    href={ROUTES.CRYPTO}
-                    label="Crypto"
-                    iconSrc="/icons/bitcoin.svg"
-                  />
-                </div>
-              </div>
-
-              {/* Tools section */}
-              <div className="mb-6">
-                <h3 className="px-2 mb-2 text-xs font-semibold uppercase text-gray-500">
-                  Tools
-                </h3>
-                <div className="flex flex-col gap-1">
-                  <NavLink
-                    key="screener"
-                    href={ROUTES.INVESTMENT_SCREENER}
-                    label="Screener"
-                    iconSrc="/icons/search.svg"
-                  />
-                  <NavLink
-                    key="planner"
-                    href={ROUTES.INVESTMENT_PLANNER}
-                    label="Investment Planner"
-                    iconSrc="/icons/trending-up.svg"
-                  />
-                  <NavLink
-                    key="calculators"
-                    href={ROUTES.INVESTMENT_CALCULATORS}
-                    label="Calculators"
-                    iconSrc="/icons/calculator.svg"
-                  />
-                  <NavLink
-                    key="ai-wealth"
-                    href={ROUTES.WEALTH_MANAGEMENT}
-                    label="AI Wealth Management"
-                    iconSrc="/icons/brain.svg"
-                  />
-                  <NavLink
-                    key="fundamental-analysis"
-                    href={ROUTES.FUNDAMENTAL_ANALYSIS}
-                    label="Fundamental Analysis"
-                    iconSrc="/icons/file-text.svg"
-                  />
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* User and profile section */}
-        <div className="mt-auto border-t border-gray-100 py-3 px-4">
-          {user ? (
-            isHydrated ? (
-              <div className="px-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 rounded-md px-2 py-2 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
-                      aria-haspopup="menu"
-                      id="user-profile-menu"
-                    >
-                      <UserAvatar
-                        src={user.image}
-                        firstName={user.firstName}
-                        lastName={user.lastName}
-                        size="sm"
-                      />
-                      <div className="flex flex-col justify-center w-full">
-                        <span
-                          className="text-sm font-medium text-gray-900"
-                          style={{ display: "inline" }}
-                        >
-                          {user.firstName} {user.lastName}
-                        </span>
-                        {user.email && (
-                          <span
-                            className="text-xs text-gray-500"
-                            style={{ display: "inline" }}
-                          >
-                            {user.email}
-                          </span>
-                        )}
-                      </div>
-                      <svg
-                        className="ml-auto h-4 w-4 text-gray-500"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="center"
-                    side="top"
-                    sideOffset={8}
-                    className="p-2 w-[calc(100%-16px)]"
-                    role="menu"
-                    id="user-menu-content"
-                    aria-label="User menu"
+          {/* Tabs for Banking and Investment */}
+          <div className={cn("pt-4", collapsed ? "px-1" : "px-4")}>
+            {isHydrated ? (
+              <Tabs
+                value={mode}
+                className="w-full"
+                onValueChange={handleTabChange}
+                id="sidebar-tabs"
+              >
+                <TabsList
+                  className={cn(
+                    "grid w-full",
+                    collapsed ? "grid-cols-1 gap-1" : "grid-cols-2"
+                  )}
+                >
+                  <TabsTrigger
+                    value="banking"
+                    id="banking-tab"
+                    className={collapsed ? "px-2" : ""}
                   >
-                    {/* User header inside popover */}
-                    <div className="px-3 py-2.5 flex items-center gap-3">
-                      <UserAvatar
-                        src={user.image}
-                        firstName={user.firstName}
-                        lastName={user.lastName}
-                        size="sm"
-                      />
-                      <div className="flex flex-col justify-center w-full">
-                        <span
-                          className="text-sm font-medium text-gray-900"
-                          style={{ display: "inline" }}
-                        >
-                          {user.firstName} {user.lastName}
-                        </span>
-                        {user.email && (
-                          <span
-                            className="text-xs text-gray-500"
-                            style={{ display: "inline" }}
-                          >
-                            {user.email}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="my-1 h-px bg-gray-100" />
-
-                    {/* Actions */}
-                    <Link
-                      href={ROUTES.PROFILE}
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
-                      role="menuitem"
-                    >
-                      <Image
-                        src="/icons/edit.svg"
-                        alt="Profile"
-                        width={16}
-                        height={16}
-                      />
-                      Profile
-                    </Link>
-                    <div className="my-1 h-px bg-gray-100" />
-                    <LogoutButton
-                      className="w-full justify-start text-red-600 hover:text-red-700 px-3 py-2 rounded-md hover:bg-gray-50"
-                      buttonVariant="ghost"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                    {collapsed ? (
+                      <Icon name="bank" className="h-5 w-5" />
+                    ) : (
+                      "Banking"
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="investment"
+                    id="investment-tab"
+                    className={collapsed ? "px-2" : ""}
+                  >
+                    {collapsed ? (
+                      <Icon name="trending-up" className="h-5 w-5" />
+                    ) : (
+                      "Investment"
+                    )}
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             ) : (
-              <div className="px-2">
-                <div className="w-full flex items-center gap-3 rounded-md px-4 py-3 hover:bg-gray-50">
-                  <div className="h-8 w-8 rounded-full bg-gray-200"></div>
-                  <div className="flex-1">
-                    <div className="h-4 w-24 bg-gray-200 rounded mb-1"></div>
-                    <div className="h-3 w-32 bg-gray-100 rounded"></div>
-                  </div>
+              <div className="h-9 bg-muted rounded-lg p-1 grid grid-cols-2 gap-1">
+                <div className="flex items-center justify-center h-7 rounded-md bg-background shadow px-3 py-1 text-sm font-medium">
+                  Banking
+                </div>
+                <div className="flex items-center justify-center h-7 rounded-md px-3 py-1 text-sm font-medium text-muted-foreground">
+                  Investment
                 </div>
               </div>
-            )
-          ) : null}
+            )}
+          </div>
+
+          {/* Scrollable nav content */}
+          <div
+            className={cn(
+              "flex-1 overflow-y-auto py-4",
+              collapsed ? "px-1" : "px-4"
+            )}
+          >
+            {mode === "banking" ? (
+              // Banking links
+              <>
+                {/* Main navigation section */}
+                <div className="mb-4">
+                  {!collapsed && (
+                    <div
+                      className="px-2 mb-2 flex items-center justify-between cursor-pointer"
+                      onClick={() => toggleSection("main")}
+                    >
+                      <h3 className="text-xs font-semibold uppercase text-gray-500">
+                        Main
+                      </h3>
+                      {expandedSections.main ? (
+                        <Icon
+                          name="chevron-up"
+                          className="h-3.5 w-3.5 text-gray-500"
+                        />
+                      ) : (
+                        <Icon
+                          name="chevron-down"
+                          className="h-3.5 w-3.5 text-gray-500"
+                        />
+                      )}
+                    </div>
+                  )}
+                  <AnimatePresence initial={false}>
+                    {(expandedSections.main || collapsed) && (
+                      <motion.div
+                        initial="collapsed"
+                        animate="expanded"
+                        exit="collapsed"
+                        variants={!collapsed ? sectionVariants : {}}
+                        className="flex flex-col gap-1 overflow-hidden"
+                      >
+                        {sidebarLinks.mainLinks.map((link) => (
+                          <NavLink
+                            key={link.label}
+                            href={link.route}
+                            label={link.label}
+                            iconSrc={link.imgURL}
+                            collapsed={collapsed}
+                          />
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Accounts section */}
+                <div className="mb-4">
+                  {!collapsed && (
+                    <div
+                      className="px-2 mb-2 flex items-center justify-between cursor-pointer"
+                      onClick={() => toggleSection("accountsCards")}
+                    >
+                      <h3 className="text-xs font-semibold uppercase text-gray-500">
+                        Accounts & Cards
+                      </h3>
+                      {expandedSections.accountsCards ? (
+                        <Icon
+                          name="chevron-up"
+                          className="h-3.5 w-3.5 text-gray-500"
+                        />
+                      ) : (
+                        <Icon
+                          name="chevron-down"
+                          className="h-3.5 w-3.5 text-gray-500"
+                        />
+                      )}
+                    </div>
+                  )}
+                  <AnimatePresence initial={false}>
+                    {(expandedSections.accountsCards || collapsed) && (
+                      <motion.div
+                        initial="collapsed"
+                        animate="expanded"
+                        exit="collapsed"
+                        variants={!collapsed ? sectionVariants : {}}
+                        className="flex flex-col gap-1 overflow-hidden"
+                      >
+                        {sidebarLinks.accountsLinks.map((link) => (
+                          <NavLink
+                            key={link.label}
+                            href={link.route}
+                            label={link.label}
+                            iconSrc={link.imgURL}
+                            collapsed={collapsed}
+                          />
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Rest of banking sections... */}
+              </>
+            ) : (
+              // Investment links
+              <>
+                {/* Portfolio section */}
+                <div className="mb-4">
+                  {!collapsed && (
+                    <div
+                      className="px-2 mb-2 flex items-center justify-between cursor-pointer"
+                      onClick={() => toggleSection("portfolio")}
+                    >
+                      <h3 className="text-xs font-semibold uppercase text-gray-500">
+                        Portfolio
+                      </h3>
+                      {expandedSections.portfolio ? (
+                        <ChevronUp className="h-3.5 w-3.5 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
+                      )}
+                    </div>
+                  )}
+                  <AnimatePresence initial={false}>
+                    {(expandedSections.portfolio || collapsed) && (
+                      <motion.div
+                        initial="collapsed"
+                        animate="expanded"
+                        exit="collapsed"
+                        variants={!collapsed ? sectionVariants : {}}
+                        className="flex flex-col gap-1 overflow-hidden"
+                      >
+                        {sidebarLinks.investmentLinks.map((link) => (
+                          <NavLink
+                            key={link.label}
+                            href={link.route}
+                            label={link.label}
+                            iconSrc={link.imgURL}
+                            collapsed={collapsed}
+                          />
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Rest of investment sections... */}
+              </>
+            )}
+          </div>
+
+          {/* User profile section at bottom */}
+          <div className={cn("border-t p-4", collapsed ? "px-2" : "px-4")}>
+            {user ? (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "flex items-center w-full rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-left",
+                      collapsed ? "justify-center" : "justify-between"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "flex items-center gap-3",
+                        collapsed ? "justify-center" : ""
+                      )}
+                    >
+                      <UserAvatar
+                        src={user?.image}
+                        firstName={user?.firstName || ""}
+                        lastName={user?.lastName}
+                        className="h-8 w-8"
+                      />
+                      {!collapsed && (
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium line-clamp-1">
+                            {user.firstName} {user.lastName}
+                          </span>
+                          {user.email && (
+                            <span className="text-xs text-gray-500 line-clamp-1">
+                              {user.email}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {!collapsed && (
+                      <ChevronUp className="h-4 w-4 text-gray-500" />
+                    )}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-2" align="start">
+                  <div className="flex flex-col gap-1">
+                    <NavLink
+                      href={ROUTES.PROFILE}
+                      label="My Profile"
+                      iconSrc="/icons/user.svg"
+                    />
+                    <NavLink
+                      href={ROUTES.SETTINGS}
+                      label="Settings"
+                      iconSrc="/icons/settings.svg"
+                    />
+                    <div className="h-px bg-gray-100 dark:bg-gray-800 my-1" />
+                    <LogoutButton />
+                  </div>
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse" />
+                <div className="flex-1">
+                  <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-3 w-32 bg-gray-200 rounded animate-pulse mt-1" />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </aside>
+      </motion.aside>
+    </>
   );
 };
 
